@@ -41,6 +41,7 @@ $stages = $routeData['stages'] ?? [];
     </style>
 </head>
 <body>
+<?php include 'navbar.php'; ?>
 
 <h2 style="text-align:center;">Edit Route</h2>
 

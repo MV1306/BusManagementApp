@@ -75,7 +75,7 @@
     </style>
 </head>
 <body>
-
+    <div> <?php include 'navbar.php'; ?> </div>
 <h2>Fare Chart by Bus Type</h2>
 
 <div class="tab">

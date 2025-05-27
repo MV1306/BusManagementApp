@@ -43,6 +43,7 @@
     </style>
 </head>
 <body>
+<?php include 'navbar.php'; ?>
 
 <header>
     <h1>Welcome to Bus Management System</h1>

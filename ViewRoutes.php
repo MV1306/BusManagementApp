@@ -65,6 +65,7 @@ $routesPage = array_slice($routes, $start, $limit);
     </style>
 </head>
 <body>
+<?php include 'navbar.php'; ?>
 
 <h2 style="text-align:center;">Bus Routes</h2>
 

@@ -4,7 +4,7 @@
     <title>Add New Route with Stages</title>
     <style>
         body { font-family: Arial, sans-serif; }
-        form { max-width: 700px; margin: 40px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        form { margin: 40px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
         label { display: block; margin-bottom: 10px; }
         input[type=text], input[type=number] { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
         button { background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 15px; }
@@ -28,6 +28,9 @@
     </style>
 </head>
 <body>
+    
+<?php include 'navbar.php'; ?>
+
 
 <h2 style="text-align:center;">Add New Route with Stages</h2>
 

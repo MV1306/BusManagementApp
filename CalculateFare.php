@@ -3,17 +3,19 @@
 <head>
     <title>Calculate Fare</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+        body { font-family: Arial, sans-serif; padding: 20px; margin: auto; }
         label { display: block; margin-top: 10px; }
         select, input { width: 100%; padding: 8px; margin-top: 4px; }
         button { margin-top: 15px; padding: 10px; width: 100%; background-color: #007bff; color: white; border: none; cursor: pointer; }
         .result, .error { margin-top: 20px; padding: 10px; border-radius: 6px; display: none; }
         .result { background-color: #d4edda; color: #155724; }
         .error { background-color: #f8d7da; color: #721c24; }
+
     </style>
 </head>
 <body>
 
+    <?php include 'navbar.php'; ?>
 <h2>Calculate Bus Fare</h2>
 
 <form id="fareForm">
@@ -155,13 +157,13 @@ document.addEventListener('DOMContentLoaded', function() {
 const totalFare = passengers * data.fare;
 
 fareResultDiv.innerHTML = `
-    <strong>வழித்தடம் :</strong> ${data.routeCode}<br>
-    <strong>ஏறும் இடம்:</strong> ${data.from} / ${data.fromTranslated}<br>
-    <strong>இறங்கும் இடம்:</strong> ${data.to} / ${data.toTranslated}<br>
-    <strong>பயனித்த நிலைகள்:</strong> ${data.stagesTravelled}<br>
-    <strong>பயணிகள்:</strong> ${passengers}<br>
-    <strong>ஒரு நபருக்கான கட்டணம்:</strong> ₹${data.fare}<br>
-    <strong>மொத்த கட்டணம்:</strong> ₹${totalFare}
+    <strong>Route :</strong> ${data.routeCode}<br>
+    <strong>Start Point:</strong> ${data.from} / ${data.fromTranslated}<br>
+    <strong>End Point:</strong> ${data.to} / ${data.toTranslated}<br>
+    <strong>Stages Travelled:</strong> ${data.stagesTravelled}<br>
+    <strong>Passengers:</strong> ${passengers}<br>
+    <strong>Fare:</strong> ₹${data.fare}<br>
+    <strong>Total Fare:</strong> ₹${totalFare}
 `;
             fareResultDiv.style.display = 'block';
         })
