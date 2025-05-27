@@ -99,7 +99,7 @@
 </script>
 
 <div class="navbar">
-    <div class="brand">Bus Management</div>
+    <div class="brand">Bus Manager</div>
     <div class="hamburger" onclick="toggleMenu()">
         <div></div>
         <div></div>
