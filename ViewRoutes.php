@@ -82,6 +82,37 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
         .content-area.shifted {
             margin-left: 250px;
         }
+
+        /* Updated styles for stages in modal */
+        .stages-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 10px;
+            max-width: 100%;
+        }
+
+        .stage-item {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            white-space: normal;       /* Allow wrapping */
+            word-break: break-word;    /* Break long words if needed */
+            min-width: 120px;          /* Minimum width for consistency */
+            max-width: 250px;          /* Max width to keep layout neat */
+            box-sizing: border-box;
+        }
+
+        .stage-item .bi-geo-alt-fill {
+            margin-left: 6px;
+            color: #0d6efd;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
@@ -198,7 +229,7 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
 
 <!-- View Modal -->
 <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg"> <!-- Make modal wider -->
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="viewModalLabel">Route Details</h5>
@@ -209,7 +240,7 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
         <p><strong>From:</strong> <span id="viewFrom"></span></p>
         <p><strong>To:</strong> <span id="viewTo"></span></p>
         <p><strong>Stages:</strong></p>
-        <ul id="viewStages" class="list-group list-group-flush"></ul>
+        <div class="stages-container" id="viewStages"></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -242,27 +273,36 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
         document.getElementById('viewFrom').textContent = route.from;
         document.getElementById('viewTo').textContent = route.to;
 
-        const stagesList = document.getElementById('viewStages');
-        stagesList.innerHTML = ''; // Clear previous list
+        const stagesContainer = document.getElementById('viewStages');
+        stagesContainer.innerHTML = '';
 
-        if (route.stages && Array.isArray(route.stages) && route.stages.length > 0) {
-            route.stages.forEach(stage => {
-                const li = document.createElement('li');
-                li.className = 'list-group-item';
-                li.textContent = stage.stageName || 'Unnamed Stage';
-                stagesList.appendChild(li);
-            });
+        if (route.stages && route.stages.length) {
+            route.stages.forEach((stage, index) => {
+    const stageDiv = document.createElement('div');
+    stageDiv.classList.add('stage-item');
+
+    // Create icon element
+    const icon = document.createElement('i');
+    icon.className = 'bi bi-geo-alt-fill me-2';  // Add some margin-right
+    stageDiv.appendChild(icon);
+
+    // Create the text node with order and stage name
+    const text = document.createTextNode(`${index + 1}. ${stage.stageName}`);
+    stageDiv.appendChild(text);
+
+    stagesContainer.appendChild(stageDiv);
+});
+
         } else {
-            const li = document.createElement('li');
-            li.className = 'list-group-item text-muted';
-            li.textContent = 'No stages available.';
-            stagesList.appendChild(li);
+            stagesContainer.textContent = 'No stages available.';
         }
 
+        // Show modal
         const modal = new bootstrap.Modal(document.getElementById('viewModal'));
         modal.show();
     }
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
