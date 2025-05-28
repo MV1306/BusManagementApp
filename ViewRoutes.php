@@ -42,6 +42,13 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
     <title>Bus Routes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <style>
         .filter-sidebar {
             position: fixed;
@@ -55,6 +62,16 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
             transform: translateX(-100%);
             transition: transform 0.3s ease;
             z-index: 1050;
+        }
+
+        .stage-start {
+            color: green;
+            font-weight: 600;
+        }
+
+        .stage-end {
+            color: red;
+            font-weight: 600;
         }
 
         .filter-sidebar.active {
@@ -112,6 +129,15 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
             color: #0d6efd;
             font-size: 1.1rem;
             flex-shrink: 0;
+        }
+
+        /* Leaflet map height for modal */
+        #routeMap {
+            height: 350px;
+            width: 100%;
+            margin-top: 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
         }
     </style>
 </head>
@@ -236,11 +262,15 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p><strong>Route Code:</strong> <span id="viewCode"></span></p>
-        <p><strong>From:</strong> <span id="viewFrom"></span></p>
-        <p><strong>To:</strong> <span id="viewTo"></span></p>
-        <p><strong>Stages:</strong></p>
-        <div class="stages-container" id="viewStages"></div>
+          <h4 id="modalRouteCode"></h4>
+          <p><strong>From:</strong> <span id="modalFrom"></span></p>
+          <p><strong>To:</strong> <span id="modalTo"></span></p>
+
+          <h6>Stages:</h6>
+          <div class="stages-container" id="modalStages"></div>
+
+          <h6>Route Map:</h6>
+          <div id="routeMap"></div> <!-- Leaflet Map -->
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -249,60 +279,157 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    const toggleBtn = document.getElementById('toggleFilter');
-    const sidebar = document.getElementById('filterSidebar');
-    const content = document.getElementById('mainContent');
+    const filterSidebar = document.getElementById('filterSidebar');
+    const toggleFilterBtn = document.getElementById('toggleFilter');
+    const mainContent = document.getElementById('mainContent');
+    let sidebarVisible = false;
 
-    toggleBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('active');
-        content.classList.toggle('shifted');
-
-        const icon = toggleBtn.querySelector('i');
-        if (sidebar.classList.contains('active')) {
-            icon.classList.remove('bi-chevron-right');
-            icon.classList.add('bi-chevron-left');
-        } else {
-            icon.classList.remove('bi-chevron-left');
-            icon.classList.add('bi-chevron-right');
-        }
+    toggleFilterBtn.addEventListener('click', () => {
+        sidebarVisible = !sidebarVisible;
+        filterSidebar.classList.toggle('active', sidebarVisible);
+        mainContent.classList.toggle('shifted', sidebarVisible);
+        toggleFilterBtn.innerHTML = sidebarVisible ? '<i class="bi bi-chevron-left"></i>' : '<i class="bi bi-chevron-right"></i>';
     });
 
+    let map; // Leaflet map instance
+    let markersLayer; // Layer group for markers
+
     function viewRoute(route) {
-        document.getElementById('viewCode').textContent = route.code;
-        document.getElementById('viewFrom').textContent = route.from;
-        document.getElementById('viewTo').textContent = route.to;
+    // Set modal content
+    document.getElementById('modalRouteCode').textContent = "Route Code: " + route.code;
+    document.getElementById('modalFrom').textContent = route.from;
+    document.getElementById('modalTo').textContent = route.to;
 
-        const stagesContainer = document.getElementById('viewStages');
-        stagesContainer.innerHTML = '';
+    // Populate stages
+    const stagesContainer = document.getElementById('modalStages');
+    stagesContainer.innerHTML = '';
+    let coordinates = [];
 
-        if (route.stages && route.stages.length) {
-            route.stages.forEach((stage, index) => {
-    const stageDiv = document.createElement('div');
-    stageDiv.classList.add('stage-item');
+    if (route.stages && route.stages.length > 0) {
+        route.stages.forEach((stage, index) => {
+            const div = document.createElement('div');
+            div.classList.add('stage-item');
+            if (index === 0) div.classList.add('stage-start');
+            else if (index === route.stages.length - 1) div.classList.add('stage-end');
+            div.innerHTML = stage.stageName + ' <i class="bi bi-geo-alt-fill"></i>';
+            stagesContainer.appendChild(div);
 
-    // Create icon element
-    const icon = document.createElement('i');
-    icon.className = 'bi bi-geo-alt-fill me-2';  // Add some margin-right
-    stageDiv.appendChild(icon);
+            // Collect coordinates
+            if (stage.latitude && stage.longitude) {
+                coordinates.push([parseFloat(stage.latitude), parseFloat(stage.longitude)]);
+            }
+        });
+    }
 
-    // Create the text node with order and stage name
-    const text = document.createTextNode(`${index + 1}. ${stage.stageName}`);
-    stageDiv.appendChild(text);
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('viewModal'));
+    modal.show();
 
-    stagesContainer.appendChild(stageDiv);
-});
-
+    setTimeout(() => {
+        if (!map) {
+            map = L.map('routeMap');
         } else {
-            stagesContainer.textContent = 'No stages available.';
+            map.eachLayer(layer => map.removeLayer(layer)); // Clear old layers
         }
 
-        // Show modal
-        const modal = new bootstrap.Modal(document.getElementById('viewModal'));
-        modal.show();
+        // Add tile layer again
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18
+        }).addTo(map);
+
+        // Add markers and polyline
+        if (coordinates.length > 0) {
+            // Add markers
+            coordinates.forEach((latlng, index) => {
+                L.marker(latlng).addTo(map)
+                    .bindPopup(route.stages[index].stageName);
+            });
+
+            // Draw polyline in blue
+            const polyline = L.polyline(coordinates, { color: 'blue' }).addTo(map);
+
+            // Fit bounds to polyline
+            map.fitBounds(polyline.getBounds(), { padding: [30, 30] });
+        } else {
+            map.setView([20.5937, 78.9629], 5); // Fallback to center of India
+        }
+    }, 500); // Delay to ensure modal is visible before initializing map
+}
+
+    function initMap(stages) {
+        // If map already exists, remove it to reset
+        if (map) {
+            map.off();
+            map.remove();
+        }
+
+        // Create map
+        map = L.map('routeMap');
+
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        markersLayer = L.layerGroup().addTo(map);
+
+        // Add markers for stages and collect latlngs for bounds
+        const latLngs = [];
+
+        stages.forEach((stage, index) => {
+            // Validate latitude and longitude
+            let lat = parseFloat(stage.latitude);
+            let lng = parseFloat(stage.longitude);
+
+            if (isNaN(lat) || isNaN(lng)) {
+                return; // Skip invalid coordinates
+            }
+
+            latLngs.push([lat, lng]);
+
+            const markerOptions = {
+                title: stage.stageName,
+                riseOnHover: true
+            };
+
+            // Different marker color for start/end
+            if (index === 0) {
+                markerOptions.icon = L.icon({
+                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/252/252025.png', // green marker icon
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                    shadowSize: [41, 41]
+                });
+            } else if (index === stages.length - 1) {
+                markerOptions.icon = L.icon({
+                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/252/252025.png', // red marker icon
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                    shadowSize: [41, 41]
+                });
+            }
+
+            const marker = L.marker([lat, lng], markerOptions).addTo(markersLayer);
+            marker.bindPopup(stage.stageName);
+        });
+
+        // Fit map to markers or set default view
+        if (latLngs.length > 0) {
+            const bounds = L.latLngBounds(latLngs);
+            map.fitBounds(bounds.pad(0.2));
+        } else {
+            // Default location if no stages
+            map.setView([20.5937, 78.9629], 5); // Center of India
+        }
     }
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
