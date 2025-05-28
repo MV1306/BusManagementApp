@@ -11,6 +11,9 @@ $response = curl_exec($ch);
 curl_close($ch);
 
 $routes = json_decode($response, true);
+if (!is_array($routes)) {
+    $routes = [];
+}
 
 // Apply filters
 $filteredRoutes = array_filter($routes, function($route) {
@@ -28,7 +31,7 @@ $filteredRoutes = array_filter($routes, function($route) {
 // Pagination
 $limit = 10;
 $totalRoutes = count($filteredRoutes);
-$totalPages = ceil($totalRoutes / $limit);
+$totalPages = max(1, ceil($totalRoutes / $limit));
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($page < 1) $page = 1;
 if ($page > $totalPages) $page = $totalPages;
@@ -42,12 +45,9 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
     <title>Bus Routes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    
-    <!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
     <style>
         .filter-sidebar {
@@ -89,6 +89,7 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
             padding: 8px 12px;
             border-radius: 50%;
             font-size: 18px;
+            cursor: pointer;
         }
 
         .content-area {
@@ -117,10 +118,10 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
             align-items: center;
             font-weight: 500;
             font-size: 0.9rem;
-            white-space: normal;       /* Allow wrapping */
-            word-break: break-word;    /* Break long words if needed */
-            min-width: 120px;          /* Minimum width for consistency */
-            max-width: 250px;          /* Max width to keep layout neat */
+            white-space: normal;       
+            word-break: break-word;    
+            min-width: 120px;          
+            max-width: 250px;          
             box-sizing: border-box;
         }
 
@@ -237,12 +238,11 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
                 $queryParams['page'] = $p;
                 $active = ($p == $page) ? 'active' : '';
             ?>
-                <li class="page-item <?= $active ?>">
-                    <a class="page-link" href="?<?= http_build_query($queryParams) ?>"><?= $p ?></a>
-                </li>
+                <li class="page-item <?= $active ?>"><a class="page-link" href="?<?= http_build_query($queryParams) ?>"><?= $p ?></a></li>
             <?php endfor; ?>
 
-            <?php if ($page < $totalPages):
+            <?php
+            if ($page < $totalPages):
                 $queryParams['page'] = $page + 1;
             ?>
                 <li class="page-item">
@@ -253,183 +253,134 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
     </nav>
 </div>
 
-<!-- View Modal -->
-<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg"> <!-- Make modal wider -->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="viewModalLabel">Route Details</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          <h4 id="modalRouteCode"></h4>
-          <p><strong>From:</strong> <span id="modalFrom"></span></p>
-          <p><strong>To:</strong> <span id="modalTo"></span></p>
-
-          <h6>Stages:</h6>
-          <div class="stages-container" id="modalStages"></div>
-
-          <h6>Route Map:</h6>
-          <div id="routeMap"></div> <!-- Leaflet Map -->
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
+<!-- Modal for Viewing Route Details -->
+<div class="modal fade" id="viewRouteModal" tabindex="-1" aria-labelledby="viewRouteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Route Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="modalCloseBtn"></button>
+            </div>
+            <div class="modal-body">
+                <div><strong>Route Code:</strong> <span id="modalRouteCode"></span></div>
+                <div><strong>From:</strong> <span id="modalFrom"></span></div>
+                <div><strong>To:</strong> <span id="modalTo"></span></div>
+                <div><strong>Stages:</strong></div>
+                <div class="stages-container" id="modalStages"></div>
+                <div id="routeMap"></div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    const filterSidebar = document.getElementById('filterSidebar');
-    const toggleFilterBtn = document.getElementById('toggleFilter');
-    const mainContent = document.getElementById('mainContent');
-    let sidebarVisible = false;
 
-    toggleFilterBtn.addEventListener('click', () => {
-        sidebarVisible = !sidebarVisible;
-        filterSidebar.classList.toggle('active', sidebarVisible);
-        mainContent.classList.toggle('shifted', sidebarVisible);
-        toggleFilterBtn.innerHTML = sidebarVisible ? '<i class="bi bi-chevron-left"></i>' : '<i class="bi bi-chevron-right"></i>';
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    // Sidebar toggle button
+    const filterToggleBtn = document.getElementById('toggleFilter');
+    const filterSidebar = document.getElementById('filterSidebar');
+    const mainContent = document.getElementById('mainContent');
+    let sidebarOpen = false;
+
+    filterToggleBtn.addEventListener('click', () => {
+        sidebarOpen = !sidebarOpen;
+        filterSidebar.classList.toggle('active', sidebarOpen);
+        mainContent.classList.toggle('shifted', sidebarOpen);
+        filterToggleBtn.innerHTML = sidebarOpen ? '<i class="bi bi-chevron-left"></i>' : '<i class="bi bi-chevron-right"></i>';
     });
 
-    let map; // Leaflet map instance
-    let markersLayer; // Layer group for markers
+    // Modal setup
+    let modal = new bootstrap.Modal(document.getElementById('viewRouteModal'));
+    let map, markersLayer;
 
     function viewRoute(route) {
-    // Set modal content
-    document.getElementById('modalRouteCode').textContent = "Route Code: " + route.code;
-    document.getElementById('modalFrom').textContent = route.from;
-    document.getElementById('modalTo').textContent = route.to;
+        document.getElementById('modalRouteCode').textContent = route.code;
+        document.getElementById('modalFrom').textContent = route.from;
+        document.getElementById('modalTo').textContent = route.to;
 
-    // Populate stages
-    const stagesContainer = document.getElementById('modalStages');
-    stagesContainer.innerHTML = '';
-    let coordinates = [];
+        const stagesContainer = document.getElementById('modalStages');
+        stagesContainer.innerHTML = '';
 
-    if (route.stages && route.stages.length > 0) {
-        route.stages.forEach((stage, index) => {
-            const div = document.createElement('div');
-            div.classList.add('stage-item');
-            if (index === 0) div.classList.add('stage-start');
-            else if (index === route.stages.length - 1) div.classList.add('stage-end');
-            div.innerHTML = stage.stageName + ' <i class="bi bi-geo-alt-fill"></i>';
-            stagesContainer.appendChild(div);
+        if (route.stages && route.stages.length > 0) {
+            route.stages.forEach((stage, i) => {
+                const stageDiv = document.createElement('div');
+                stageDiv.className = 'stage-item';
+                if (i === 0) stageDiv.classList.add('stage-start');
+                if (i === route.stages.length - 1) stageDiv.classList.add('stage-end');
 
-            // Collect coordinates
-            if (stage.latitude && stage.longitude) {
-                coordinates.push([parseFloat(stage.latitude), parseFloat(stage.longitude)]);
-            }
-        });
-    }
-
-    // Show modal
-    const modal = new bootstrap.Modal(document.getElementById('viewModal'));
-    modal.show();
-
-    setTimeout(() => {
-        if (!map) {
-            map = L.map('routeMap');
-        } else {
-            map.eachLayer(layer => map.removeLayer(layer)); // Clear old layers
-        }
-
-        // Add tile layer again
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18
-        }).addTo(map);
-
-        // Add markers and polyline
-        if (coordinates.length > 0) {
-            // Add markers
-            coordinates.forEach((latlng, index) => {
-                L.marker(latlng).addTo(map)
-                    .bindPopup(route.stages[index].stageName);
+                stageDiv.innerHTML = `${stage.stageName} <i class="bi bi-geo-alt-fill"></i>`;
+                stagesContainer.appendChild(stageDiv);
             });
-
-            // Draw polyline in blue
-            const polyline = L.polyline(coordinates, { color: 'blue' }).addTo(map);
-
-            // Fit bounds to polyline
-            map.fitBounds(polyline.getBounds(), { padding: [30, 30] });
         } else {
-            map.setView([20.5937, 78.9629], 5); // Fallback to center of India
-        }
-    }, 500); // Delay to ensure modal is visible before initializing map
-}
-
-    function initMap(stages) {
-        // If map already exists, remove it to reset
-        if (map) {
-            map.off();
-            map.remove();
+            stagesContainer.innerHTML = '<em>No stages available</em>';
         }
 
-        // Create map
-        map = L.map('routeMap');
+        // Show modal
+        modal.show();
 
-        // Add OpenStreetMap tile layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
-
-        markersLayer = L.layerGroup().addTo(map);
-
-        // Add markers for stages and collect latlngs for bounds
-        const latLngs = [];
-
-        stages.forEach((stage, index) => {
-            // Validate latitude and longitude
-            let lat = parseFloat(stage.latitude);
-            let lng = parseFloat(stage.longitude);
-
-            if (isNaN(lat) || isNaN(lng)) {
-                return; // Skip invalid coordinates
+        // Initialize or update the Leaflet map
+        setTimeout(() => {
+            if (!map) {
+                map = L.map('routeMap').setView([20.5937, 78.9629], 5); // Centered roughly on India
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+                markersLayer = L.layerGroup().addTo(map);
             }
 
-            latLngs.push([lat, lng]);
+            markersLayer.clearLayers();
 
-            const markerOptions = {
-                title: stage.stageName,
-                riseOnHover: true
-            };
+            if (route.stages && route.stages.length > 0) {
+                const latlngs = [];
+                route.stages.forEach((stage, i) => {
+                    if (stage.latitude && stage.longitude) {
+                        const latlng = [stage.latitude, stage.longitude];
+                        latlngs.push(latlng);
 
-            // Different marker color for start/end
-            if (index === 0) {
-                markerOptions.icon = L.icon({
-                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/252/252025.png', // green marker icon
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-                    shadowSize: [41, 41]
+                        let markerOptions = {};
+                        if (i === 0) {
+                            markerOptions = {title: 'Start: ' + stage.stageName, icon: L.icon({
+                                iconUrl: 'https://cdn-icons-png.flaticon.com/512/190/190411.png',
+                                iconSize: [25, 41],
+                                iconAnchor: [12, 41],
+                                popupAnchor: [1, -34],
+                            })};
+                        } else if (i === route.stages.length - 1) {
+                            markerOptions = {title: 'End: ' + stage.stageName, icon: L.icon({
+                                iconUrl: 'https://cdn-icons-png.flaticon.com/512/190/190406.png',
+                                iconSize: [25, 41],
+                                iconAnchor: [12, 41],
+                                popupAnchor: [1, -34],
+                            })};
+                        } else {
+                            markerOptions = {title: stage.stageName};
+                        }
+
+                        L.marker(latlng, markerOptions).addTo(markersLayer).bindPopup(stage.stageName);
+                    }
                 });
-            } else if (index === stages.length - 1) {
-                markerOptions.icon = L.icon({
-                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/252/252025.png', // red marker icon
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-                    shadowSize: [41, 41]
-                });
+
+                if (latlngs.length > 0) {
+                    map.fitBounds(latlngs, {padding: [30, 30]});
+                    // Draw polyline for route
+                    L.polyline(latlngs, {color: 'blue', weight: 4}).addTo(markersLayer);
+                } else {
+                    map.setView([20.5937, 78.9629], 5);
+                }
+            } else {
+                map.setView([20.5937, 78.9629], 5);
             }
-
-            const marker = L.marker([lat, lng], markerOptions).addTo(markersLayer);
-            marker.bindPopup(stage.stageName);
-        });
-
-        // Fit map to markers or set default view
-        if (latLngs.length > 0) {
-            const bounds = L.latLngBounds(latLngs);
-            map.fitBounds(bounds.pad(0.2));
-        } else {
-            // Default location if no stages
-            map.setView([20.5937, 78.9629], 5); // Center of India
-        }
+        }, 300);
     }
-</script>
 
+    // Optional: Close modal and reset map if needed
+    document.getElementById('modalCloseBtn').addEventListener('click', () => {
+        if (markersLayer) markersLayer.clearLayers();
+    });
+</script>
 </body>
 </html>
