@@ -70,6 +70,8 @@ $stages = $routeData['stages'] ?? [];
             <th>Stage Name</th>
             <th>Stage Order</th>
             <th>Distance From Start</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -79,6 +81,8 @@ $stages = $routeData['stages'] ?? [];
             <td class="stageName"><?= htmlspecialchars($stage['stageName']) ?></td>
             <td class="stageOrder"><?= htmlspecialchars($stage['stageOrder']) ?></td>
             <td class="distanceFromStart"><?= htmlspecialchars($stage['distanceFromStart']) ?></td>
+            <td class="latitude"><?= htmlspecialchars($stage['latitude'] ?? '') ?></td>
+            <td class="longitude"><?= htmlspecialchars($stage['longitude'] ?? '') ?></td>
             <td>
                 <button class="btn-edit" onclick="editStage(this)">Edit</button>
                 <button class="btn-delete" onclick="deleteStage(<?= $index ?>)">Delete</button>
@@ -93,6 +97,8 @@ $stages = $routeData['stages'] ?? [];
     <input type="text" id="newStageName" placeholder="Stage Name" required>
     <input type="number" id="newStageOrder" placeholder="Stage Order" required>
     <input type="number" step="0.01" id="newDistanceFromStart" placeholder="Distance From Start" required>
+    <input type="number" step="0.000001" id="newLatitude" placeholder="Latitude" required>
+    <input type="number" step="0.000001" id="newLongitude" placeholder="Longitude" required>
     <button type="submit">Add Stage</button>
 </form>
 
@@ -116,11 +122,13 @@ function saveRoute() {
         busStages: stages.map(stage => ({
             stageName: stage.stageName,
             stageOrder: parseInt(stage.stageOrder),
-            distanceFromStart: parseFloat(stage.distanceFromStart)
+            distanceFromStart: parseFloat(stage.distanceFromStart),
+            latitude: parseFloat(stage.latitude),
+            longitude: parseFloat(stage.longitude)
         }))
     };
 
-    fetch(`save_route.php?id=${encodeURIComponent(routeId)}`, {
+    fetch(`SaveRoute.php?id=${encodeURIComponent(routeId)}`, {
         method: 'POST', // PHP will call PUT internally
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -145,12 +153,16 @@ function editStage(button) {
     const name = tr.querySelector('.stageName').textContent;
     const order = tr.querySelector('.stageOrder').textContent;
     const distance = tr.querySelector('.distanceFromStart').textContent;
+    const lat = tr.querySelector('.latitude')?.textContent || '';
+    const lng = tr.querySelector('.longitude')?.textContent || '';
 
     // Replace cells with inputs
     tr.innerHTML = `
         <td><input type="text" value="${name}" id="editName_${index}"></td>
         <td><input type="number" value="${order}" id="editOrder_${index}"></td>
         <td><input type="number" step="0.01" value="${distance}" id="editDistance_${index}"></td>
+        <td><input type="number" step="0.000001" value="${lat}" id="editLat_${index}"></td>
+        <td><input type="number" step="0.000001" value="${lng}" id="editLng_${index}"></td>
         <td>
             <button onclick="saveStage(${index})">Save</button>
             <button onclick="cancelEdit(${index})">Cancel</button>
@@ -166,6 +178,8 @@ function cancelEdit(index) {
         <td class="stageName">${stage.stageName}</td>
         <td class="stageOrder">${stage.stageOrder}</td>
         <td class="distanceFromStart">${stage.distanceFromStart}</td>
+        <td class="Latitude">${stage.latitude}</td>
+        <td class="Longitude">${stage.longitude}</td>
         <td>
             <button class="btn-edit" onclick="editStage(this)">Edit</button>
             <button class="btn-delete" onclick="deleteStage(${index})">Delete</button>
@@ -178,8 +192,10 @@ function saveStage(index) {
     const name = document.getElementById(`editName_${index}`).value.trim();
     const order = document.getElementById(`editOrder_${index}`).value.trim();
     const distance = document.getElementById(`editDistance_${index}`).value.trim();
+    const lat = document.getElementById(`editLat_${index}`).value.trim();
+    const lng = document.getElementById(`editLng_${index}`).value.trim();
 
-    if (!name || !order || !distance) {
+    if (!name || !order || !distance || !lat || !lng) {
         alert('Please fill all fields.');
         return;
     }
@@ -190,7 +206,9 @@ function saveStage(index) {
         stageIndex: index,
         stageName: name,
         stageOrder: parseInt(order),
-        distanceFromStart: parseFloat(distance)
+        distanceFromStart: parseFloat(distance),
+        latitude: parseFloat(lat),
+        longitude: parseFloat(lng)
     };
 	        stages[index] = stageData;
             cancelEdit(index); // refresh row
@@ -212,8 +230,10 @@ function addStage() {
     const name = document.getElementById('newStageName').value.trim();
     const order = document.getElementById('newStageOrder').value.trim();
     const distance = document.getElementById('newDistanceFromStart').value.trim();
+    const latitude = document.getElementById('newLatitude').value.trim();
+    const longitude = document.getElementById('newLongitude').value.trim();
 
-    if (!name || !order || !distance) {
+    if (!name || !order || !distance || !latitude || !longitude) {
         alert('Please fill all fields.');
         return;
     }
@@ -222,7 +242,9 @@ function addStage() {
         routeId: routeId,
         stageName: name,
         stageOrder: parseInt(order),
-        distanceFromStart: parseFloat(distance)
+        distanceFromStart: parseFloat(distance),
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude)
     };
 
             stages.push(newStage);
@@ -240,6 +262,8 @@ function renderStages() {
             <td class="stageName">${stage.stageName}</td>
             <td class="stageOrder">${stage.stageOrder}</td>
             <td class="distanceFromStart">${stage.distanceFromStart}</td>
+            <td class="latitude">${stage.latitude ?? ''}</td>
+            <td class="longitude">${stage.longitude ?? ''}</td>
             <td>
                 <button class="btn-edit" onclick="editStage(this)">Edit</button>
                 <button class="btn-delete" onclick="deleteStage(${i})">Delete</button>
