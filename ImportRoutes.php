@@ -34,12 +34,13 @@
             margin-bottom: 8px;
             color: #34495e;
         }
-        input[type="file"] {
+        input[type="file"], select {
             width: 100%;
             padding: 10px 14px;
             border: 2px solid #ddd;
             border-radius: 8px;
             background: white;
+            font-size: 1rem;
         }
         .buttons {
             display: flex;
@@ -94,6 +95,14 @@
 
 <form id="importForm" enctype="multipart/form-data">
     <div class="input-group mb-3">
+        <label for="importType">Select Import Type:</label>
+        <select id="importType" name="importType" required>
+            <option value="routes" selected>Routes</option>
+            <option value="stageTranslations">Stage Translations</option>
+        </select>
+    </div>
+
+    <div class="input-group mb-3">
         <label for="excelFile">Choose Excel File:</label>
         <input type="file" id="excelFile" name="excelFile" accept=".xlsx,.xls" required />
     </div>
@@ -111,6 +120,7 @@
         e.preventDefault();
 
         const fileInput = document.getElementById('excelFile');
+        const importType = document.getElementById('importType').value;
         const resultContainer = document.getElementById('resultContainer');
 
         if (fileInput.files.length === 0) {
@@ -118,10 +128,21 @@
             return;
         }
 
+        // Decide API URL based on import type
+        let apiUrl = '';
+        if (importType === 'routes') {
+            apiUrl = 'http://192.168.29.141/BusManagementAPI/ImportBusRoutes';
+        } else if (importType === 'stageTranslations') {
+            apiUrl = 'http://192.168.29.141/BusManagementAPI/ImportStageTranslations';
+        } else {
+            resultContainer.innerHTML = `<div class='result-message error'>Invalid import type selected.</div>`;
+            return;
+        }
+
         const formData = new FormData();
         formData.append('file', fileInput.files[0]);
 
-        fetch('http://192.168.29.141/BusManagementAPI/ImportBusRoutes', {
+        fetch(apiUrl, {
             method: 'POST',
             body: formData
         })
@@ -135,9 +156,9 @@
             }
 
             if (response.ok) {
-                resultContainer.innerHTML = `<div class='result-message success'>${data.message || 'File imported successfully.'}</div>`;
+                resultContainer.innerHTML = `<div class='result-message success'>${data || 'File imported successfully.'}</div>`;
             } else {
-                resultContainer.innerHTML = `<div class='result-message error'>${data.message || 'Import failed. Please try again.'}</div>`;
+                resultContainer.innerHTML = `<div class='result-message error'>${data || 'Import failed. Please try again.'}</div>`;
             }
         })
         .catch(error => {
