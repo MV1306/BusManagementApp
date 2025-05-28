@@ -96,6 +96,8 @@ $stages = $routeData['stages'] ?? [];
     <button type="submit">Add Stage</button>
 </form>
 
+    <button type="button" class="back-btn" onclick="window.location.href='ViewRoutes.php'">Back</button>
+
 <script>
 // Hold stages data locally for this example (initial load)
 let stages = <?php echo json_encode($stages); ?>;
