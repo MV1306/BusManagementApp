@@ -134,7 +134,7 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
 
         /* Leaflet map height for modal */
         #routeMap {
-            height: 350px;
+            height: 600px;
             width: 100%;
             margin-top: 15px;
             border-radius: 6px;
