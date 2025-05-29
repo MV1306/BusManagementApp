@@ -4,7 +4,7 @@ if (!$routeId) {
     die("Route ID not specified");
 }
 
-$routeApiUrl = "https://192.168.29.141/BusManagementAPI/GetRouteById/" . urlencode($routeId);
+$routeApiUrl = "https://172.20.10.2/BusManagementAPI/GetRouteById/" . urlencode($routeId);
 
 $ch = curl_init($routeApiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

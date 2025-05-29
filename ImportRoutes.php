@@ -131,9 +131,9 @@
         // Decide API URL based on import type
         let apiUrl = '';
         if (importType === 'routes') {
-            apiUrl = 'http://192.168.29.141/BusManagementAPI/ImportBusRoutes';
+            apiUrl = 'http://172.20.10.2/BusManagementAPI/ImportBusRoutes';
         } else if (importType === 'stageTranslations') {
-            apiUrl = 'http://192.168.29.141/BusManagementAPI/ImportStageTranslations';
+            apiUrl = 'http://172.20.10.2/BusManagementAPI/ImportStageTranslations';
         } else {
             resultContainer.innerHTML = `<div class='result-message error'>Invalid import type selected.</div>`;
             return;

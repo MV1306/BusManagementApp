@@ -1,6 +1,6 @@
 <?php
 // API base URL
-$apiUrl = "https://192.168.29.141/BusManagementAPI/GetAllRoutes";
+$apiUrl = "https://172.20.10.2/BusManagementAPI/GetAllRoutes";
 
 // Fetch all routes via cURL
 $ch = curl_init($apiUrl);
@@ -204,7 +204,7 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
                             <td><?= htmlspecialchars($route['from']) ?></td>
                             <td><?= htmlspecialchars($route['to']) ?></td>
                             <td>
-                                <a href="#" class="text-primary me-2" title="View" onclick='viewRoute(<?= json_encode($route) ?>)'>
+                                <a href="RouteDetails.php?id=<?= $route['id'] ?>" class="text-primary me-2" title="View">
                                     <i class="bi bi-eye-fill"></i>
                                 </a>
                                 <a href="EditRoute.php?id=<?= $route['id'] ?>" class="text-warning me-2" title="Edit">
@@ -253,26 +253,6 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
     </nav>
 </div>
 
-<!-- Modal for Viewing Route Details -->
-<div class="modal fade" id="viewRouteModal" tabindex="-1" aria-labelledby="viewRouteModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Route Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="modalCloseBtn"></button>
-            </div>
-            <div class="modal-body">
-                <div><strong>Route Code:</strong> <span id="modalRouteCode"></span></div>
-                <div><strong>From:</strong> <span id="modalFrom"></span></div>
-                <div><strong>To:</strong> <span id="modalTo"></span></div>
-                <div><strong>Stages:</strong></div>
-                <div class="stages-container" id="modalStages"></div>
-                <div id="routeMap"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -293,94 +273,6 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
         filterToggleBtn.innerHTML = sidebarOpen ? '<i class="bi bi-chevron-left"></i>' : '<i class="bi bi-chevron-right"></i>';
     });
 
-    // Modal setup
-    let modal = new bootstrap.Modal(document.getElementById('viewRouteModal'));
-    let map, markersLayer;
-
-    function viewRoute(route) {
-        document.getElementById('modalRouteCode').textContent = route.code;
-        document.getElementById('modalFrom').textContent = route.from;
-        document.getElementById('modalTo').textContent = route.to;
-
-        const stagesContainer = document.getElementById('modalStages');
-        stagesContainer.innerHTML = '';
-
-        if (route.stages && route.stages.length > 0) {
-            route.stages.forEach((stage, i) => {
-                const stageDiv = document.createElement('div');
-                stageDiv.className = 'stage-item';
-                if (i === 0) stageDiv.classList.add('stage-start');
-                if (i === route.stages.length - 1) stageDiv.classList.add('stage-end');
-
-                stageDiv.innerHTML = `${stage.stageName} <i class="bi bi-geo-alt-fill"></i>`;
-                stagesContainer.appendChild(stageDiv);
-            });
-        } else {
-            stagesContainer.innerHTML = '<em>No stages available</em>';
-        }
-
-        // Show modal
-        modal.show();
-
-        // Initialize or update the Leaflet map
-        setTimeout(() => {
-            if (!map) {
-                map = L.map('routeMap').setView([20.5937, 78.9629], 5); // Centered roughly on India
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; OpenStreetMap contributors'
-                }).addTo(map);
-                markersLayer = L.layerGroup().addTo(map);
-            }
-
-            markersLayer.clearLayers();
-
-            if (route.stages && route.stages.length > 0) {
-                const latlngs = [];
-                route.stages.forEach((stage, i) => {
-                    if (stage.latitude && stage.longitude) {
-                        const latlng = [stage.latitude, stage.longitude];
-                        latlngs.push(latlng);
-
-                        let markerOptions = {};
-                        if (i === 0) {
-                            markerOptions = {title: 'Start: ' + stage.stageName, icon: L.icon({
-                                iconUrl: 'https://cdn-icons-png.flaticon.com/512/190/190411.png',
-                                iconSize: [25, 41],
-                                iconAnchor: [12, 41],
-                                popupAnchor: [1, -34],
-                            })};
-                        } else if (i === route.stages.length - 1) {
-                            markerOptions = {title: 'End: ' + stage.stageName, icon: L.icon({
-                                iconUrl: 'https://cdn-icons-png.flaticon.com/512/190/190406.png',
-                                iconSize: [25, 41],
-                                iconAnchor: [12, 41],
-                                popupAnchor: [1, -34],
-                            })};
-                        } else {
-                            markerOptions = {title: stage.stageName};
-                        }
-
-                        L.marker(latlng, markerOptions).addTo(markersLayer).bindPopup(stage.stageName);
-                    }
-                });
-
-                if (latlngs.length > 0) {
-                    map.fitBounds(latlngs, {padding: [30, 30]});
-                    // Draw polyline for route
-                    L.polyline(latlngs, {color: 'blue', weight: 4}).addTo(markersLayer);
-                } else {
-                    map.setView([20.5937, 78.9629], 5);
-                }
-            } else {
-                map.setView([20.5937, 78.9629], 5);
-            }
-        }, 300);
-    }
-
-    // Optional: Close modal and reset map if needed
-    document.getElementById('modalCloseBtn').addEventListener('click', () => {
-        if (markersLayer) markersLayer.clearLayers();
-    });
 </script>
 </body>
 </html>
