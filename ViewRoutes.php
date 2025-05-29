@@ -1,6 +1,6 @@
 <?php
 // API base URL
-$apiUrl = "https://172.20.10.2/BusManagementAPI/GetAllRoutes";
+$apiUrl = "http://172.20.10.2/BusManagementAPI/GetAllRoutes";
 
 // Fetch all routes via cURL
 $ch = curl_init($apiUrl);

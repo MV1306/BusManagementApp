@@ -137,7 +137,7 @@
             busStages: busStages
         };
 
-        fetch('https://172.20.10.2/BusManagementAPI/CreateRoute', {
+        fetch('http://172.20.10.2/BusManagementAPI/CreateRoute', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)

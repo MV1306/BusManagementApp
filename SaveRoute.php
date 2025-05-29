@@ -14,7 +14,7 @@ if (!$input) {
     exit;
 }
 
-$apiUrl = "https://172.20.10.2/BusManagementAPI/UpdateRoute/" . urlencode($routeId);
+$apiUrl = "http://172.20.10.2/BusManagementAPI/UpdateRoute/" . urlencode($routeId);
 
 $ch = curl_init($apiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

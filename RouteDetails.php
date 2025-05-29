@@ -5,7 +5,7 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 }
 
 $routeId = $_GET['id'];
-$apiUrl = "https://172.20.10.2/BusManagementAPI/GetRouteByID/" . urlencode($routeId);
+$apiUrl = "http://172.20.10.2/BusManagementAPI/GetRouteByID/" . urlencode($routeId);
 
 $ch = curl_init($apiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

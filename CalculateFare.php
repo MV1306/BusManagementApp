@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const apiUrl = `https://172.20.10.2/BusManagementAPI/CalculateFare/${encodeURIComponent(routeCode)}/${encodeURIComponent(busType)}/${encodeURIComponent(startStage)}/${encodeURIComponent(endStage)}`;
+        const apiUrl = `http://172.20.10.2/BusManagementAPI/CalculateFare/${encodeURIComponent(routeCode)}/${encodeURIComponent(busType)}/${encodeURIComponent(startStage)}/${encodeURIComponent(endStage)}`;
 
         fetch(apiUrl, {
             method: 'GET',
