@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const passengersSelect = document.getElementById('passengers');
 
     // Fetch route codes
-    fetch('http://172.20.10.2/BusManagementAPI/GetRouteCodes')
+    fetch('https://busmanagementapi.onrender.com//BusManagementAPI/GetRouteCodes')
         .then(response => response.json())
         .then(data => {
             routeCodeSelect.innerHTML = '<option value="">Select Route Code</option>';
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!selectedRouteCode) return;
 
-        fetch(`http://172.20.10.2/BusManagementAPI/GetRouteStagesByCode/${selectedRouteCode}`)
+        fetch(`https://busmanagementapi.onrender.com//BusManagementAPI/GetRouteStagesByCode/${selectedRouteCode}`)
             .then(response => response.json())
             .then(data => {
                 const stages = data.stages || [];
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const apiUrl = `http://172.20.10.2/BusManagementAPI/CalculateFare/${encodeURIComponent(routeCode)}/${encodeURIComponent(busType)}/${encodeURIComponent(startStage)}/${encodeURIComponent(endStage)}`;
+        const apiUrl = `https://busmanagementapi.onrender.com//BusManagementAPI/CalculateFare/${encodeURIComponent(routeCode)}/${encodeURIComponent(busType)}/${encodeURIComponent(startStage)}/${encodeURIComponent(endStage)}`;
 
         fetch(apiUrl, {
             method: 'GET',

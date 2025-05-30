@@ -137,7 +137,7 @@
             busStages: busStages
         };
 
-        fetch('http://172.20.10.2/BusManagementAPI/CreateRoute', {
+        fetch('https://busmanagementapi.onrender.com//BusManagementAPI/CreateRoute', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)

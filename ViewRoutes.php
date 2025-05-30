@@ -1,6 +1,6 @@
 <?php
 // API base URL
-$apiUrl = "http://172.20.10.2/BusManagementAPI/GetAllRoutes";
+$apiUrl = "https://busmanagementapi.onrender.com//BusManagementAPI/GetAllRoutes";
 
 // Fetch all routes via cURL
 $ch = curl_init($apiUrl);
@@ -31,6 +31,7 @@ $filteredRoutes = array_filter($routes, function($route) {
 // Pagination
 $limit = 10;
 $totalRoutes = count($filteredRoutes);
+echo $totalRoutes;
 $totalPages = max(1, ceil($totalRoutes / $limit));
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($page < 1) $page = 1;
