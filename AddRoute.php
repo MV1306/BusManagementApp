@@ -1,61 +1,219 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Add New Route with Stages</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        form { margin: 40px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
-        label { display: block; margin-bottom: 10px; }
-        input[type=text], input[type=number] { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
-        button { background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 15px; }
-        button:hover { background-color: #218838; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        th { background-color: #f4f4f4; }
-        .btn-remove-stage { background-color: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
-        .btn-remove-stage:hover { background-color: #c82333; }
-        .message { text-align: center; margin: 20px 0; }
-        .add-stage-btn { background-color: #007bff; margin-top: 10px; }
-        .add-stage-btn:hover { background-color: #0069d9; }
+        /* Reset and base */
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background: #f9f9f9;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.8rem;
+        }
+        form {
+            background: #fff;
+            max-width: 700px;
+            width: 100%;
+            padding: 25px 30px 30px 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block;
+            color: #444;
+            font-size: 1rem;
+        }
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px 14px;
+            margin-bottom: 18px;
+            border: 1.8px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.25s ease;
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 6px rgba(0, 123, 255, 0.4);
+        }
+        h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-weight: 700;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 6px;
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 0.95rem;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        thead {
+            background: #007bff;
+            color: #fff;
+            font-weight: 700;
+        }
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e1e1e1;
+            text-align: left;
+        }
+        tbody tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        /* Buttons */
+        button {
+            font-size: 1rem;
+            padding: 12px 20px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            user-select: none;
+        }
+        .add-stage-btn {
+            background-color: #007bff;
+            color: #fff;
+            margin-top: 15px;
+            align-self: flex-start;
+        }
+        .add-stage-btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-remove-stage {
+            background-color: #dc3545;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 5px;
+        }
+        .btn-remove-stage:hover {
+            background-color: #b02a37;
+        }
+        button[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            margin-top: 25px;
+            width: 100%;
+            font-weight: 700;
+        }
+        button[type="submit"]:hover {
+            background-color: #218838;
+        }
         .back-btn {
-            background-color: #6c757d; 
-            margin-top: 15px; 
-            margin-right: 10px;
+            background-color: #6c757d;
+            color: #fff;
+            margin-top: 15px;
+            width: 100%;
+            font-weight: 600;
         }
         .back-btn:hover {
             background-color: #5a6268;
         }
+
+        .message {
+            margin: 25px auto 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e74c3c;
+            max-width: 700px;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            form {
+                padding: 20px;
+            }
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.9rem;
+            }
+            button[type="submit"],
+            .back-btn {
+                font-size: 1.1rem;
+                padding: 14px;
+            }
+        }
+        @media (max-width: 480px) {
+            /* Stack labels and inputs */
+            label {
+                font-size: 0.9rem;
+            }
+            input[type="text"],
+            input[type="number"] {
+                font-size: 0.9rem;
+                padding: 9px 12px;
+            }
+            button {
+                font-size: 0.95rem;
+                padding: 10px 14px;
+            }
+            /* Table scroll on small screens */
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
     </style>
 </head>
 <body>
-    
+
 <?php include 'navbar.php'; ?>
 
-
-<h2 style="text-align:center;">Add New Route with Stages</h2>
+<h2>Add New Route with Stages</h2>
 
 <form id="addRouteForm" onsubmit="event.preventDefault(); saveRoute();">
+    <label for="code">Route Code:</label>
+    <input type="text" id="code" name="code" required placeholder="Enter Route Code" />
 
-    <label>Route Code:
-        <input type="text" id="code" name="code" required>
-    </label>
+    <label for="from">From:</label>
+    <input type="text" id="from" name="from" required placeholder="Starting Point" />
 
-    <label>From:
-        <input type="text" id="from" name="from" required>
-    </label>
-
-    <label>To:
-        <input type="text" id="to" name="to" required>
-    </label>
+    <label for="to">To:</label>
+    <input type="text" id="to" name="to" required placeholder="Destination" />
 
     <h3>Stages</h3>
-    <table id="stagesTable">
+    <table id="stagesTable" aria-label="Stages Table">
         <thead>
             <tr>
-                <th>Stage Name</th>
-                <th>Stage Order</th>
-                <th>Distance From Start</th>
-                <th>Actions</th>
+                <th scope="col">Stage Name</th>
+                <th scope="col">Stage Order</th>
+                <th scope="col">Distance From Start (km)</th>
+                <th scope="col">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -64,11 +222,8 @@
     </table>
 
     <button type="button" class="add-stage-btn" onclick="addStageRow()">+ Add Stage</button>
-    
-    <br>
-    
+
     <button type="submit">Add Route</button>
-	    
     <button type="button" class="back-btn" onclick="window.location.href='ViewRoutes.php'">Back</button>
 </form>
 
@@ -142,15 +297,13 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         })
-        .then(res => res.text())   // Read response as plain text
+        .then(res => res.text())
         .then(text => {
-            alert(text);  // Show alert with the API response
+            alert(text);
 
             if (text.toLowerCase().includes('success')) {
-                // Redirect to ViewRoute.php after alert
                 window.location.href = 'ViewRoutes.php';
             } else {
-                // Show error message in message div as well
                 const msg = document.getElementById('message');
                 msg.style.color = 'red';
                 msg.textContent = text || 'Failed to add route.';

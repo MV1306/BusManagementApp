@@ -1,81 +1,117 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Fare Chart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
             background: #f7f7f7;
+            margin: 0;
         }
+
         h2 {
             text-align: center;
             margin-bottom: 30px;
         }
+
         /* Tab container */
         .tab {
-            overflow: hidden;
+            overflow-x: auto;
+            white-space: nowrap;
             border-bottom: 2px solid #ccc;
-            margin-bottom: 20px;
-            max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
+            max-width: 100%;
+            margin: 0 auto 20px auto;
+            padding: 0 10px;
+            text-align: center;
         }
-        /* Tab buttons */
+
         .tab button {
+            display: inline-block;
             background-color: #e7e7e7;
-            float: left;
             border: none;
             outline: none;
             cursor: pointer;
             padding: 12px 20px;
             transition: 0.3s;
             font-size: 16px;
-            margin-right: 4px;
+            margin: 0 4px 0 0;
             border-radius: 6px 6px 0 0;
         }
+
         .tab button:hover {
             background-color: #d0d0d0;
         }
+
         .tab button.active {
             background-color: #007bff;
             color: white;
             font-weight: bold;
         }
+
         /* Tab content */
         .tabcontent {
             display: none;
-            max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
+            max-width: 100%;
+            margin: auto;
             background: white;
             border: 1px solid #ccc;
             border-top: none;
             padding: 20px;
             border-radius: 0 6px 6px 6px;
-
-            /* Flex container for tables */
             display: flex;
-            justify-content: space-between;
-            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
         }
+
         table {
-            width: 30%; /* three tables side by side */
+            width: 280px;
             border-collapse: collapse;
+            overflow-x: auto;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
+
         th, td {
             border: 1px solid #aaa;
             padding: 8px;
             text-align: center;
+            font-size: 14px;
         }
+
         th {
             background-color: #007bff;
             color: white;
         }
+
+        @media (max-width: 768px) {
+            .tabcontent {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            table {
+                width: 90%;
+            }
+
+            .tab {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .tab button {
+                margin: 5px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div> <?php include 'navbar.php'; ?> </div>
+
+<div><?php include 'navbar.php'; ?></div>
+
 <h2>Fare Chart by Bus Type</h2>
 
 <div class="tab">
@@ -86,35 +122,30 @@
     <button class="tablinks" onclick="openTab(event, 'Night')">Night Service</button>
 </div>
 
-<!-- Ordinary Tab -->
-<div id="Ordinary" class="tabcontent" style="display:flex;">
+<div id="Ordinary" class="tabcontent" style="display: flex;">
     <table id="ordinaryTable1"></table>
     <table id="ordinaryTable2"></table>
     <table id="ordinaryTable3"></table>
 </div>
 
-<!-- Express Tab -->
 <div id="Express" class="tabcontent">
     <table id="expressTable1"></table>
     <table id="expressTable2"></table>
     <table id="expressTable3"></table>
 </div>
 
-<!-- Deluxe Tab -->
 <div id="Deluxe" class="tabcontent">
     <table id="deluxeTable1"></table>
     <table id="deluxeTable2"></table>
     <table id="deluxeTable3"></table>
 </div>
 
-<!-- A/C Tab -->
 <div id="AC" class="tabcontent">
     <table id="acTable1"></table>
     <table id="acTable2"></table>
     <table id="acTable3"></table>
 </div>
 
-<!-- Night Service Tab -->
 <div id="Night" class="tabcontent">
     <table id="nightTable1"></table>
     <table id="nightTable2"></table>
@@ -122,7 +153,6 @@
 </div>
 
 <script>
-    // Sample fare data for 30 stages per bus type (replace with real data)
     const fareData = {
         ordinary: [
         5.00, 6.00, 7.00, 8.00, 9.00, 10.00, 11.00, 12.00, 13.00, 14.00,
@@ -155,49 +185,41 @@
     ].map((fare, i) => ({ stage: i + 1, fare }))
     };
 
-    // Function to create table HTML for a range of stages
     function createTableHtml(data, startIndex, endIndex) {
         let html = `<thead>
                         <tr>
-                            <th>Stage(s) Travelled</th>
+                            <th>Stage(s)</th>
                             <th>Fare (₹)</th>
                         </tr>
-                    </thead>
-                    <tbody>`;
+                    </thead><tbody>`;
 
-        for(let i = startIndex; i < endIndex && i < data.length; i++) {
-            html += `<tr>
-                        <td>${data[i].stage}</td>
-                        <td>${data[i].fare}</td>
-                     </tr>`;
+        for (let i = startIndex; i < endIndex && i < data.length; i++) {
+            html += `<tr><td>${data[i].stage}</td><td>${data[i].fare.toFixed(2)}</td></tr>`;
         }
 
         html += `</tbody>`;
         return html;
     }
 
-    // Render tables for each bus type and each range
     function renderAllTables() {
         ['ordinary', 'express', 'deluxe', 'ac', 'night'].forEach(busType => {
-            for(let chunk = 0; chunk < 3; chunk++) {
+            for (let chunk = 0; chunk < 3; chunk++) {
                 const start = chunk * 10;
                 const end = start + 10;
-                const tableId = `${busType}Table${chunk+1}`;
+                const tableId = `${busType}Table${chunk + 1}`;
                 document.getElementById(tableId).innerHTML = createTableHtml(fareData[busType], start, end);
             }
         });
     }
 
-    renderAllTables();
-	
-	window.onload = function() {
-      const tabcontent = document.querySelectorAll(".tabcontent");
-      tabcontent.forEach((tc, index) => {
-        tc.style.display = index === 0 ? "flex" : "none";
-      });
+    window.onload = function () {
+        renderAllTables();
+        const tabcontent = document.querySelectorAll(".tabcontent");
+        tabcontent.forEach((tc, index) => {
+            tc.style.display = index === 0 ? "flex" : "none";
+        });
     };
 
-    // Tab switching logic
     function openTab(evt, busType) {
         const tabcontent = document.querySelectorAll(".tabcontent");
         tabcontent.forEach(tc => tc.style.display = "none");

@@ -24,97 +24,328 @@ $stages = $routeData['stages'] ?? [];
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Edit Route and Stages</title>
     <style>
-        table { border-collapse: collapse; width: 90%; margin: 20px auto; }
-        th, td { padding: 10px; border: 1px solid #ccc; }
-        th { background-color: #f2f2f2; }
-        input[type=text], input[type=number] { width: 100%; padding: 5px; }
-        button, a.button { padding: 5px 10px; margin: 2px; cursor: pointer; }
-        .btn-edit { background-color: #4CAF50; color: white; border: none; }
-        .btn-delete { background-color: #f44336; color: white; border: none; }
-        .btn-cancel { background-color: #777; color: white; border: none; }
-        #addStageForm { margin: 20px auto; width: 90%; }
-        #addStageForm input { width: 30%; margin-right: 10px; }
+        /* Reset and basics */
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+        h2, h3 {
+            text-align: center;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            color: #222;
+        }
+
+        /* Navbar placeholder styling */
+        /* You can customize your navbar.php to be responsive */
+        /* Assuming navbar.php has responsive nav */
+
+        /* Container */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 15px 2rem;
+        }
+
+        /* Route Form styling */
+        #routeForm {
+            background: white;
+            padding: 20px 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem 1.5rem;
+            align-items: center;
+        }
+        #routeForm label {
+            flex: 1 1 45%;
+            display: flex;
+            flex-direction: column;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #444;
+        }
+        #routeForm input[type="text"] {
+            padding: 8px 10px;
+            margin-top: 6px;
+            border: 1.5px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        #routeForm input[type="text"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        #routeForm button {
+            flex: 1 1 100%;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 12px 0;
+            font-size: 1.1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+        #routeForm button:hover {
+            background-color: #45a049;
+        }
+
+        /* Table container for responsiveness */
+        .table-responsive {
+            overflow-x: auto;
+            margin: 0 auto 2rem;
+            max-width: 1100px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+            padding: 15px;
+        }
+
+        /* Table styling */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 600px;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        tr:hover {
+            background-color: #f1f7f1;
+        }
+        td input[type="text"],
+        td input[type="number"] {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1.2px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        td input[type="text"]:focus,
+        td input[type="number"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        /* Buttons inside table */
+        button.btn-edit, button.btn-delete {
+            border: none;
+            color: white;
+            padding: 7px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-right: 6px;
+        }
+        button.btn-edit {
+            background-color: #4CAF50;
+        }
+        button.btn-edit:hover {
+            background-color: #3e8e41;
+        }
+        button.btn-delete {
+            background-color: #f44336;
+        }
+        button.btn-delete:hover {
+            background-color: #c0392b;
+        }
+        button.btn-cancel {
+            background-color: #777;
+            color: white;
+            border: none;
+            padding: 7px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-left: 6px;
+        }
+        button.btn-cancel:hover {
+            background-color: #555;
+        }
+
+        /* Add Stage Form */
+        #addStageForm {
+            max-width: 1100px;
+            margin: 0 auto 2rem;
+            background: white;
+            padding: 20px 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 16px;
+            justify-content: center;
+        }
+        #addStageForm input[type="text"],
+        #addStageForm input[type="number"] {
+            flex: 1 1 180px;
+            padding: 10px 12px;
+            font-size: 1rem;
+            border: 1.5px solid #ccc;
+            border-radius: 6px;
+            transition: border-color 0.3s ease;
+        }
+        #addStageForm input[type="text"]:focus,
+        #addStageForm input[type="number"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        #addStageForm button {
+            flex: 1 1 150px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #addStageForm button:hover {
+            background-color: #45a049;
+        }
+
+        /* Back button */
+        .back-btn {
+            display: block;
+            max-width: 1100px;
+            margin: 0 auto 40px;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background-color: #777;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background-color: #555;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 720px) {
+            #routeForm label {
+                flex: 1 1 100%;
+            }
+            #addStageForm input[type="text"],
+            #addStageForm input[type="number"],
+            #addStageForm button {
+                flex: 1 1 100%;
+            }
+            table {
+                min-width: unset;
+            }
+        }
     </style>
 </head>
 <body>
 <?php include 'navbar.php'; ?>
 
-<h2 style="text-align:center;">Edit Route</h2>
+<div class="container">
+    <h2>Edit Route</h2>
 
-<form id="routeForm">
-    <input type="hidden" name="id" value="<?= htmlspecialchars($route['id']) ?>">
-    <label>Route Code:
-        <input type="text" name="code" value="<?= htmlspecialchars($route['code']) ?>" required>
-    </label>
-    <br>
-    <label>From:
-        <input type="text" name="from" value="<?= htmlspecialchars($route['from']) ?>" required>
-    </label>
-    <br>
-    <label>To:
-        <input type="text" name="to" value="<?= htmlspecialchars($route['to']) ?>" required>
-    </label>
-    <br>
-    <button type="button" onclick="saveRoute()">Save Route</button>
-</form>
+    <form id="routeForm">
+        <input type="hidden" name="id" value="<?= htmlspecialchars($route['id']) ?>">
+        <label>Route Code:
+            <input type="text" name="code" value="<?= htmlspecialchars($route['code']) ?>" required>
+        </label>
+        <label>From:
+            <input type="text" name="from" value="<?= htmlspecialchars($route['from']) ?>" required>
+        </label>
+        <label>To:
+            <input type="text" name="to" value="<?= htmlspecialchars($route['to']) ?>" required>
+        </label>
+        <button type="button" onclick="saveRoute()">Save Route</button>
+    </form>
 
-<h3 style="text-align:center;">Stages for this Route</h3>
+    <h3>Stages for this Route</h3>
+    <div class="table-responsive">
+        <table id="stagesTable" aria-label="Stages Table">
+            <thead>
+                <tr>
+                    <th scope="col">Stage Name</th>
+                    <th scope="col">Stage Order</th>
+                    <th scope="col">Distance From Start</th>
+                    <th scope="col">Latitude</th>
+                    <th scope="col">Longitude</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($stages as $index => $stage): ?>
+                <tr data-index="<?= $index ?>">
+                    <td class="stageName"><?= htmlspecialchars($stage['stageName']) ?></td>
+                    <td class="stageOrder"><?= htmlspecialchars($stage['stageOrder']) ?></td>
+                    <td class="distanceFromStart"><?= htmlspecialchars($stage['distanceFromStart']) ?></td>
+                    <td class="latitude"><?= htmlspecialchars($stage['latitude'] ?? '') ?></td>
+                    <td class="longitude"><?= htmlspecialchars($stage['longitude'] ?? '') ?></td>
+                    <td>
+                        <button class="btn-edit" onclick="editStage(this)" aria-label="Edit stage <?= htmlspecialchars($stage['stageName']) ?>">Edit</button>
+                        <button class="btn-delete" onclick="deleteStage(<?= $index ?>)" aria-label="Delete stage <?= htmlspecialchars($stage['stageName']) ?>">Delete</button>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 
-<table id="stagesTable">
-    <thead>
-        <tr>
-            <th>Stage Name</th>
-            <th>Stage Order</th>
-            <th>Distance From Start</th>
-            <th>Latitude</th>
-            <th>Longitude</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php foreach ($stages as $index => $stage): ?>
-        <tr data-index="<?= $index ?>">
-            <td class="stageName"><?= htmlspecialchars($stage['stageName']) ?></td>
-            <td class="stageOrder"><?= htmlspecialchars($stage['stageOrder']) ?></td>
-            <td class="distanceFromStart"><?= htmlspecialchars($stage['distanceFromStart']) ?></td>
-            <td class="latitude"><?= htmlspecialchars($stage['latitude'] ?? '') ?></td>
-            <td class="longitude"><?= htmlspecialchars($stage['longitude'] ?? '') ?></td>
-            <td>
-                <button class="btn-edit" onclick="editStage(this)">Edit</button>
-                <button class="btn-delete" onclick="deleteStage(<?= $index ?>)">Delete</button>
-            </td>
-        </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
-
-<h3 style="text-align:center;">Add New Stage</h3>
-<form id="addStageForm" onsubmit="event.preventDefault(); addStage();">
-    <input type="text" id="newStageName" placeholder="Stage Name" required>
-    <input type="number" id="newStageOrder" placeholder="Stage Order" required>
-    <input type="number" step="0.01" id="newDistanceFromStart" placeholder="Distance From Start" required>
-    <input type="number" step="0.000001" id="newLatitude" placeholder="Latitude" required>
-    <input type="number" step="0.000001" id="newLongitude" placeholder="Longitude" required>
-    <button type="submit">Add Stage</button>
-</form>
+    <h3>Add New Stage</h3>
+    <form id="addStageForm" onsubmit="event.preventDefault(); addStage();" aria-label="Add new stage form">
+        <input type="text" id="newStageName" placeholder="Stage Name" required aria-required="true" />
+        <input type="number" id="newStageOrder" placeholder="Stage Order" required aria-required="true" />
+        <input type="number" step="0.01" id="newDistanceFromStart" placeholder="Distance From Start" required aria-required="true" />
+        <input type="number" step="0.000001" id="newLatitude" placeholder="Latitude" required aria-required="true" />
+        <input type="number" step="0.000001" id="newLongitude" placeholder="Longitude" required aria-required="true" />
+        <button type="submit">Add Stage</button>
+    </form>
 
     <button type="button" class="back-btn" onclick="window.location.href='ViewRoutes.php'">Back</button>
+</div>
 
 <script>
-// Hold stages data locally for this example (initial load)
 let stages = <?php echo json_encode($stages); ?>;
 const routeId = '<?= $route['id'] ?>';
 
-// Save route info (call your API)
 function saveRoute() {
     const form = document.getElementById('routeForm');
     const formData = new FormData(form);
 
-    // Prepare data as per your API format
     const data = {
         routeCode: formData.get('code').trim(),
         startPoint: formData.get('from').trim(),
@@ -129,7 +360,7 @@ function saveRoute() {
     };
 
     fetch(`SaveRoute.php?id=${encodeURIComponent(routeId)}`, {
-        method: 'POST', // PHP will call PUT internally
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     })
@@ -137,49 +368,85 @@ function saveRoute() {
     .then(res => {
         alert(res.message || 'Route saved successfully');
         if(res.success) {
-			window.location.href = 'ViewRoutes.php';
+            window.location.href = 'ViewRoutes.php';
         }
     })
     .catch(err => alert('Error saving route: ' + err));
 }
 
-
-// Edit stage inline
 function editStage(button) {
     const tr = button.closest('tr');
     const index = tr.getAttribute('data-index');
 
-    // Get current values
-    const name = tr.querySelector('.stageName').textContent;
-    const order = tr.querySelector('.stageOrder').textContent;
-    const distance = tr.querySelector('.distanceFromStart').textContent;
-    const lat = tr.querySelector('.latitude')?.textContent || '';
-    const lng = tr.querySelector('.longitude')?.textContent || '';
+    if (button.textContent === 'Edit') {
+        // Convert cells to input fields
+        tr.querySelectorAll('td').forEach((td, idx) => {
+            if (idx < 5) {
+                const val = td.textContent;
+                const inputType = (idx === 1 || idx === 2 || idx === 3 || idx === 4) ? 'number' : 'text';
+                const step = (idx === 2) ? '0.01' : ((idx === 3 || idx === 4) ? '0.000001' : '');
+                td.innerHTML = `<input type="${inputType}" step="${step}" value="${val}" aria-label="${td.previousElementSibling ? td.previousElementSibling.textContent : ''} input" />`;
+            }
+        });
+        button.textContent = 'Save';
 
-    // Replace cells with inputs
-    tr.innerHTML = `
-        <td><input type="text" value="${name}" id="editName_${index}"></td>
-        <td><input type="number" value="${order}" id="editOrder_${index}"></td>
-        <td><input type="number" step="0.01" value="${distance}" id="editDistance_${index}"></td>
-        <td><input type="number" step="0.000001" value="${lat}" id="editLat_${index}"></td>
-        <td><input type="number" step="0.000001" value="${lng}" id="editLng_${index}"></td>
-        <td>
-            <button onclick="saveStage(${index})">Save</button>
-            <button onclick="cancelEdit(${index})">Cancel</button>
-        </td>
-    `;
+        // Add cancel button
+        const cancelBtn = document.createElement('button');
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.className = 'btn-cancel';
+        cancelBtn.type = 'button';
+        cancelBtn.onclick = () => cancelEditStage(tr, index);
+        button.insertAdjacentElement('afterend', cancelBtn);
+    } else {
+        // Save edited stage
+        const inputs = tr.querySelectorAll('input');
+        let valid = true;
+
+        const updatedStage = {
+            stageName: inputs[0].value.trim(),
+            stageOrder: parseInt(inputs[1].value),
+            distanceFromStart: parseFloat(inputs[2].value),
+            latitude: parseFloat(inputs[3].value),
+            longitude: parseFloat(inputs[4].value),
+        };
+
+        // Simple validation
+        if (!updatedStage.stageName) {
+            alert("Stage Name cannot be empty.");
+            valid = false;
+        }
+        if (isNaN(updatedStage.stageOrder) || updatedStage.stageOrder < 0) {
+            alert("Invalid Stage Order.");
+            valid = false;
+        }
+        if (isNaN(updatedStage.distanceFromStart) || updatedStage.distanceFromStart < 0) {
+            alert("Invalid Distance From Start.");
+            valid = false;
+        }
+        if (isNaN(updatedStage.latitude)) {
+            alert("Invalid Latitude.");
+            valid = false;
+        }
+        if (isNaN(updatedStage.longitude)) {
+            alert("Invalid Longitude.");
+            valid = false;
+        }
+        if (!valid) return;
+
+        stages[index] = updatedStage;
+        updateStagesTable();
+    }
 }
 
-// Cancel editing: restore original row
-function cancelEdit(index) {
-    const tr = document.querySelector(`tr[data-index='${index}']`);
+function cancelEditStage(tr, index) {
+    // Restore row data from stages array
     const stage = stages[index];
     tr.innerHTML = `
         <td class="stageName">${stage.stageName}</td>
         <td class="stageOrder">${stage.stageOrder}</td>
         <td class="distanceFromStart">${stage.distanceFromStart}</td>
-        <td class="Latitude">${stage.latitude}</td>
-        <td class="Longitude">${stage.longitude}</td>
+        <td class="latitude">${stage.latitude}</td>
+        <td class="longitude">${stage.longitude}</td>
         <td>
             <button class="btn-edit" onclick="editStage(this)">Edit</button>
             <button class="btn-delete" onclick="deleteStage(${index})">Delete</button>
@@ -187,88 +454,58 @@ function cancelEdit(index) {
     `;
 }
 
-// Save edited stage (call your API)
-function saveStage(index) {
-    const name = document.getElementById(`editName_${index}`).value.trim();
-    const order = document.getElementById(`editOrder_${index}`).value.trim();
-    const distance = document.getElementById(`editDistance_${index}`).value.trim();
-    const lat = document.getElementById(`editLat_${index}`).value.trim();
-    const lng = document.getElementById(`editLng_${index}`).value.trim();
-
-    if (!name || !order || !distance || !lat || !lng) {
-        alert('Please fill all fields.');
-        return;
-    }
-
-    // Prepare stage data
-    const stageData = {
-        routeId: routeId,
-        stageIndex: index,
-        stageName: name,
-        stageOrder: parseInt(order),
-        distanceFromStart: parseFloat(distance),
-        latitude: parseFloat(lat),
-        longitude: parseFloat(lng)
-    };
-	        stages[index] = stageData;
-            cancelEdit(index); // refresh row
-    
-}
-
-// Delete stage (call your API)
 function deleteStage(index) {
-    if (!confirm('Are you sure you want to delete this stage?')) return;
-
-    const stageData = {routeId: routeId, stageIndex: index};
-
-            stages.splice(index, 1);
-            renderStages();
+    if (confirm("Are you sure you want to delete this stage?")) {
+        stages.splice(index, 1);
+        updateStagesTable();
+    }
 }
 
-// Add new stage
 function addStage() {
     const name = document.getElementById('newStageName').value.trim();
-    const order = document.getElementById('newStageOrder').value.trim();
-    const distance = document.getElementById('newDistanceFromStart').value.trim();
-    const latitude = document.getElementById('newLatitude').value.trim();
-    const longitude = document.getElementById('newLongitude').value.trim();
+    const order = parseInt(document.getElementById('newStageOrder').value);
+    const distance = parseFloat(document.getElementById('newDistanceFromStart').value);
+    const lat = parseFloat(document.getElementById('newLatitude').value);
+    const lng = parseFloat(document.getElementById('newLongitude').value);
 
-    if (!name || !order || !distance || !latitude || !longitude) {
-        alert('Please fill all fields.');
-        return;
-    }
+    if (!name) { alert('Stage Name is required.'); return; }
+    if (isNaN(order) || order < 0) { alert('Valid Stage Order is required.'); return; }
+    if (isNaN(distance) || distance < 0) { alert('Valid Distance From Start is required.'); return; }
+    if (isNaN(lat)) { alert('Valid Latitude is required.'); return; }
+    if (isNaN(lng)) { alert('Valid Longitude is required.'); return; }
 
-    const newStage = {
-        routeId: routeId,
+    stages.push({
         stageName: name,
-        stageOrder: parseInt(order),
-        distanceFromStart: parseFloat(distance),
-        latitude: parseFloat(latitude),
-        longitude: parseFloat(longitude)
-    };
+        stageOrder: order,
+        distanceFromStart: distance,
+        latitude: lat,
+        longitude: lng
+    });
 
-            stages.push(newStage);
-            renderStages();
-            document.getElementById('addStageForm').reset();
+    // Clear inputs
+    document.getElementById('addStageForm').reset();
+    updateStagesTable();
 }
 
-// Re-render stages table after add/delete
-function renderStages() {
+function updateStagesTable() {
     const tbody = document.querySelector('#stagesTable tbody');
     tbody.innerHTML = '';
-    stages.forEach((stage, i) => {
-        tbody.innerHTML += `
-        <tr data-index="${i}">
+
+    stages.forEach((stage, index) => {
+        const tr = document.createElement('tr');
+        tr.setAttribute('data-index', index);
+        tr.innerHTML = `
             <td class="stageName">${stage.stageName}</td>
             <td class="stageOrder">${stage.stageOrder}</td>
             <td class="distanceFromStart">${stage.distanceFromStart}</td>
-            <td class="latitude">${stage.latitude ?? ''}</td>
-            <td class="longitude">${stage.longitude ?? ''}</td>
+            <td class="latitude">${stage.latitude}</td>
+            <td class="longitude">${stage.longitude}</td>
             <td>
                 <button class="btn-edit" onclick="editStage(this)">Edit</button>
-                <button class="btn-delete" onclick="deleteStage(${i})">Delete</button>
+                <button class="btn-delete" onclick="deleteStage(${index})">Delete</button>
             </td>
-        </tr>`;
+        `;
+        tbody.appendChild(tr);
     });
 }
 </script>

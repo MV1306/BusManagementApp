@@ -31,7 +31,6 @@ $filteredRoutes = array_filter($routes, function($route) {
 // Pagination
 $limit = 10;
 $totalRoutes = count($filteredRoutes);
-echo $totalRoutes;
 $totalPages = max(1, ceil($totalRoutes / $limit));
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($page < 1) $page = 1;
@@ -44,10 +43,9 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
 <html>
 <head>
     <title>Bus Routes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
     <style>
@@ -63,16 +61,6 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
             transform: translateX(-100%);
             transition: transform 0.3s ease;
             z-index: 1050;
-        }
-
-        .stage-start {
-            color: green;
-            font-weight: 600;
-        }
-
-        .stage-end {
-            color: red;
-            font-weight: 600;
         }
 
         .filter-sidebar.active {
@@ -102,7 +90,16 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
             margin-left: 250px;
         }
 
-        /* Updated styles for stages in modal */
+        .stage-start {
+            color: green;
+            font-weight: 600;
+        }
+
+        .stage-end {
+            color: red;
+            font-weight: 600;
+        }
+
         .stages-container {
             display: flex;
             flex-wrap: wrap;
@@ -119,10 +116,10 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
             align-items: center;
             font-weight: 500;
             font-size: 0.9rem;
-            white-space: normal;       
-            word-break: break-word;    
-            min-width: 120px;          
-            max-width: 250px;          
+            white-space: normal;
+            word-break: break-word;
+            min-width: 120px;
+            max-width: 250px;
             box-sizing: border-box;
         }
 
@@ -133,7 +130,6 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
             flex-shrink: 0;
         }
 
-        /* Leaflet map height for modal */
         #routeMap {
             height: 600px;
             width: 100%;
@@ -141,13 +137,43 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
             border-radius: 6px;
             border: 1px solid #ddd;
         }
+
+        @media (max-width: 767px) {
+            .filter-sidebar {
+                width: 100%;
+                height: auto;
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 1055;
+                padding-top: 60px;
+                transform: translateY(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .filter-sidebar.active {
+                transform: translateY(0);
+            }
+
+            .content-area.shifted {
+                margin-left: 0;
+            }
+
+            .filter-toggle {
+                top: 10px;
+            }
+
+            .filter-toggle i {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 <body>
 <?php include 'navbar.php'; ?>
 
 <!-- Toggle Button -->
-<button class="filter-toggle" id="toggleFilter"><i class="bi bi-chevron-right"></i></button>
+<button class="filter-toggle" id="toggleFilter"><i class="bi bi-funnel-fill"></i></button>
 
 <!-- Sidebar Filter -->
 <div class="filter-sidebar" id="filterSidebar">
@@ -182,7 +208,6 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
         <a href="AddRoute.php" class="btn btn-success">Add New Route</a>
     </div>
 
-    <!-- Routes Table -->
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover">
             <thead class="table-light">
@@ -224,7 +249,7 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
 
     <!-- Pagination -->
     <nav>
-        <ul class="pagination justify-content-center">
+        <ul class="pagination justify-content-center flex-wrap">
             <?php
             $queryParams = $_GET;
             if ($page > 1):
@@ -256,12 +281,8 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 <script>
-    // Sidebar toggle button
     const filterToggleBtn = document.getElementById('toggleFilter');
     const filterSidebar = document.getElementById('filterSidebar');
     const mainContent = document.getElementById('mainContent');
@@ -271,9 +292,10 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
         sidebarOpen = !sidebarOpen;
         filterSidebar.classList.toggle('active', sidebarOpen);
         mainContent.classList.toggle('shifted', sidebarOpen);
-        filterToggleBtn.innerHTML = sidebarOpen ? '<i class="bi bi-chevron-left"></i>' : '<i class="bi bi-chevron-right"></i>';
+        filterToggleBtn.innerHTML = sidebarOpen
+            ? '<i class="bi bi-x-lg"></i>'
+            : '<i class="bi bi-funnel-fill"></i>';
     });
-
 </script>
 </body>
 </html>
