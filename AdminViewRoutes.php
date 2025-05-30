@@ -425,7 +425,7 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
 </style>
 </head>
 <body>
-<?php include 'Navbar.php'; ?>
+<?php include 'AdminNavbar.php'; ?>
 
 <div class="container main-container">
     <div class="row">
@@ -471,9 +471,9 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Bus Routes</h5>
-                    <!-- <a href="AddRoute.php" class="btn btn-success">
+                    <a href="AddRoute.php" class="btn btn-success">
                         <i class="bi bi-plus-lg me-1"></i> Add New Route
-                    </a> -->
+                    </a>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -506,16 +506,16 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
                                             <td data-label="From"><?= htmlspecialchars($route['from']) ?></td>
                                             <td data-label="To"><?= htmlspecialchars($route['to']) ?></td>
                                             <td data-label="Actions">
-                                                <a href="RouteDetails.php?id=<?= $route['id'] ?>" class="action-btn view-btn" title="View details">
+                                                <a href="AdminRouteDetails.php?id=<?= $route['id'] ?>" class="action-btn view-btn" title="View details">
                                                     <i class="bi bi-eye-fill"></i>
                                                 </a>
-                                                <!-- <a href="EditRoute.php?id=<?= $route['id'] ?>" class="action-btn edit-btn" title="Edit">
+                                                <a href="EditRoute.php?id=<?= $route['id'] ?>" class="action-btn edit-btn" title="Edit">
                                                     <i class="bi bi-pencil-square"></i>
                                                 </a>
                                                 <a href="DeleteRoute.php?id=<?= $route['id'] ?>" class="action-btn delete-btn" title="Delete" 
                                                    onclick="return confirm('Are you sure you want to delete this route?');">
                                                     <i class="bi bi-trash-fill"></i>
-                                                </a> -->
+                                                </a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

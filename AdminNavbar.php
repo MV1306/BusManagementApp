@@ -106,9 +106,12 @@
         <div></div>
     </div>
     <div class="links">
-        <a href="Index.php">Home</a>
-        <a href="ViewRoutes.php">View Route</a>
+        <a href="AdminDashboard.php">Home</a>
+        <a href="AdminViewRoutes.php">View Route</a>
         <a href="FindRoutes.php">Find Routes</a>
-        <a href="AdminLogin.php">Admin</a>
+        <a href="ImportRoutes.php">Import Routes</a>
+        <a href="CalculateFare.php">Calculate Fare</a>
+        <!-- <a href="AdminLogin.php">Admin</a> -->
+        <a href="AdminLogout.php">Logout</a>
     </div>
 </div>

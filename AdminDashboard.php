@@ -117,16 +117,18 @@
     </style>
 </head>
 <body>
-<?php include 'navbar.php'; ?>
+<?php include 'AdminNavbar.php'; ?>
 
 <header>
     <h1>Welcome to Bus Management System</h1>
 </header>
 
 <div class="container">
-    <a class="btn" href="ViewRoutes.php">📋 View Routes</a>
+    <a class="btn" href="AddRoute.php">➕ Add New Route</a>
+    <a class="btn" href="AdminViewRoutes.php">📋 View Routes</a>
     <a class="btn" href="FindRoutes.php">🔍 Find Routes</a>
     <a class="btn" href="CalculateFare.php">🔢 Calculate Fare</a>
+    <a class="btn" href="Reports.php">📊 Reports</a>
     <a class="btn" href="FareChart.php">💰 Fare Chart</a>
 </div>
 
