@@ -217,7 +217,7 @@
 if (!empty($_GET['fromStage']) && !empty($_GET['toStage'])) {
     $fromStage = rawurlencode($_GET['fromStage']);
     $toStage = rawurlencode($_GET['toStage']);
-    $apiUrl = "https://busmanagementapi.onrender.com//BusManagementAPI/FindRoutesBetweenStages/$fromStage/$toStage";
+    $apiUrl = "https://busmanagementapi.onrender.com/FindRoutesBetweenStages/$fromStage/$toStage";
 
     $curl = curl_init();
     curl_setopt_array($curl, [

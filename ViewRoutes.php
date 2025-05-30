@@ -1,6 +1,6 @@
 <?php
 // API base URL
-$apiUrl = "https://busmanagementapi.onrender.com//BusManagementAPI/GetAllRoutes";
+$apiUrl = "https://busmanagementapi.onrender.com/GetAllRoutes";
 
 // Fetch all routes via cURL
 $ch = curl_init($apiUrl);

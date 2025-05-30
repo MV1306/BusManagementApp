@@ -14,7 +14,7 @@ if (!$input) {
     exit;
 }
 
-$apiUrl = "https://busmanagementapi.onrender.com//BusManagementAPI/UpdateRoute/" . urlencode($routeId);
+$apiUrl = "https://busmanagementapi.onrender.com/UpdateRoute/" . urlencode($routeId);
 
 $ch = curl_init($apiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

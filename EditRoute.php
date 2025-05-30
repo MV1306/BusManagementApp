@@ -4,7 +4,7 @@ if (!$routeId) {
     die("Route ID not specified");
 }
 
-$routeApiUrl = "https://busmanagementapi.onrender.com//BusManagementAPI/GetRouteById/" . urlencode($routeId);
+$routeApiUrl = "https://busmanagementapi.onrender.com/GetRouteById/" . urlencode($routeId);
 
 $ch = curl_init($routeApiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

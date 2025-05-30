@@ -131,9 +131,9 @@
         // Decide API URL based on import type
         let apiUrl = '';
         if (importType === 'routes') {
-            apiUrl = 'https://busmanagementapi.onrender.com//BusManagementAPI/ImportBusRoutes';
+            apiUrl = 'https://busmanagementapi.onrender.com/ImportBusRoutes';
         } else if (importType === 'stageTranslations') {
-            apiUrl = 'https://busmanagementapi.onrender.com//BusManagementAPI/ImportStageTranslations';
+            apiUrl = 'https://busmanagementapi.onrender.com/ImportStageTranslations';
         } else {
             resultContainer.innerHTML = `<div class='result-message error'>Invalid import type selected.</div>`;
             return;
