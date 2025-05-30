@@ -283,6 +283,78 @@ if (!empty($_GET['fromStage']) && !empty($_GET['toStage'])) {
 </div>
 
 <script>
+     // Helper: debounce function to limit API calls while typingAdd commentMore actions
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    // Fetch suggestions from SearchStages API
+    async function fetchStages(query) {
+        if (!query.trim()) return [];
+        const url = `http://192.168.29.141/BusManagementAPI/SearchStages/${encodeURIComponent(query)}`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) return [];
+            const data = await response.json();
+            return data; // assuming data is an array of stage names or objects with stageName
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function setupAutocomplete(inputId, listId) {
+        const input = document.getElementById(inputId);
+        const list = document.getElementById(listId);
+
+        input.addEventListener('input', debounce(async () => {
+            const query = input.value;
+            if (!query) {
+                list.innerHTML = '';
+                return;
+            }
+            const stages = await fetchStages(query);
+            if (!Array.isArray(stages) || stages.length === 0) {
+                list.innerHTML = '';
+                return;
+            }
+
+            list.innerHTML = stages.map(stage => {
+                // stage could be string or object; adjust if needed
+                let name = typeof stage === 'string' ? stage : stage.stageName || '';
+                return `<li tabindex="0">${name}</li>`;
+            }).join('');
+
+            // Add click handlers for list items
+            list.querySelectorAll('li').forEach(li => {
+                li.addEventListener('click', () => {
+                    input.value = li.textContent;
+                    list.innerHTML = '';
+                });
+                // Also allow keyboard selection
+                li.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        input.value = li.textContent;
+                        list.innerHTML = '';
+                        input.focus();
+                    }
+                });
+            });
+        }, 300));
+
+        // Hide suggestions when input loses focus (delay to allow click)
+        input.addEventListener('blur', () => {
+            setTimeout(() => list.innerHTML = '', 200);
+        });
+    }
+
+    setupAutocomplete('fromStage', 'fromStageList');
+    setupAutocomplete('toStage', 'toStageList');
+
     // Clear button functionality
     document.getElementById('clearBtn').addEventListener('click', function() {
         document.getElementById('fromStage').value = '';
