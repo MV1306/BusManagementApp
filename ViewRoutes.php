@@ -40,131 +40,264 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Bus Routes</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
-        .filter-sidebar {
-            position: fixed;
-            top: 56px;
-            left: 0;
-            width: 250px;
-            height: 100%;
-            background: #f8f9fa;
-            border-right: 1px solid #ddd;
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-bg: #f8f9fa;
+            --dark-text: #212529;
+            --light-text: #6c757d;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-text);
+        }
+
+        /* Header and Navigation */
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background-color: white !important;
+        }
+
+        /* Main Content */
+        .main-container {
+            margin-top: 80px;
             padding: 20px;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            z-index: 1050;
         }
 
-        .filter-sidebar.active {
-            transform: translateX(0);
-        }
-
-        .filter-toggle {
-            position: fixed;
-            top: 70px;
-            left: 10px;
-            z-index: 1100;
-            background: #0d6efd;
-            color: white;
+        .card {
             border: none;
-            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            margin-bottom: 24px;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            font-weight: 600;
+            padding: 16px 20px;
+            border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+        }
+
+        /* Table Styling */
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+            border: none;
+            padding: 12px 16px;
+        }
+
+        .table tbody tr {
+            transition: var(--transition);
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .table td {
+            padding: 14px 16px;
+            vertical-align: middle;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            font-size: 18px;
-            cursor: pointer;
+            transition: var(--transition);
         }
 
-        .content-area {
-            margin-left: 0;
-            transition: margin-left 0.3s ease;
+        .action-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            transform: scale(1.1);
         }
 
-        .content-area.shifted {
-            margin-left: 250px;
+        .view-btn { color: var(--primary-color); }
+        .edit-btn { color: #ffc107; }
+        .delete-btn { color: #dc3545; }
+
+        /* Filter Sidebar */
+        .filter-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            margin-bottom: 24px;
         }
 
-        .stage-start {
-            color: green;
+        .filter-title {
+            color: var(--primary-color);
             font-weight: 600;
-        }
-
-        .stage-end {
-            color: red;
-            font-weight: 600;
-        }
-
-        .stages-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 10px;
-            max-width: 100%;
-        }
-
-        .stage-item {
-            background: #e9ecef;
-            padding: 8px 12px;
-            border-radius: 20px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
+            gap: 8px;
+        }
+
+        .filter-title i {
+            font-size: 1.2rem;
+        }
+
+        .form-label {
             font-weight: 500;
-            font-size: 0.9rem;
-            white-space: normal;
-            word-break: break-word;
-            min-width: 120px;
-            max-width: 250px;
-            box-sizing: border-box;
+            color: var(--dark-text);
+            margin-bottom: 8px;
         }
 
-        .stage-item .bi-geo-alt-fill {
-            margin-left: 6px;
-            color: #0d6efd;
-            font-size: 1.1rem;
-            flex-shrink: 0;
+        .form-control {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            padding: 10px 14px;
+            transition: var(--transition);
         }
 
-        #routeMap {
-            height: 600px;
-            width: 100%;
-            margin-top: 15px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
         }
 
-        @media (max-width: 767px) {
-            .filter-sidebar {
-                width: 100%;
-                height: auto;
-                position: fixed;
-                top: 0;
-                left: 0;
-                z-index: 1055;
-                padding-top: 60px;
-                transform: translateY(-100%);
-                transition: transform 0.3s ease;
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background-color: #4cc9f0;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+        }
+
+        .btn-success:hover {
+            background-color: #3a86ff;
+            transform: translateY(-1px);
+        }
+
+        /* Pagination */
+        .pagination .page-item .page-link {
+            color: var(--primary-color);
+            border: none;
+            margin: 0 4px;
+            border-radius: var(--border-radius) !important;
+            transition: var(--transition);
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .pagination .page-item:not(.active) .page-link:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
+        /* Empty State */
+        .empty-state {
+            padding: 40px 0;
+            text-align: center;
+            color: var(--light-text);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .main-container {
+                margin-top: 70px;
+                padding: 15px;
             }
 
-            .filter-sidebar.active {
-                transform: translateY(0);
+            .table-responsive {
+                border-radius: var(--border-radius);
+                overflow: hidden;
             }
 
-            .content-area.shifted {
-                margin-left: 0;
+            .table thead {
+                display: none;
             }
 
-            .filter-toggle {
-                top: 10px;
+            .table tr {
+                display: block;
+                margin-bottom: 16px;
+                border-radius: var(--border-radius);
+                box-shadow: var(--box-shadow);
+                background-color: white;
             }
 
-            .filter-toggle i {
-                font-size: 24px;
+            .table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border: none;
+                padding: 12px 16px;
+            }
+
+            .table td:before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--dark-text);
+                margin-right: 16px;
+            }
+
+            .table td:last-child {
+                justify-content: flex-end;
+                gap: 12px;
+                padding-top: 0;
+            }
+
+            .action-btn {
+                width: 36px;
+                height: 36px;
             }
         }
     </style>
@@ -172,129 +305,160 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
 <body>
 <?php include 'navbar.php'; ?>
 
-<!-- Toggle Button -->
-<button class="filter-toggle" id="toggleFilter"><i class="bi bi-funnel-fill"></i></button>
+<div class="container main-container">
+    <div class="row">
+        <!-- Filter Sidebar - Left Column -->
+        <div class="col-lg-3 mb-4">
+            <div class="filter-container sticky-top" style="top: 90px;">
+                <h5 class="filter-title">
+                    <i class="bi bi-funnel"></i> Filter Routes
+                </h5>
+                <form method="GET" autocomplete="off">
+                    <div class="mb-3">
+                        <label for="filterCode" class="form-label">Route Code</label>
+                        <input id="filterCode" type="text" name="code" class="form-control" 
+                               value="<?= isset($_GET['code']) ? htmlspecialchars($_GET['code']) : '' ?>" 
+                               placeholder="Enter route code" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="filterFrom" class="form-label">From</label>
+                        <input id="filterFrom" type="text" name="from" class="form-control" 
+                               value="<?= isset($_GET['from']) ? htmlspecialchars($_GET['from']) : '' ?>" 
+                               placeholder="Starting location" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="filterTo" class="form-label">To</label>
+                        <input id="filterTo" type="text" name="to" class="form-control" 
+                               value="<?= isset($_GET['to']) ? htmlspecialchars($_GET['to']) : '' ?>" 
+                               placeholder="Destination" />
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-filter me-1"></i> Apply Filters
+                        </button>
+                        <a href="ViewRoutes.php" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-<!-- Sidebar Filter -->
-<div class="filter-sidebar" id="filterSidebar">
-    <br/>
-    <br/>
-    <h5 class="mb-3">Filter Routes</h5>
-    <form method="GET">
-        <div class="mb-3">
-            <label class="form-label">Route Code</label>
-            <input type="text" name="code" class="form-control" value="<?= isset($_GET['code']) ? htmlspecialchars($_GET['code']) : '' ?>">
+        <!-- Main Content - Right Column -->
+        <div class="col-lg-9">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Bus Routes</h5>
+                    <a href="AddRoute.php" class="btn btn-success">
+                        <i class="bi bi-plus-lg me-1"></i> Add New Route
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="d-none">ID</th>
+                                    <th>Route Code</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th style="width: 120px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (count($routesPage) === 0): ?>
+                                    <tr>
+                                        <td colspan="5" class="empty-state">
+                                            <i class="bi bi-exclamation-circle"></i>
+                                            <h5>No routes found</h5>
+                                            <p class="mb-0">Try adjusting your filters or add a new route</p>
+                                        </td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php foreach ($routesPage as $route): ?>
+                                        <tr>
+                                            <td class="d-none" data-label="ID"><?= htmlspecialchars($route['id']) ?></td>
+                                            <td data-label="Route Code">
+                                                <span class="fw-semibold"><?= htmlspecialchars($route['code']) ?></span>
+                                            </td>
+                                            <td data-label="From"><?= htmlspecialchars($route['from']) ?></td>
+                                            <td data-label="To"><?= htmlspecialchars($route['to']) ?></td>
+                                            <td data-label="Actions">
+                                                <a href="RouteDetails.php?id=<?= $route['id'] ?>" class="action-btn view-btn" title="View details">
+                                                    <i class="bi bi-eye-fill"></i>
+                                                </a>
+                                                <a href="EditRoute.php?id=<?= $route['id'] ?>" class="action-btn edit-btn" title="Edit">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <a href="DeleteRoute.php?id=<?= $route['id'] ?>" class="action-btn delete-btn" title="Delete" 
+                                                   onclick="return confirm('Are you sure you want to delete this route?');">
+                                                    <i class="bi bi-trash-fill"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <?php if ($totalPages > 1): ?>
+                <nav aria-label="Route pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item<?= $page <= 1 ? ' disabled' : '' ?>">
+                            <a class="page-link" href="?<?php
+                                $params = $_GET;
+                                $params['page'] = $page - 1;
+                                echo http_build_query($params);
+                            ?>" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+
+                        <?php
+                        // Show max 7 page links around current page
+                        $startPage = max(1, $page - 3);
+                        $endPage = min($totalPages, $page + 3);
+                        for ($i = $startPage; $i <= $endPage; $i++): 
+                        ?>
+                            <li class="page-item<?= $i === $page ? ' active' : '' ?>">
+                                <a class="page-link" href="?<?php
+                                    $params = $_GET;
+                                    $params['page'] = $i;
+                                    echo http_build_query($params);
+                                ?>"><?= $i ?></a>
+                            </li>
+                        <?php endfor; ?>
+
+                        <li class="page-item<?= $page >= $totalPages ? ' disabled' : '' ?>">
+                            <a class="page-link" href="?<?php
+                                $params = $_GET;
+                                $params['page'] = $page + 1;
+                                echo http_build_query($params);
+                            ?>" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            <?php endif; ?>
         </div>
-        <div class="mb-3">
-            <label class="form-label">From</label>
-            <input type="text" name="from" class="form-control" value="<?= isset($_GET['from']) ? htmlspecialchars($_GET['from']) : '' ?>">
-        </div>
-        <div class="mb-3">
-            <label class="form-label">To</label>
-            <input type="text" name="to" class="form-control" value="<?= isset($_GET['to']) ? htmlspecialchars($_GET['to']) : '' ?>">
-        </div>
-        <div class="d-grid gap-2">
-            <button type="submit" class="btn btn-primary">Apply</button>
-            <a href="ViewRoutes.php" class="btn btn-secondary">Reset</a>
-        </div>
-    </form>
+    </div>
 </div>
 
-<!-- Main Content -->
-<div class="container mt-4 content-area" id="mainContent">
-    <h2 class="text-center mb-4">Bus Routes</h2>
-
-    <div class="mb-3 text-end">
-        <a href="AddRoute.php" class="btn btn-success">Add New Route</a>
-    </div>
-
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="table-light">
-                <tr>
-                    <th class="d-none">ID</th>
-                    <th>Route Code</th>
-                    <th>From</th>
-                    <th>To</th>
-                    <th style="width: 140px;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (count($routesPage) === 0): ?>
-                    <tr><td colspan="5" class="text-center">No routes found.</td></tr>
-                <?php else: ?>
-                    <?php foreach ($routesPage as $route): ?>
-                        <tr>
-                            <td class="d-none"><?= htmlspecialchars($route['id']) ?></td>
-                            <td><?= htmlspecialchars($route['code']) ?></td>
-                            <td><?= htmlspecialchars($route['from']) ?></td>
-                            <td><?= htmlspecialchars($route['to']) ?></td>
-                            <td>
-                                <a href="RouteDetails.php?id=<?= $route['id'] ?>" class="text-primary me-2" title="View">
-                                    <i class="bi bi-eye-fill"></i>
-                                </a>
-                                <a href="EditRoute.php?id=<?= $route['id'] ?>" class="text-warning me-2" title="Edit">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </a>
-                                <a href="delete_route.php?id=<?= $route['id'] ?>" class="text-danger" title="Delete" onclick="return confirm('Are you sure?')">
-                                    <i class="bi bi-trash-fill"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Pagination -->
-    <nav>
-        <ul class="pagination justify-content-center flex-wrap">
-            <?php
-            $queryParams = $_GET;
-            if ($page > 1):
-                $queryParams['page'] = $page - 1;
-            ?>
-                <li class="page-item">
-                    <a class="page-link" href="?<?= http_build_query($queryParams) ?>">&laquo; Prev</a>
-                </li>
-            <?php endif; ?>
-
-            <?php for ($p = 1; $p <= $totalPages; $p++):
-                $queryParams['page'] = $p;
-                $active = ($p == $page) ? 'active' : '';
-            ?>
-                <li class="page-item <?= $active ?>"><a class="page-link" href="?<?= http_build_query($queryParams) ?>"><?= $p ?></a></li>
-            <?php endfor; ?>
-
-            <?php
-            if ($page < $totalPages):
-                $queryParams['page'] = $page + 1;
-            ?>
-                <li class="page-item">
-                    <a class="page-link" href="?<?= http_build_query($queryParams) ?>">Next &raquo;</a>
-                </li>
-            <?php endif; ?>
-        </ul>
-    </nav>
-</div>
-
-<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    const filterToggleBtn = document.getElementById('toggleFilter');
-    const filterSidebar = document.getElementById('filterSidebar');
-    const mainContent = document.getElementById('mainContent');
-    let sidebarOpen = false;
-
-    filterToggleBtn.addEventListener('click', () => {
-        sidebarOpen = !sidebarOpen;
-        filterSidebar.classList.toggle('active', sidebarOpen);
-        mainContent.classList.toggle('shifted', sidebarOpen);
-        filterToggleBtn.innerHTML = sidebarOpen
-            ? '<i class="bi bi-x-lg"></i>'
-            : '<i class="bi bi-funnel-fill"></i>';
+    // Add active class to current nav item
+    document.addEventListener('DOMContentLoaded', function() {
+        // Make table rows clickable
+        document.querySelectorAll('tbody tr[data-href]').forEach(row => {
+            row.addEventListener('click', () => {
+                window.location.href = row.dataset.href;
+            });
+        });
     });
 </script>
 </body>
