@@ -425,7 +425,7 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
 </style>
 </head>
 <body>
-<?php include 'Navbar.php'; ?>
+<?php include 'navbar.php'; ?>
 
 <div class="container main-container">
     <div class="row">

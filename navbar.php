@@ -109,6 +109,7 @@
         <a href="Index.php">Home</a>
         <a href="ViewRoutes.php">View Route</a>
         <a href="FindRoutes.php">Find Routes</a>
+        <a href="CalculateFare.php">Calculate Fare</a>
         <a href="AdminLogin.php">Admin</a>
     </div>
 </div>
