@@ -535,8 +535,8 @@ $stages = $routeData['stages'] ?? [];
                 <div class="form-col">
                     <div class="form-group">
                         <label for="newDistanceFromStart" class="form-label">Distance From Start (km)</label>
-                        <input type="number" step="0.01" id="newDistanceFromStart" class="form-control" 
-                               placeholder="0.00" required aria-required="true">
+                        <input type="number" step="1" id="newDistanceFromStart" class="form-control" 
+                               placeholder="0" required aria-required="true">
                     </div>
                 </div>
             </div>

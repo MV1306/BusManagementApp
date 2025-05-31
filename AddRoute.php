@@ -472,7 +472,7 @@ $apiBaseUrl = $config['api_base_url'];
         row.innerHTML = `
             <td><input type="text" class="form-control stageName" placeholder="Enter stage name" value="${stageName}" required></td>
             <td><input type="number" class="form-control stageOrder" placeholder="Order" value="${stageOrder}" min="1" required></td>
-            <td><input type="number" class="form-control distanceFromStart" placeholder="0.00" step="0.01" value="${distance}" min="0" required></td>
+            <td><input type="number" class="form-control distanceFromStart" placeholder="0" step="1" value="${distance}" min="0" required></td>
             <td><button type="button" class="btn btn-danger btn-sm" onclick="removeStageRow(this)"><i class="fas fa-trash"></i> Remove</button></td>
         `;
         tbody.appendChild(row);
