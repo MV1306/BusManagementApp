@@ -123,6 +123,30 @@ if (!$route || !isset($route['id'])) {
             color: white;
         }
         
+        .stage-order-badge {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        .stage-start .stage-order-badge {
+            background: white;
+            color: #27ae60;
+        }
+        
+        .stage-end .stage-order-badge {
+            background: white;
+            color: #c0392b;
+        }
+        
         #routeMap {
             height: 500px;
             width: 100%;
@@ -216,10 +240,12 @@ if (!$route || !isset($route['id'])) {
                     <?php if (!empty($route['stages'])): ?>
                         <?php foreach ($route['stages'] as $i => $stage): ?>
                             <?php 
+                                $stageNumber = $i + 1;
                                 $isFirst = ($i === 0);
                                 $isLast = ($i === count($route['stages']) - 1);
                             ?>
                             <div class="stage-item <?= $isFirst ? 'stage-start' : ($isLast ? 'stage-end' : '') ?>">
+                                <span class="stage-order-badge"><?= $stageNumber ?></span>
                                 <?php if ($isFirst): ?>
                                     <i class="bi bi-flag-fill" title="Start Stage"></i>
                                 <?php elseif ($isLast): ?>
@@ -266,38 +292,42 @@ if (!$route || !isset($route['id'])) {
 
             stages.forEach((stage, i) => {
                 if (stage.latitude && stage.longitude) {
+                    const stageNumber = i + 1;
                     const latLng = [stage.latitude, stage.longitude];
                     bounds.push(latLng);
                     pathCoordinates.push(latLng);
 
                     let marker;
                     if (i === 0) {
+                        // Start marker (green)
                         marker = L.marker(latLng, {
                             icon: L.divIcon({
-                                html: `<div style="background: #2ecc70; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">S</div>`,
+                                html: `<div style="background: #2ecc70; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${stageNumber}</div>`,
                                 className: 'custom-div-icon',
                                 iconSize: [30, 30],
                                 iconAnchor: [15, 15]
                             })
-                        }).bindPopup(`<b>Start:</b> ${stage.stageName}`);
+                        }).bindPopup(`<b>Start (Stage ${stageNumber}):</b> ${stage.stageName}`);
                     } else if (i === stages.length - 1) {
+                        // End marker (red)
                         marker = L.marker(latLng, {
                             icon: L.divIcon({
-                                html: `<div style="background: #e74c3c; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">E</div>`,
+                                html: `<div style="background: #e74c3c; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${stageNumber}</div>`,
                                 className: 'custom-div-icon',
                                 iconSize: [30, 30],
                                 iconAnchor: [15, 15]
                             })
-                        }).bindPopup(`<b>End:</b> ${stage.stageName}`);
+                        }).bindPopup(`<b>End (Stage ${stageNumber}):</b> ${stage.stageName}`);
                     } else {
+                        // Intermediate markers (blue)
                         marker = L.marker(latLng, {
                             icon: L.divIcon({
-                                html: `<div style="background: #3498db; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${i}</div>`,
+                                html: `<div style="background: #3498db; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${stageNumber}</div>`,
                                 className: 'custom-div-icon',
                                 iconSize: [24, 24],
                                 iconAnchor: [12, 12]
                             })
-                        }).bindPopup(`<b>Stage ${i}:</b> ${stage.stageName}`);
+                        }).bindPopup(`<b>Stage ${stageNumber}:</b> ${stage.stageName}`);
                     }
                     
                     marker.addTo(map);
@@ -308,7 +338,7 @@ if (!$route || !isset($route['id'])) {
             if (bounds.length > 0) {
                 // Add route path
                 L.polyline(pathCoordinates, {
-                    color: '#3498db',
+                    color: '#00008B',
                     weight: 4,
                     opacity: 0.8,
                     dashArray: '5, 5',
