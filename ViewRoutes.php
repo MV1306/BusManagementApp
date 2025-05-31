@@ -6,8 +6,6 @@ $apiBaseUrl = $config['api_base_url'];
 
 $apiUrl = $apiBaseUrl . "GetAllRoutes";
 
-echo $apiUrl;
-
 // Fetch all routes via cURL
 $ch = curl_init($apiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
