@@ -4,8 +4,13 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
     exit;
 }
 
+
+$config = include('config.php');
+
+$apiBaseUrl = $config['api_base_url'];
+
 $routeId = $_GET['id'];
-$apiUrl = "https://busmanagementapi.onrender.com/GetRouteByID/" . urlencode($routeId);
+$apiUrl = $apiBaseUrl . "GetRouteByID/" . urlencode($routeId);
 
 $ch = curl_init($apiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

@@ -1,3 +1,9 @@
+<?php
+$config = include('config.php');
+
+$apiBaseUrl = $config['api_base_url'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -140,13 +146,16 @@
 <div id="errorResult" class="error"></div>
 
 <script>
+
+const API_BASE_URL = "<?php echo $apiBaseUrl; ?>";
+
 document.addEventListener('DOMContentLoaded', function () {
     const routeCodeSelect = document.getElementById('routeCode');
     const startStageSelect = document.getElementById('startStage');
     const endStageSelect = document.getElementById('endStage');
     const passengersSelect = document.getElementById('passengers');
 
-    fetch('https://busmanagementapi.onrender.com/GetRouteCodes')
+    fetch(`${API_BASE_URL}GetRouteCodes`)
         .then(response => response.json())
         .then(data => {
             routeCodeSelect.innerHTML = '<option value="">Select Route Code</option>';
@@ -169,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!selectedRouteCode) return;
 
-        fetch(`https://busmanagementapi.onrender.com/GetRouteStagesByCode/${selectedRouteCode}`)
+        fetch(`${API_BASE_URL}GetRouteStagesByCode/${selectedRouteCode}`)
             .then(response => response.json())
             .then(data => {
                 const stages = data.stages || [];
@@ -213,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        const apiUrl = `https://busmanagementapi.onrender.com/CalculateFare/${encodeURIComponent(routeCode)}/${encodeURIComponent(busType)}/${encodeURIComponent(startStage)}/${encodeURIComponent(endStage)}`;
+        const apiUrl = `${API_BASE_URL}CalculateFare/${encodeURIComponent(routeCode)}/${encodeURIComponent(busType)}/${encodeURIComponent(startStage)}/${encodeURIComponent(endStage)}`;
 
         fetch(apiUrl, {
             method: 'GET',

@@ -1,6 +1,10 @@
 <?php
 // save_route.php
 
+$config = include('config.php');
+
+$apiBaseUrl = $config['api_base_url'];
+
 $routeId = $_GET['id'] ?? null;
 if (!$routeId) {
     echo json_encode(['success' => false, 'message' => 'Route ID missing']);
@@ -14,7 +18,7 @@ if (!$input) {
     exit;
 }
 
-$apiUrl = "https://busmanagementapi.onrender.com/UpdateRoute/" . urlencode($routeId);
+$apiUrl = $apiBaseUrl . "UpdateRoute/" . urlencode($routeId);
 
 $ch = curl_init($apiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

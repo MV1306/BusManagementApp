@@ -1,3 +1,9 @@
+<?php
+$config = include('config.php');
+
+$apiBaseUrl = $config['api_base_url'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -230,6 +236,9 @@
 <div class="message" id="message"></div>
 
 <script>
+
+    const API_BASE_URL = "<?php echo $apiBaseUrl; ?>";
+
     function addStageRow(stage = {}) {
         const tbody = document.querySelector('#stagesTable tbody');
         const stageName = stage.stageName || '';
@@ -292,7 +301,7 @@
             busStages: busStages
         };
 
-        fetch('https://busmanagementapi.onrender.com/CreateRoute', {
+        fetch(`${API_BASE_URL}CreateRoute`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
