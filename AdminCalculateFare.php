@@ -173,7 +173,7 @@ $apiBaseUrl = $config['api_base_url'];
 </head>
 <body>
 
-<?php include 'navbar.php'; ?>
+<?php include 'AdminNavbar.php'; ?>
 
 <div class="container">
     <div class="fare-container">

@@ -254,7 +254,7 @@
     </style>
 </head>
 <body>
-<?php include 'navbar.php'; ?>
+<?php include 'AdminNavbar.php'; ?>
 
 <div class="container py-4">
     <div class="page-header">
@@ -326,7 +326,7 @@
             } else {
                 $data = json_decode($response, true);
                 if (is_null($data)) {
-                    echo "<div class='error-message'><i class='bi bi-exclamation-triangle-fill me-2'></i> No routes found between the given stages.</div>";
+                    echo "<div class='error-message'><i class='bi bi-exclamation-triangle-fill me-2'></i> Failed to decode JSON response.</div>";
                 } elseif (empty($data)) {
                     echo "<div class='no-results'><i class='bi bi-info-circle-fill me-2'></i> No routes found between the given stages.</div>";
                 } else {
