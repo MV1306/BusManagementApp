@@ -162,10 +162,15 @@
 
 <div class="container" id="routeResults">
 <?php
+
+$config = include('config.php');
+
+$apiBaseUrl = $config['api_base_url'];
+
 if (!empty($_GET['fromStage']) && !empty($_GET['toStage'])) {
     $fromStage = rawurlencode($_GET['fromStage']);
     $toStage = rawurlencode($_GET['toStage']);
-    $apiUrl = "https://busmanagementapi.onrender.com/FindRoutesBetweenStages/$fromStage/$toStage";
+    $apiUrl = $apiBaseUrl . "FindRoutesBetweenStages/$fromStage/$toStage";
 
     $curl = curl_init();
     curl_setopt_array($curl, [
@@ -224,6 +229,8 @@ if (!empty($_GET['fromStage']) && !empty($_GET['toStage'])) {
 </div>
 
 <script>
+    const API_BASE_URL = "<?php echo $apiBaseUrl; ?>";
+
     function debounce(func, delay) {
         let timeout;
         return (...args) => {
@@ -234,7 +241,7 @@ if (!empty($_GET['fromStage']) && !empty($_GET['toStage'])) {
 
     async function fetchStages(query) {
         if (!query.trim()) return [];
-        const url = `https://busmanagementapi.onrender.com/SearchStages/${encodeURIComponent(query)}`;
+        const url = `${API_BASE_URL}SearchStages/${encodeURIComponent(query)}`;
         try {
             const res = await fetch(url);
             if (!res.ok) return [];

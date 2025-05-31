@@ -1,3 +1,8 @@
+<?php
+$config = include('config.php');
+
+$apiBaseUrl = $config['api_base_url'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -99,6 +104,9 @@
 </div>
 
 <script>
+
+    const API_BASE_URL = "<?php echo $apiBaseUrl; ?>";
+
     document.getElementById('importForm').addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -113,9 +121,9 @@
 
         let apiUrl = '';
         if (importType === 'routes') {
-            apiUrl = 'https://busmanagementapi.onrender.com/ImportBusRoutes';
+            apiUrl = `${API_BASE_URL}ImportBusRoutes`;
         } else if (importType === 'stageTranslations') {
-            apiUrl = 'https://busmanagementapi.onrender.com/ImportStageTranslations';
+            apiUrl = `${API_BASE_URL}ImportStageTranslations`;
         } else {
             resultContainer.innerHTML = `<div class='result-message error'><i class="bi bi-x-circle"></i> Invalid import type selected.</div>`;
             return;

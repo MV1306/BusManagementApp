@@ -1,11 +1,17 @@
 <?php
+
+$config = include('config.php');
+
+// API base URL from config
+$apiBaseUrl = $config['api_base_url'];
+
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     echo "Invalid Route ID.";
     exit;
 }
 
 $routeId = $_GET['id'];
-$apiUrl = "https://busmanagementapi.onrender.com/GetRouteByID/" . urlencode($routeId);
+$apiUrl = $apiBaseUrl . "GetRouteByID/" . urlencode($routeId);
 
 $ch = curl_init($apiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
