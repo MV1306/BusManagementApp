@@ -124,12 +124,13 @@
 </header>
 
 <div class="container">
-    <a class="btn" href="AddRoute.php">➕ Add New Route</a>
+    <a class="btn" href="AddRoute.php">➕ Add Route</a>
     <a class="btn" href="AdminViewRoutes.php">📋 View Routes</a>
-    <a class="btn" href="FindRoutes.php">🔍 Find Routes</a>
-    <a class="btn" href="CalculateFare.php">🔢 Calculate Fare</a>
+    <a class="btn" href="AdminFindRoutes.php">🔍 Find Routes</a>
+    <a class="btn" href="AdminCalculateFare.php">🔢 Calculate Fare</a>
+    <a class="btn" href="ImportRoutes.php">📤 Import</a>    
     <a class="btn" href="Reports.php">📊 Reports</a>
-    <a class="btn" href="FareChart.php">💰 Fare Chart</a>
+    <a class="btn" href="AdminFareChart.php">💰 Fare Chart</a>
 </div>
 
 <footer>

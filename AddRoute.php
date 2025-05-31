@@ -1,6 +1,5 @@
 <?php
 $config = include('config.php');
-
 $apiBaseUrl = $config['api_base_url'];
 ?>
 
@@ -10,253 +9,494 @@ $apiBaseUrl = $config['api_base_url'];
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Add New Route with Stages</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Reset and base */
-        * {
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            background: #f9f9f9;
-            color: #333;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-        h2 {
-            margin-bottom: 20px;
-            color: #2c3e50;
-            text-align: center;
-            font-weight: 600;
-            font-size: 1.8rem;
-        }
-        form {
-            background: #fff;
-            max-width: 700px;
-            width: 100%;
-            padding: 25px 30px 30px 30px;
-            border-radius: 10px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-        }
-        label {
-            font-weight: 600;
-            margin-bottom: 6px;
-            display: block;
-            color: #444;
-            font-size: 1rem;
-        }
-        input[type="text"],
-        input[type="number"] {
-            width: 100%;
-            padding: 10px 14px;
-            margin-bottom: 18px;
-            border: 1.8px solid #ccc;
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: border-color 0.25s ease;
-        }
-        input[type="text"]:focus,
-        input[type="number"]:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 6px rgba(0, 123, 255, 0.4);
-        }
-        h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: #2c3e50;
-            font-weight: 700;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 6px;
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        /* Table styles */
-        table {
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7ff;
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin: 30px 0 40px;
+        }
+
+        .page-header h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .page-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            border-radius: 2px;
+        }
+
+        .page-header p {
+            color: var(--gray);
+            font-size: 1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            background-color: var(--light);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            background-color: white;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: #4cc9f0;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #3ab5db;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #e5177a;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--gray);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: 25px 0;
+            border-radius: var(--border-radius);
+            box-shadow: 0 0 0 1px var(--light-gray);
+        }
+
+        .table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 8px;
-            font-size: 0.95rem;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            min-width: 600px;
         }
-        thead {
-            background: #007bff;
-            color: #fff;
-            font-weight: 700;
-        }
-        th, td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #e1e1e1;
+
+        .table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 500;
+            padding: 15px;
             text-align: left;
         }
-        tbody tr:nth-child(even) {
-            background: #f9f9f9;
+
+        .table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--light-gray);
+            vertical-align: middle;
         }
-        tbody tr:last-child td {
+
+        .table tr:last-child td {
             border-bottom: none;
         }
-        /* Buttons */
-        button {
-            font-size: 1rem;
-            padding: 12px 20px;
+
+        .table tr:nth-child(even) {
+            background-color: rgba(248, 249, 250, 0.5);
+        }
+
+        .table tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .table input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--light-gray);
             border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            user-select: none;
+            transition: var(--transition);
         }
-        .add-stage-btn {
-            background-color: #007bff;
-            color: #fff;
-            margin-top: 15px;
-            align-self: flex-start;
+
+        .table input:focus {
+            outline: none;
+            border-color: var(--primary);
         }
-        .add-stage-btn:hover {
-            background-color: #0056b3;
-        }
-        .btn-remove-stage {
-            background-color: #dc3545;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 5px;
-        }
-        .btn-remove-stage:hover {
-            background-color: #b02a37;
-        }
-        button[type="submit"] {
-            background-color: #28a745;
-            color: white;
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
             margin-top: 25px;
-            width: 100%;
-            font-weight: 700;
         }
-        button[type="submit"]:hover {
-            background-color: #218838;
-        }
-        .back-btn {
-            background-color: #6c757d;
-            color: #fff;
-            margin-top: 15px;
-            width: 100%;
-            font-weight: 600;
-        }
-        .back-btn:hover {
-            background-color: #5a6268;
+
+        .action-buttons .btn {
+            flex: 1;
         }
 
         .message {
-            margin: 25px auto 0;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #e74c3c;
-            max-width: 700px;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
             text-align: center;
+            font-weight: 500;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            form {
-                padding: 20px;
+        .message.error {
+            background-color: #ffebee;
+            color: var(--danger);
+            border: 1px solid #ffcdd2;
+        }
+
+        .message.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--light-gray);
+        }
+
+        .empty-state p {
+            margin-bottom: 20px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .container {
+                padding: 15px;
             }
-            th, td {
-                padding: 10px 8px;
-                font-size: 0.9rem;
+            
+            .page-header h2 {
+                font-size: 1.8rem;
             }
-            button[type="submit"],
-            .back-btn {
-                font-size: 1.1rem;
-                padding: 14px;
+            
+            .card {
+                padding: 25px;
             }
         }
-        @media (max-width: 480px) {
-            /* Stack labels and inputs */
-            label {
+
+        @media (max-width: 768px) {
+            .page-header h2 {
+                font-size: 1.6rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .form-control {
+                padding: 10px 12px;
+            }
+            
+            .btn {
+                padding: 10px 18px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .page-header h2 {
+                font-size: 1.4rem;
+            }
+            
+            .page-header p {
                 font-size: 0.9rem;
             }
-            input[type="text"],
-            input[type="number"] {
+            
+            .card-title {
+                font-size: 1.2rem;
+            }
+            
+            .form-label {
                 font-size: 0.9rem;
-                padding: 9px 12px;
             }
-            button {
-                font-size: 0.95rem;
-                padding: 10px 14px;
-            }
-            /* Table scroll on small screens */
-            table {
-                display: block;
-                overflow-x: auto;
+            
+            .form-control {
+                font-size: 0.9rem;
             }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-<?php include 'navbar.php'; ?>
+<?php include 'AdminNavbar.php'; ?>
 
-<h2>Add New Route with Stages</h2>
+<div class="container">
+    <div class="page-header animate-in">
+        <h2>Create New Route</h2>
+        <p>Add a new bus route with all its intermediate stages and distances</p>
+    </div>
 
-<form id="addRouteForm" onsubmit="event.preventDefault(); saveRoute();">
-    <label for="code">Route Code:</label>
-    <input type="text" id="code" name="code" required placeholder="Enter Route Code" />
-
-    <label for="from">From:</label>
-    <input type="text" id="from" name="from" required placeholder="Starting Point" />
-
-    <label for="to">To:</label>
-    <input type="text" id="to" name="to" required placeholder="Destination" />
-
-    <h3>Stages</h3>
-    <table id="stagesTable" aria-label="Stages Table">
-        <thead>
-            <tr>
-                <th scope="col">Stage Name</th>
-                <th scope="col">Stage Order</th>
-                <th scope="col">Distance From Start (km)</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Stage rows go here -->
-        </tbody>
-    </table>
-
-    <button type="button" class="add-stage-btn" onclick="addStageRow()">+ Add Stage</button>
-
-    <button type="submit">Add Route</button>
-    <button type="button" class="back-btn" onclick="window.location.href='ViewRoutes.php'">Back</button>
-</form>
-
-<div class="message" id="message"></div>
+    <div class="card animate-in" style="animation-delay: 0.1s;">
+        <h3 class="card-title">Route Information</h3>
+        
+        <form id="addRouteForm" onsubmit="event.preventDefault(); saveRoute();">
+            <div class="form-group">
+                <label for="code" class="form-label">Route Code</label>
+                <input type="text" id="code" name="code" class="form-control" required placeholder="E.g., RT-101" />
+            </div>
+            
+            <div class="form-group">
+                <label for="from" class="form-label">Starting Point</label>
+                <input type="text" id="from" name="from" class="form-control" required placeholder="Where the route begins" />
+            </div>
+            
+            <div class="form-group">
+                <label for="to" class="form-label">Destination</label>
+                <input type="text" id="to" name="to" class="form-control" required placeholder="Where the route ends" />
+            </div>
+            
+            <h3 class="card-title" style="margin-top: 30px;">Route Stages</h3>
+            
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Stage Name</th>
+                            <th style="width: 120px;">Order</th>
+                            <th style="width: 180px;">Distance (km)</th>
+                            <th style="width: 100px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stagesTableBody">
+                        <!-- Stage rows will be added here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-map-marked-alt"></i>
+                <p>No stages added yet</p>
+                <button type="button" class="btn btn-primary" onclick="addStageRow()">
+                    <i class="fas fa-plus"></i> Add First Stage
+                </button>
+            </div>
+            
+            <button type="button" class="btn btn-primary" onclick="addStageRow()" style="margin-top: 15px;">
+                <i class="fas fa-plus"></i> Add Another Stage
+            </button>
+            
+            <div class="action-buttons">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Save Route
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='AdminViewRoutes.php'">
+                    <i class="fas fa-arrow-left"></i> Back to Routes
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <div id="message" class="message" style="display: none;"></div>
+</div>
 
 <script>
-
     const API_BASE_URL = "<?php echo $apiBaseUrl; ?>";
+    let stageCounter = 0;
+
+    // Initialize with empty state
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleEmptyState();
+    });
+
+    function toggleEmptyState() {
+        const tbody = document.getElementById('stagesTableBody');
+        const emptyState = document.getElementById('emptyState');
+        
+        if (tbody.children.length === 0) {
+            emptyState.style.display = 'block';
+        } else {
+            emptyState.style.display = 'none';
+        }
+    }
 
     function addStageRow(stage = {}) {
-        const tbody = document.querySelector('#stagesTable tbody');
+        const tbody = document.getElementById('stagesTableBody');
         const stageName = stage.stageName || '';
-        const stageOrder = stage.stageOrder !== undefined ? stage.stageOrder : '';
+        const stageOrder = stage.stageOrder !== undefined ? stage.stageOrder : (tbody.children.length + 1);
         const distance = stage.distanceFromStart !== undefined ? stage.distanceFromStart : '';
 
         const row = document.createElement('tr');
+        row.className = 'animate-in';
+        row.style.animationDelay = `${stageCounter * 0.05}s`;
         row.innerHTML = `
-            <td><input type="text" class="stageName" placeholder="Stage Name" value="${stageName}" required></td>
-            <td><input type="number" class="stageOrder" placeholder="Stage Order" value="${stageOrder}" min="0" required></td>
-            <td><input type="number" class="distanceFromStart" placeholder="Distance From Start" step="0.01" value="${distance}" min="0" required></td>
-            <td><button type="button" class="btn-remove-stage" onclick="removeStageRow(this)">Remove</button></td>
+            <td><input type="text" class="form-control stageName" placeholder="Enter stage name" value="${stageName}" required></td>
+            <td><input type="number" class="form-control stageOrder" placeholder="Order" value="${stageOrder}" min="1" required></td>
+            <td><input type="number" class="form-control distanceFromStart" placeholder="0.00" step="0.01" value="${distance}" min="0" required></td>
+            <td><button type="button" class="btn btn-danger btn-sm" onclick="removeStageRow(this)"><i class="fas fa-trash"></i> Remove</button></td>
         `;
         tbody.appendChild(row);
+        stageCounter++;
+        toggleEmptyState();
     }
 
     function removeStageRow(button) {
-        button.closest('tr').remove();
+        const row = button.closest('tr');
+        row.classList.add('animate-in');
+        row.style.animation = 'fadeIn 0.3s reverse forwards';
+        
+        setTimeout(() => {
+            row.remove();
+            toggleEmptyState();
+            renumberStages();
+        }, 300);
+    }
+
+    function renumberStages() {
+        const rows = document.querySelectorAll('#stagesTableBody tr');
+        rows.forEach((row, index) => {
+            row.querySelector('.stageOrder').value = index + 1;
+        });
     }
 
     function saveRoute() {
@@ -265,13 +505,13 @@ $apiBaseUrl = $config['api_base_url'];
         const to = document.getElementById('to').value.trim();
 
         if (!code || !from || !to) {
-            alert('Please fill all route fields.');
+            showMessage('Please fill all route fields.', 'error');
             return;
         }
 
-        const stagesRows = document.querySelectorAll('#stagesTable tbody tr');
+        const stagesRows = document.querySelectorAll('#stagesTableBody tr');
         if (stagesRows.length === 0) {
-            if (!confirm('No stages added. Are you sure you want to continue?')) {
+            if (!confirm('No stages added. Are you sure you want to create a route without stages?')) {
                 return;
             }
         }
@@ -283,7 +523,7 @@ $apiBaseUrl = $config['api_base_url'];
             const distanceFromStart = row.querySelector('.distanceFromStart').value.trim();
 
             if (!stageName || !stageOrder || !distanceFromStart) {
-                alert('Please fill all fields for each stage.');
+                showMessage('Please fill all fields for each stage.', 'error');
                 return;
             }
 
@@ -301,32 +541,53 @@ $apiBaseUrl = $config['api_base_url'];
             busStages: busStages
         };
 
+        showMessage('Saving route...', 'info');
+
         fetch(`${API_BASE_URL}CreateRoute`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         })
-        .then(res => res.text())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
         .then(text => {
-            alert(text);
-
             if (text.toLowerCase().includes('success')) {
-                window.location.href = 'ViewRoutes.php';
+                showMessage(text, 'success');
+                setTimeout(() => {
+                    window.location.href = 'ViewRoutes.php';
+                }, 1500);
             } else {
-                const msg = document.getElementById('message');
-                msg.style.color = 'red';
-                msg.textContent = text || 'Failed to add route.';
+                showMessage(text || 'Failed to add route.', 'error');
             }
         })
         .catch(err => {
-            const msg = document.getElementById('message');
-            msg.style.color = 'red';
-            msg.textContent = 'Error: ' + err.message;
+            showMessage('Error: ' + err.message, 'error');
+            console.error('Error:', err);
         });
     }
 
+    function showMessage(text, type) {
+        const messageEl = document.getElementById('message');
+        messageEl.textContent = text;
+        messageEl.className = `message ${type}`;
+        messageEl.style.display = 'block';
+        
+        // Auto-hide success messages after 3 seconds
+        if (type === 'success') {
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 3000);
+        }
+    }
+
     // Add one empty stage row by default
-    addStageRow();
+    setTimeout(() => {
+        addStageRow();
+    }, 300);
 </script>
 
 </body>
