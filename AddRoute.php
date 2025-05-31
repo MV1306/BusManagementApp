@@ -558,7 +558,7 @@ $apiBaseUrl = $config['api_base_url'];
             if (text.toLowerCase().includes('success')) {
                 showMessage(text, 'success');
                 setTimeout(() => {
-                    window.location.href = 'ViewRoutes.php';
+                    window.location.href = 'AdminViewRoutes.php';
                 }, 1500);
             } else {
                 showMessage(text || 'Failed to add route.', 'error');
