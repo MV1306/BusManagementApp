@@ -680,12 +680,12 @@ $apiBaseUrl = $config['api_base_url'];
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(response.text());
-            }
-            return response.text();
-        })
+        // .then(response => {
+        //     if (!response.ok) {
+        //         throw new Error(response.text());
+        //     }
+        //     return response.text();
+        // })
         .then(text => {
             if (text.toLowerCase().includes('success')) {
                 showMessage(text, 'success');
