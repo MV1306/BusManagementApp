@@ -202,8 +202,8 @@ $apiBaseUrl = $config['api_base_url'];
                 <label for="importType" class="form-label">Import Type</label>
                 <select id="importType" name="importType" class="form-select" required>
                     <option value="routes" selected>Bus Routes</option>
+                    <option value="stageCoordinates">Stage Coordinates</option>
                     <option value="stageTranslations">Stage Translations</option>
-                    <option value="stageCoordinates">Stage Coordinates</option>                    
                 </select>
                 <div class="form-text">Select the type of data you want to import</div>
             </div>
@@ -219,6 +219,17 @@ $apiBaseUrl = $config['api_base_url'];
                     <input type="file" id="excelFile" name="excelFile" class="d-none" accept=".xlsx,.xls" required />
                 </div>
                 <div class="form-text">Supported formats: .xlsx, .xls (Max size: 5MB)</div>
+            </div>
+
+            <!-- Template download section -->
+            <div class="mb-4">
+                <label class="form-label">Download Template</label>
+                <div class="button-group">
+                    <button type="button" id="downloadTemplateBtn" class="btn btn-outline-primary">
+                        <i class="bi bi-file-earmark-excel"></i> Download Template
+                    </button>
+                </div>
+                <div class="form-text">Download the template for the selected import type</div>
             </div>
 
             <div class="button-group">
@@ -373,6 +384,43 @@ $apiBaseUrl = $config['api_base_url'];
         document.getElementById('resultContainer').innerHTML = '';
         fileNameElement.textContent = 'No file selected';
         fileNameElement.style.color = 'var(--muted-text)';
+    });
+
+    // Template download functionality
+    document.getElementById('downloadTemplateBtn').addEventListener('click', function() {
+        const importType = document.getElementById('importType').value;
+        const templateFile = `${importType}_template.xlsx`;
+        const templatePath = `templates/${templateFile}`;
+        
+        // Show loading state
+        const originalBtnText = this.innerHTML;
+        this.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Preparing...`;
+        this.disabled = true;
+        
+        // Create a temporary anchor element to trigger download
+        const a = document.createElement('a');
+        a.href = templatePath;
+        a.download = templateFile;
+        document.body.appendChild(a);
+        a.click();
+        
+        // Clean up
+        setTimeout(() => {
+            document.body.removeChild(a);
+            this.innerHTML = originalBtnText;
+            this.disabled = false;
+            
+            // Check if download was successful
+            fetch(templatePath, { method: 'HEAD' })
+                .then(response => {
+                    if (!response.ok) {
+                        showResult('error', 'Template file not found. Please contact support.');
+                    }
+                })
+                .catch(() => {
+                    showResult('error', 'Failed to download template. Please try again.');
+                });
+        }, 100);
     });
 
     // Helper function to show result messages

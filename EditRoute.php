@@ -590,7 +590,7 @@ function saveRoute() {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error(response.text());
         }
         return response.json();
     })
@@ -598,7 +598,7 @@ function saveRoute() {
         if (res.success) {
             showMessage(res.message || 'Route saved successfully!', 'success');
             setTimeout(() => {
-                window.location.href = 'ViewRoutes.php';
+                window.location.href = 'AdminViewRoutes.php';
             }, 1500);
         } else {
             showMessage(res.message || 'Failed to save route.', 'error');
