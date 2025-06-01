@@ -197,9 +197,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </a>
                     </div>
                 </form>
-                <div class="footer-text">
-                    <small>Use admin/Welcome@123 to login</small>
-                </div>
             </div>
         </div>
     </div>
