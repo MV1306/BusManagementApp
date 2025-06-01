@@ -588,12 +588,12 @@ function saveRoute() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(response.text());
-        }
-        return response.json();
-    })
+    // .then(response => {
+    //     if (!response.ok) {
+    //         throw new Error(response.text());
+    //     }
+    //     return response.json();
+    // })
     .then(res => {
         if (res.success) {
             showMessage(res.message || 'Route saved successfully!', 'success');
