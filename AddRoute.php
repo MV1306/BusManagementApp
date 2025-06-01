@@ -107,6 +107,7 @@ $apiBaseUrl = $config['api_base_url'];
 
         .form-group {
             margin-bottom: 20px;
+            position: relative;
         }
 
         .form-label {
@@ -202,6 +203,8 @@ $apiBaseUrl = $config['api_base_url'];
             margin: 25px 0;
             border-radius: var(--border-radius);
             box-shadow: 0 0 0 1px var(--light-gray);
+            position: relative;
+            overflow: visible;
         }
 
         .table {
@@ -222,6 +225,7 @@ $apiBaseUrl = $config['api_base_url'];
             padding: 12px 15px;
             border-bottom: 1px solid var(--light-gray);
             vertical-align: middle;
+            position: relative;
         }
 
         .table tr:last-child td {
@@ -293,6 +297,33 @@ $apiBaseUrl = $config['api_base_url'];
 
         .empty-state p {
             margin-bottom: 20px;
+        }
+
+        /* Autocomplete styles */
+        .autocomplete-dropdown {
+            position: absolute;
+            background: white;
+            width: calc(100% - 2px);
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--light-gray);
+            border-top: none;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: none;
+            left: 0;
+            top: 100%;
+        }
+
+        .autocomplete-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .autocomplete-item:hover {
+            background-color: var(--light);
         }
 
         /* Animations */
@@ -388,12 +419,12 @@ $apiBaseUrl = $config['api_base_url'];
             
             <div class="form-group">
                 <label for="from" class="form-label">Starting Point</label>
-                <input type="text" id="from" name="from" class="form-control" required placeholder="Where the route begins" />
+                <input type="text" id="from" name="from" class="form-control" required placeholder="Where the route begins" autocomplete="off" />
             </div>
             
             <div class="form-group">
                 <label for="to" class="form-label">Destination</label>
-                <input type="text" id="to" name="to" class="form-control" required placeholder="Where the route ends" />
+                <input type="text" id="to" name="to" class="form-control" required placeholder="Where the route ends" autocomplete="off" />
             </div>
             
             <h3 class="card-title" style="margin-top: 30px;">Route Stages</h3>
@@ -447,6 +478,11 @@ $apiBaseUrl = $config['api_base_url'];
     // Initialize with empty state
     document.addEventListener('DOMContentLoaded', function() {
         toggleEmptyState();
+        setupAutocomplete();
+        // Add one empty stage row by default
+        setTimeout(() => {
+            addStageRow();
+        }, 300);
     });
 
     function toggleEmptyState() {
@@ -470,7 +506,7 @@ $apiBaseUrl = $config['api_base_url'];
         row.className = 'animate-in';
         row.style.animationDelay = `${stageCounter * 0.05}s`;
         row.innerHTML = `
-            <td><input type="text" class="form-control stageName" placeholder="Enter stage name" value="${stageName}" required></td>
+            <td><input type="text" class="form-control stageName" placeholder="Enter stage name" value="${stageName}" required autocomplete="off"></td>
             <td><input type="number" class="form-control stageOrder" placeholder="Order" value="${stageOrder}" min="1" required></td>
             <td><input type="number" class="form-control distanceFromStart" placeholder="0" step="1" value="${distance}" min="0" required></td>
             <td><button type="button" class="btn btn-danger btn-sm" onclick="removeStageRow(this)"><i class="fas fa-trash"></i> Remove</button></td>
@@ -478,6 +514,9 @@ $apiBaseUrl = $config['api_base_url'];
         tbody.appendChild(row);
         stageCounter++;
         toggleEmptyState();
+        
+        // Setup autocomplete for the new stage input
+        setupTypeahead(row.querySelector('.stageName'));
     }
 
     function removeStageRow(button) {
@@ -496,6 +535,99 @@ $apiBaseUrl = $config['api_base_url'];
         const rows = document.querySelectorAll('#stagesTableBody tr');
         rows.forEach((row, index) => {
             row.querySelector('.stageOrder').value = index + 1;
+        });
+    }
+
+    async function fetchStages(query) {
+        if (!query.trim()) return [];
+        const url = `${API_BASE_URL}SearchStages/${encodeURIComponent(query)}`;
+        try {
+            const res = await fetch(url);
+            if (!res.ok) return [];
+            return await res.json();
+        } catch {
+            return [];
+        }
+    }
+
+    function setupAutocomplete() {
+        // Setup autocomplete for starting point
+        const fromInput = document.getElementById('from');
+        setupTypeahead(fromInput);
+        
+        // Setup autocomplete for destination
+        const toInput = document.getElementById('to');
+        setupTypeahead(toInput);
+        
+        // Setup autocomplete for existing stage name inputs
+        document.querySelectorAll('.stageName').forEach(input => {
+            setupTypeahead(input);
+        });
+    }
+
+    function setupTypeahead(inputElement) {
+        let timeout;
+        let dropdown;
+        
+        // Create dropdown element if it doesn't exist
+        if (!inputElement.nextElementSibling || !inputElement.nextElementSibling.classList.contains('autocomplete-dropdown')) {
+            dropdown = document.createElement('div');
+            dropdown.className = 'autocomplete-dropdown';
+            
+            // For table cells, append to the cell instead of parent
+            if (inputElement.closest('td')) {
+                inputElement.closest('td').appendChild(dropdown);
+            } else {
+                inputElement.parentNode.appendChild(dropdown);
+            }
+        } else {
+            dropdown = inputElement.nextElementSibling;
+        }
+        
+        inputElement.addEventListener('input', async () => {
+            clearTimeout(timeout);
+            dropdown.innerHTML = '';
+            
+            const query = inputElement.value.trim();
+            if (query.length < 2) {
+                dropdown.style.display = 'none';
+                return;
+            }
+            
+            timeout = setTimeout(async () => {
+                const stages = await fetchStages(query);
+                if (stages.length === 0) {
+                    dropdown.style.display = 'none';
+                    return;
+                }
+                
+                dropdown.innerHTML = '';
+                stages.forEach(stage => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    item.textContent = stage;
+                    item.addEventListener('click', () => {
+                        inputElement.value = stage;
+                        dropdown.style.display = 'none';
+                    });
+                    dropdown.appendChild(item);
+                });
+                
+                dropdown.style.display = 'block';
+            }, 300);
+        });
+        
+        // Hide dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target !== inputElement && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+        
+        inputElement.addEventListener('focus', () => {
+            if (dropdown.children.length > 0) {
+                dropdown.style.display = 'block';
+            }
         });
     }
 
@@ -583,11 +715,6 @@ $apiBaseUrl = $config['api_base_url'];
             }, 3000);
         }
     }
-
-    // Add one empty stage row by default
-    setTimeout(() => {
-        addStageRow();
-    }, 300);
 </script>
 
 </body>
