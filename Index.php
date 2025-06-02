@@ -1,3 +1,7 @@
+<?php
+    $config = include('config.php');
+    $apiBaseUrl = $config['api_base_url'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -438,13 +442,15 @@
         const chatbotMessages = document.getElementById('chatbotMessages');
         const chatbotInput = document.getElementById('chatbotInput');
         const chatbotSend = document.getElementById('chatbotSend');
+
+        const API_BASE_URL = "<?php echo $apiBaseUrl; ?>";
         
         // API endpoints
         const API_ENDPOINTS = {
-            getRouteByCode: 'https://busmanagementapi.onrender.com/GetRouteByCode/',
-            findRoutesBetweenStages: 'https://busmanagementapi.onrender.com/FindRoutesBetweenStages/',
-            getRouteStagesByCode: 'https://busmanagementapi.onrender.com/GetRouteStagesByCode/',
-            calculateFare: 'https://busmanagementapi.onrender.com/CalculateFare/'
+            getRouteByCode: `${API_BASE_URL}GetRouteByCode/`,
+            findRoutesBetweenStages: `${API_BASE_URL}FindRoutesBetweenStages/`,
+            getRouteStagesByCode: `${API_BASE_URL}GetRouteStagesByCode/`,
+            calculateFare: `${API_BASE_URL}CalculateFare/`
         };
         
         // Current state of the conversation
