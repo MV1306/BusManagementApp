@@ -55,377 +55,494 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
-    :root {
-        --primary-color: #1a237e;
-        --secondary-color: #0d47a1;
-        --accent-color: #1976d2;
-        --light-bg: #e3f2fd;
-        --dark-text: #e3f2fd;
-        --light-text: #bbdefb;
-        --border-radius: 8px;
-        --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        --transition: all 0.3s ease;
-    }
+        /* RCB Color Palette */
+:root {
+    --rcb-red: #E21B4C;
+    --rcb-dark-red: #56042C;
+    --rcb-black: #000000;
+    --rcb-gold: #FFD700; /* Gold */
+    --rcb-light-gold: rgba(255, 215, 0, 0.7); /* Lighter, semi-transparent gold */
+    --rcb-text-light: #FFFFFF; /* Pure white for maximum visibility */
+    --rcb-text-dark: #333333; /* Dark text for contrast on light elements */
 
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #0d47a1;
-        color: var(--dark-text);
-    }
+    /* UI Variables based on RCB palette */
+    --primary-color: var(--rcb-dark-red); /* Darker red for main elements */
+    --secondary-color: var(--rcb-black); /* Black for cards/backgrounds */
+    --accent-color: var(--rcb-red); /* Bright red for accents/buttons */
+    --light-bg: #2a2a2a; /* Slightly lighter black for subtle contrast */
+    --dark-text: var(--rcb-text-light); /* Main text color (now white) */
+    --light-text: var(--rcb-gold); /* Highlight text color */
+    --border-color: rgba(255, 215, 0, 0.2); /* Subtle gold border */
 
-    /* Header and Navigation */
-    .navbar {
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        background-color: var(--primary-color) !important;
-    }
+    --border-radius: 12px;
+    --box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
+    --transition: all 0.3s ease;
+}
 
-    /* Main Content */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--rcb-dark-red), var(--rcb-black)); /* RCB gradient */
+    color: var(--dark-text); /* Now explicitly white */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header and Navigation */
+.navbar {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Stronger shadow */
+    background-color: var(--secondary-color) !important; /* Black navbar */
+    color: var(--light-text); /* Gold text */
+}
+
+.navbar .nav-link, .navbar .navbar-brand {
+    color: var(--light-text) !important; /* Ensure nav links are gold */
+}
+
+/* Main Content */
+.main-container {
+    margin-top: 80px;
+    padding: 20px; /* Slightly more padding */
+}
+
+.card {
+    border: 1px solid var(--border-color); /* Subtle gold border */
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+    margin-bottom: 28px; /* More spacing between cards */
+    background-color: var(--secondary-color); /* Black card background */
+    overflow: hidden; /* Ensures rounded corners apply to children */
+}
+
+.card:hover {
+    transform: translateY(-4px); /* More pronounced lift */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* Stronger shadow on hover */
+}
+
+.card-header {
+    background: linear-gradient(90deg, var(--rcb-red), var(--rcb-dark-red)); /* Red to dark red gradient */
+    border-bottom: 1px solid var(--rcb-dark-red); /* Dark red border */
+    font-weight: 600;
+    padding: 18px 25px; /* More padding */
+    color: var(--rcb-text-light); /* Light text (now white) */
+    border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+    font-size: 1.3rem; /* Larger header text */
+}
+
+/* Table Styling - Updated for visibility */
+.table {
+    margin-bottom: 0;
+    color: white !important; /* Force white text for all table content */
+    background-color: var(--secondary-color); /* Ensure table background matches card */
+}
+
+.table thead th {
+    background-color: var(--primary-color); /* Dark red header */
+    color: var(--rcb-text-light) !important; /* Light text (now white) */
+    font-weight: 500;
+    border: none;
+    padding: 14px 20px; /* More padding */
+    text-transform: uppercase; /* Uppercase headers */
+    font-size: 0.95rem;
+}
+
+.table tbody tr {
+    transition: var(--transition);
+    background-color: var(--secondary-color); /* Black rows */
+    border-bottom: 1px solid rgba(255, 215, 0, 0.1); /* Subtle gold line between rows */
+}
+
+.table tbody tr:last-child {
+    border-bottom: none; /* No border for the last row */
+}
+
+.table tbody tr:hover {
+    background-color: rgba(255, 215, 0, 0.05); /* Subtle gold highlight on hover */
+    cursor: pointer; /* Indicate clickability */
+}
+
+.table td {
+    padding: 16px 20px; /* More padding */
+    vertical-align: middle;
+    border-top: none; /* Remove default bootstrap border */
+    color: white !important; /* Force white text */
+}
+
+/* Specific column styling */
+.table td .fw-semibold {
+    color: var(--rcb-gold) !important; /* Gold for route code */
+}
+
+.table td:nth-child(3), /* From column */
+.table td:nth-child(4) { /* To column */
+    color: var(--rcb-light-gold) !important; /* Lighter gold for better visibility */
+}
+
+/* Mobile view data labels */
+.table td:before {
+    color: var(--rcb-gold) !important; /* Gold labels */
+}
+
+/* Action Buttons */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px; /* Larger buttons */
+    height: 38px;
+    border-radius: 50%;
+    transition: var(--transition);
+    font-size: 1.2rem; /* Larger icons */
+    margin: 0 4px;
+}
+
+.action-btn:hover {
+    background-color: rgba(255, 215, 0, 0.15); /* Gold highlight on hover */
+    transform: scale(1.15); /* More pronounced scale */
+}
+
+.view-btn { color: var(--rcb-gold); } /* Gold for view */
+.edit-btn { color: #f8c000; } /* Slightly different gold for edit */
+.delete-btn { color: var(--rcb-red); } /* Red for delete */
+
+/* Filter Sidebar */
+.filter-container {
+    background-color: var(--secondary-color); /* Black background */
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 25px; /* More padding */
+    margin-bottom: 28px;
+    border: 1px solid var(--border-color); /* Subtle gold border */
+}
+
+.filter-title {
+    color: var(--rcb-gold); /* Gold title */
+    font-weight: 600;
+    margin-bottom: 25px; /* More spacing */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.4rem; /* Larger title */
+}
+
+.filter-title i {
+    font-size: 1.5rem;
+    color: var(--rcb-red); /* Red icon */
+}
+
+.form-label {
+    font-weight: 500;
+    color: white; /* Explicitly white for labels */
+    margin-bottom: 10px; /* More spacing */
+    font-size: 1.05rem;
+}
+
+.form-control {
+    background-color: rgba(255, 215, 0, 0.05); /* Very light transparent gold */
+    border: 1px solid rgba(255, 215, 0, 0.2); /* Transparent gold border */
+    color: white; /* Explicitly white for input text */
+    border-radius: var(--border-radius);
+    padding: 12px 16px; /* More padding */
+    transition: var(--transition);
+    font-size: 1rem;
+}
+
+.form-control:focus {
+    background-color: rgba(255, 215, 0, 0.1); /* Slightly more opaque on focus */
+    border-color: var(--rcb-gold); /* Solid gold border on focus */
+    box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.3); /* Gold glow on focus */
+    color: white; /* Ensure text stays white */
+}
+
+.form-control::placeholder {
+    color: var(--rcb-gold); /* Solid gold placeholder */
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--rcb-red); /* RCB Red */
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 12px 25px; /* More padding */
+    font-weight: 600;
+    transition: var(--transition);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    color: white; /* White text */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary:hover {
+    background-color: var(--rcb-dark-red); /* Darker red on hover */
+    transform: translateY(-2px); /* Lift effect */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-success { /* Add New Route button - if uncommented */
+    background-color: var(--rcb-gold); /* RCB Gold */
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 12px 25px;
+    font-weight: 600;
+    transition: var(--transition);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    color: var(--rcb-black); /* Black text for contrast */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-success:hover {
+    background-color: var(--rcb-light-gold); /* Lighter gold on hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-outline-secondary {
+    border-color: rgba(255, 215, 0, 0.3); /* Transparent gold border */
+    color: var(--rcb-gold); /* Gold text */
+    background-color: transparent;
+    border-radius: var(--border-radius);
+    padding: 12px 25px;
+    font-weight: 600;
+    transition: var(--transition);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-outline-secondary:hover {
+    background-color: rgba(255, 215, 0, 0.1); /* Light transparent gold background */
+    border-color: var(--rcb-gold); /* Solid gold border */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-outline-secondary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Pagination */
+.pagination .page-item .page-link {
+    background-color: var(--secondary-color); /* Black background */
+    color: var(--rcb-gold); /* Gold text */
+    border: 1px solid rgba(255, 215, 0, 0.2); /* Subtle gold border */
+    margin: 0 6px; /* More spacing */
+    border-radius: var(--border-radius) !important;
+    transition: var(--transition);
+    padding: 10px 16px; /* More padding */
+    font-weight: 500;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--rcb-red); /* RCB Red for active page */
+    color: white; /* White text */
+    border-color: var(--rcb-red);
+    box-shadow: 0 2px 8px rgba(226, 27, 76, 0.4); /* Red glow */
+}
+
+.pagination .page-item:not(.active) .page-link:hover {
+    background-color: rgba(255, 215, 0, 0.1); /* Light transparent gold on hover */
+    border-color: var(--rcb-gold);
+}
+
+/* Empty State */
+.empty-state {
+    padding: 50px 0; /* More padding */
+    text-align: center;
+    color: var(--rcb-text-light); /* Light text (now white) */
+    background-color: var(--secondary-color); /* Black background */
+    border-radius: var(--border-radius);
+    box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.05); /* Inner gold shadow */
+}
+
+.empty-state i {
+    font-size: 4rem; /* Larger icon */
+    margin-bottom: 20px;
+    color: rgba(255, 215, 0, 0.3); /* Transparent gold icon */
+}
+
+.empty-state h5 {
+    font-size: 1.5rem;
+    color: var(--rcb-gold); /* Gold heading */
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    color: white; /* Explicitly white */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
     .main-container {
-        margin-top: 80px;
+        margin-top: 70px;
         padding: 15px;
     }
+    
+    .filter-container {
+        position: static !important;
+        margin-bottom: 25px;
+        padding: 20px;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 15px 20px;
+        font-size: 1.2rem;
+    }
+    
+    .card-header .btn-success {
+        width: 100%;
+        padding: 10px 20px;
+    }
+}
 
-    .card {
-        border: none;
+@media (max-width: 768px) {
+    .main-container {
+        margin-top: 60px;
+        padding: 10px;
+    }
+    
+    .row {
+        flex-direction: column;
+    }
+    
+    .col-lg-3, .col-lg-9 {
+        width: 100%;
+        max-width: 100%;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    
+    .filter-container {
+        padding: 15px;
+    }
+    
+    .table-responsive {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--box-shadow); /* Apply shadow to responsive table container */
+    }
+
+    .table thead {
+        display: none;
+    }
+
+    .table tr {
+        display: block;
+        margin-bottom: 20px; /* More spacing */
         border-radius: var(--border-radius);
         box-shadow: var(--box-shadow);
-        transition: var(--transition);
-        margin-bottom: 24px;
         background-color: var(--secondary-color);
-    }
-
-    .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-    }
-
-    .card-header {
-        background-color: var(--primary-color);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        font-weight: 600;
-        padding: 16px 20px;
-        color: var(--light-text);
-        border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
-    }
-
-    /* Table Styling */
-    .table {
-        margin-bottom: 0;
-        color: var(--dark-text);
-    }
-
-    .table thead th {
-        background-color: var(--primary-color);
-        color: var(--light-text);
-        font-weight: 500;
-        border: none;
-        padding: 12px 16px;
-    }
-
-    .table tbody tr {
-        transition: var(--transition);
-        background-color: rgba(255, 255, 255, 0.05);
-    }
-
-    .table tbody tr:hover {
-        background-color: rgba(255, 255, 255, 0.1);
+        padding: 15px; /* More padding */
+        border: 1px solid var(--border-color); /* Border for each row card */
     }
 
     .table td {
-        padding: 14px 16px;
-        vertical-align: middle;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        display: block;
+        padding: 10px 15px; /* Adjust padding */
+        text-align: right;
+        border: none;
+        position: relative;
+        padding-left: 55%; /* Adjust for label width */
+        font-size: 1rem;
+        color: white !important; /* Force white text */
     }
 
-    /* Action Buttons */
-    .action-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        transition: var(--transition);
-    }
-
-    .action-btn:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-        transform: scale(1.1);
-    }
-
-    .view-btn { color: #bbdefb; }
-    .edit-btn { color: #ffd54f; }
-    .delete-btn { color: #ff8a65; }
-
-    /* Filter Sidebar */
-    .filter-container {
-        background-color: var(--secondary-color);
-        border-radius: var(--border-radius);
-        box-shadow: var(--box-shadow);
-        padding: 20px;
-        margin-bottom: 24px;
-    }
-
-    .filter-title {
-        color: var(--light-text);
+    .table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px; /* Align label to the left */
+        width: 45%; /* Label width */
+        padding-right: 10px;
         font-weight: 600;
-        margin-bottom: 20px;
+        color: var(--rcb-gold) !important; /* Gold labels */
+        text-align: left;
+        font-size: 0.95rem;
+    }
+
+    .table td:last-child {
         display: flex;
-        align-items: center;
-        gap: 8px;
+        justify-content: flex-end;
+        padding-top: 15px;
+        padding-bottom: 10px;
+        padding-left: 15px;
+    }
+    
+    .table td:last-child:before {
+        display: none;
     }
 
-    .filter-title i {
-        font-size: 1.2rem;
+    .action-btn {
+        width: 40px; /* Slightly larger for touch */
+        height: 40px;
+        margin: 0 6px;
     }
-
-    .form-label {
-        font-weight: 500;
-        color: var(--light-text);
-        margin-bottom: 8px;
-    }
-
-    .form-control {
-        background-color: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: var(--dark-text);
-        border-radius: var(--border-radius);
-        padding: 10px 14px;
-        transition: var(--transition);
-    }
-
-    .form-control:focus {
-        background-color: rgba(255, 255, 255, 0.15);
-        border-color: var(--accent-color);
-        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.3);
-        color: white;
-    }
-
-    .form-control::placeholder {
-        color: rgba(255, 255, 255, 0.5);
-    }
-
-    /* Buttons */
-    .btn-primary {
-        background-color: var(--accent-color);
-        border: none;
-        border-radius: var(--border-radius);
-        padding: 10px 20px;
-        font-weight: 500;
-        transition: var(--transition);
-    }
-
-    .btn-primary:hover {
-        background-color: #1565c0;
-        transform: translateY(-1px);
-    }
-
-    .btn-success {
-        background-color: #00acc1;
-        border: none;
-        border-radius: var(--border-radius);
-        padding: 10px 20px;
-        font-weight: 500;
-        transition: var(--transition);
-        box-shadow: var(--box-shadow);
-    }
-
-    .btn-success:hover {
-        background-color: #00838f;
-        transform: translateY(-1px);
-    }
-
-    .btn-outline-secondary {
-        border-color: rgba(255, 255, 255, 0.2);
-        color: var(--light-text);
-    }
-
-    .btn-outline-secondary:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.3);
-    }
-
-    /* Pagination */
+    
     .pagination .page-item .page-link {
-        background-color: rgba(255, 255, 255, 0.05);
-        color: var(--light-text);
-        border: none;
+        padding: 10px 14px;
         margin: 0 4px;
-        border-radius: var(--border-radius) !important;
-        transition: var(--transition);
+        font-size: 1rem;
     }
+}
 
-    .pagination .page-item.active .page-link {
-        background-color: var(--accent-color);
-        color: white;
+@media (max-width: 576px) {
+    .main-container {
+        margin-top: 60px;
+        padding: 10px;
     }
-
-    .pagination .page-item:not(.active) .page-link:hover {
-        background-color: rgba(255, 255, 255, 0.1);
+    
+    .card-header h5 {
+        font-size: 1.1rem;
     }
-
-    /* Empty State */
-    .empty-state {
-        padding: 40px 0;
-        text-align: center;
-        color: var(--light-text);
+    
+    .filter-title {
+        font-size: 1.2rem;
+        margin-bottom: 20px;
     }
-
-    .empty-state i {
-        font-size: 3rem;
-        margin-bottom: 16px;
-        color: rgba(255, 255, 255, 0.2);
+    
+    .form-control {
+        padding: 10px 14px;
+        font-size: 0.95rem;
     }
-
-    /* Responsive Adjustments */
-    @media (max-width: 992px) {
-        .main-container {
-            margin-top: 70px;
-            padding: 10px;
-        }
-        
-        .filter-container {
-            position: static !important;
-            margin-bottom: 20px;
-        }
-        
-        .card-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
-        }
-        
-        .card-header .btn-success {
-            width: 100%;
-        }
+    
+    .btn {
+        padding: 10px 20px;
+        font-size: 0.95rem;
     }
-
-    @media (max-width: 768px) {
-        .main-container {
-            margin-top: 60px;
-        }
-        
-        .row {
-            flex-direction: column;
-        }
-        
-        .col-lg-3, .col-lg-9 {
-            width: 100%;
-            max-width: 100%;
-            padding-left: 0;
-            padding-right: 0;
-        }
-        
-        .filter-container {
-            padding: 15px;
-        }
-        
-        .table-responsive {
-            border-radius: var(--border-radius);
-            overflow: hidden;
-        }
-
-        .table thead {
-            display: none;
-        }
-
-        .table tr {
-            display: block;
-            margin-bottom: 16px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            background-color: var(--secondary-color);
-            padding: 10px;
-        }
-
-        .table td {
-            display: block;
-            padding: 8px 10px;
-            text-align: right;
-            border: none;
-            position: relative;
-            padding-left: 50%;
-        }
-
-        .table td:before {
-            content: attr(data-label);
-            position: absolute;
-            left: 10px;
-            width: 45%;
-            padding-right: 10px;
-            font-weight: 600;
-            color: var(--light-text);
-            text-align: left;
-        }
-
-        .table td:last-child {
-            display: flex;
-            justify-content: flex-end;
-            padding-top: 10px;
-            padding-bottom: 5px;
-            padding-left: 10px;
-        }
-        
-        .table td:last-child:before {
-            display: none;
-        }
-
-        .action-btn {
-            width: 36px;
-            height: 36px;
-            margin: 0 5px;
-        }
-        
-        .pagination .page-item .page-link {
-            padding: 8px 12px;
-            margin: 0 2px;
-            font-size: 0.9rem;
-        }
+    
+    .table td {
+        padding-left: 45%;
+        font-size: 0.95rem;
     }
-
-    @media (max-width: 576px) {
-        .main-container {
-            margin-top: 60px;
-            padding: 8px;
-        }
-        
-        .card-header h5 {
-            font-size: 1.2rem;
-        }
-        
-        .filter-title {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-        }
-        
-        .form-control {
-            padding: 8px 12px;
-            font-size: 0.9rem;
-        }
-        
-        .btn {
-            padding: 8px 16px;
-            font-size: 0.9rem;
-        }
-        
-        .table td {
-            padding-left: 40%;
-            font-size: 0.9rem;
-        }
-        
-        .table td:before {
-            width: 40%;
-            font-size: 0.85rem;
-        }
-        
-        .empty-state h5 {
-            font-size: 1.1rem;
-        }
-        
-        .empty-state p {
-            font-size: 0.9rem;
-        }
+    
+    .table td:before {
+        width: 40%;
+        font-size: 0.9rem;
     }
+    
+    .empty-state h5 {
+        font-size: 1.3rem;
+    }
+    
+    .empty-state p {
+        font-size: 1.0rem; /* Adjusted for better visibility */
+    }
+}
 </style>
 </head>
 <body>
@@ -502,7 +619,7 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
                                     </tr>
                                 <?php else: ?>
                                     <?php foreach ($routesPage as $route): ?>
-                                        <tr>
+                                        <tr data-href="RouteDetails.php?id=<?= $route['id'] ?>">
                                             <td class="d-none" data-label="ID"><?= htmlspecialchars($route['id']) ?></td>
                                             <td data-label="Route Code">
                                                 <span class="fw-semibold"><?= htmlspecialchars($route['code']) ?></span>

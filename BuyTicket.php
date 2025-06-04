@@ -9,21 +9,155 @@
 <head>
     <title>Buy Ticket</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; padding: 20px; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h2 { color: #1a1a2e; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { font-weight: bold; }
+        :root {
+            --rcb-primary: #000000;
+            --rcb-secondary: #FF005C;
+            --rcb-accent: #FFFFFF;
+            --rcb-highlight: #575757;
+        }
+        
+        body { 
+            font-family: 'Poppins', 'Segoe UI', sans-serif; 
+            background: linear-gradient(135deg, var(--rcb-primary) 0%, var(--rcb-highlight) 100%);
+            padding: 20px;
+            min-height: 100vh;
+            color: var(--rcb-accent);
+        }
+        
+        .container { 
+            max-width: 600px; 
+            margin: 20px auto; 
+            background: rgba(0, 0, 0, 0.8); 
+            padding: 30px; 
+            border-radius: 15px; 
+            box-shadow: 0 5px 15px rgba(255, 0, 92, 0.2);
+            border: 1px solid var(--rcb-secondary);
+        }
+        
+        h2 { 
+            color: var(--rcb-secondary); 
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .form-group { 
+            margin-bottom: 20px; 
+        }
+        
+        label { 
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            color: var(--rcb-accent);
+        }
+        
         select, input[type="number"] {
-            width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc;
+            width: 100%; 
+            padding: 12px 15px; 
+            margin-top: 5px; 
+            border-radius: 8px; 
+            border: 1px solid var(--rcb-secondary);
+            background-color: var(--rcb-primary);
+            color: var(--rcb-accent);
+            font-size: 16px;
+            transition: all 0.3s;
         }
+        
+        select:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: var(--rcb-accent);
+            box-shadow: 0 0 0 2px rgba(255, 0, 92, 0.3);
+        }
+        
         button {
-            padding: 10px 20px; border: none; border-radius: 5px; background-color: #e94560; color: white; cursor: pointer;
+            padding: 12px 25px; 
+            border: none; 
+            border-radius: 8px; 
+            background-color: var(--rcb-secondary); 
+            color: var(--rcb-accent); 
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
         }
-        button:disabled { background-color: #ccc; cursor: not-allowed; }
-        #fareResult { margin-top: 20px; font-weight: bold; }
+        
+        button:hover {
+            background-color: #d4004f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 92, 0.4);
+        }
+        
+        button:disabled { 
+            background-color: var(--rcb-highlight); 
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        #fareResult { 
+            margin-top: 25px; 
+            font-weight: bold;
+            padding: 15px;
+            background-color: rgba(255, 0, 92, 0.1);
+            border-left: 4px solid var(--rcb-secondary);
+            border-radius: 0 8px 8px 0;
+            color: var(--rcb-accent);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h2 {
+                font-size: 22px;
+            }
+            
+            select, input[type="number"] {
+                padding: 10px 12px;
+            }
+            
+            button {
+                padding: 10px 20px;
+            }
+        }
+        
+        /* RCB logo inspired decoration */
+        .container::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background: var(--rcb-secondary);
+            border-radius: 50%;
+            z-index: -1;
+        }
+        
+        .container::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: var(--rcb-secondary);
+            border-radius: 50%;
+            z-index: -1;
+        }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
