@@ -39,21 +39,32 @@ if (!$route || !isset($route['id'])) {
 
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            --secondary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            /* RCB Colors */
+            --rcb-red: #CE1126;
+            --rcb-gold: #F7D100;
+            --rcb-black: #2F2F2F;
+            --rcb-dark-grey: #4A4A4A;
+            --rcb-light-grey: #E0E0E0;
+            --rcb-white: #FFFFFF;
+
+            --primary-gradient: linear-gradient(135deg, var(--rcb-red) 0%, #A90E20 100%); /* Deeper red for gradient */
+            --secondary-gradient: linear-gradient(135deg, var(--rcb-gold) 0%, #D8B700 100%); /* Deeper gold for gradient */
         }
         
         body {
-            background-color: #f8f9fa;
+            background-color: var(--rcb-light-grey);
+            color: var(--rcb-dark-grey);
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
         
         .route-header-card {
             background: var(--primary-gradient);
-            color: white;
+            color: var(--rcb-white);
             border-radius: 12px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
             overflow: hidden;
             margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         
         .route-badge {
@@ -64,6 +75,7 @@ if (!$route || !isset($route['id'])) {
             background: rgba(255,255,255,0.2);
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255,255,255,0.3);
+            color: var(--rcb-white);
         }
         
         .location-card {
@@ -77,12 +89,13 @@ if (!$route || !isset($route['id'])) {
         
         .location-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            background: rgba(255,255,255,0.25);
         }
         
         .location-icon {
             font-size: 1.75rem;
-            color: white;
+            color: var(--rcb-white);
             background: rgba(255,255,255,0.2);
             width: 50px;
             height: 50px;
@@ -92,8 +105,20 @@ if (!$route || !isset($route['id'])) {
             justify-content: center;
         }
         
+        .card {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .card-title {
+            color: var(--rcb-red);
+            font-weight: bold;
+        }
+
         .stage-item {
-            background: #e9ecef;
+            background: var(--rcb-white);
+            color: var(--rcb-black);
             padding: 0.5rem 1rem;
             border-radius: 50px;
             margin: 0.5rem 0.5rem 0.5rem 0;
@@ -102,33 +127,36 @@ if (!$route || !isset($route['id'])) {
             font-weight: 500;
             transition: all 0.3s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid var(--rcb-light-grey);
         }
         
         .stage-item:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background: var(--rcb-light-grey);
         }
         
         .stage-item i {
             margin-right: 0.5rem;
+            color: var(--rcb-dark-grey);
         }
         
         .stage-start {
-            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-            color: white;
+            background: var(--rcb-red);
+            color: var(--rcb-white);
         }
         
         .stage-end {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: white;
+            background: var(--rcb-gold);
+            color: var(--rcb-black); /* Changed to black for better contrast on gold */
         }
         
         .stage-order-badge {
             width: 24px;
             height: 24px;
             border-radius: 50%;
-            background: #3498db;
-            color: white;
+            background: var(--rcb-black);
+            color: var(--rcb-gold);
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -138,13 +166,13 @@ if (!$route || !isset($route['id'])) {
         }
         
         .stage-start .stage-order-badge {
-            background: white;
-            color: #27ae60;
+            background: var(--rcb-gold);
+            color: var(--rcb-red);
         }
         
         .stage-end .stage-order-badge {
-            background: white;
-            color: #c0392b;
+            background: var(--rcb-red);
+            color: var(--rcb-gold);
         }
         
         #routeMap {
@@ -161,11 +189,20 @@ if (!$route || !isset($route['id'])) {
             font-weight: 500;
             padding: 0.5rem 1.5rem;
             border-radius: 50px;
+            background-color: var(--rcb-gold);
+            color: var(--rcb-black);
+            border-color: var(--rcb-gold);
         }
         
         .back-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            background-color: #D8B700; /* Slightly darker gold on hover */
+            border-color: #D8B700;
+        }
+
+        .text-primary {
+            color: var(--rcb-red) !important;
         }
         
         @media (max-width: 768px) {
@@ -188,7 +225,6 @@ if (!$route || !isset($route['id'])) {
     <?php include 'navbar.php'; ?>
 
     <div class="container py-4">
-        <!-- Route Header Card -->
         <div class="route-header-card p-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
                 <h1 class="h3 mb-3 mb-md-0 fw-bold">
@@ -197,7 +233,7 @@ if (!$route || !isset($route['id'])) {
                         <?= htmlspecialchars($route['code']) ?>
                     </span>
                 </h1>
-                <a href="ViewRoutes.php" class="btn btn-light back-btn">
+                <a href="ViewRoutes.php" class="btn back-btn">
                     <i class="bi bi-arrow-left me-2"></i>Back to Routes
                 </a>
             </div>
@@ -228,7 +264,6 @@ if (!$route || !isset($route['id'])) {
             </div>
         </div>
 
-        <!-- Stages Section -->
         <div class="card shadow-sm mb-4">
             <div class="card-body">
                 <h5 class="card-title mb-3 fw-semibold">
@@ -263,7 +298,6 @@ if (!$route || !isset($route['id'])) {
             </div>
         </div>
 
-        <!-- Map Section -->
         <div class="card shadow-sm">
             <div class="card-body">
                 <h5 class="card-title mb-3 fw-semibold">
@@ -299,30 +333,30 @@ if (!$route || !isset($route['id'])) {
 
                     let marker;
                     if (i === 0) {
-                        // Start marker (green)
+                        // Start marker (RCB Red)
                         marker = L.marker(latLng, {
                             icon: L.divIcon({
-                                html: `<div style="background: #2ecc70; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${stageNumber}</div>`,
+                                html: `<div style="background: var(--rcb-red); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: var(--rcb-white); font-weight: bold;">${stageNumber}</div>`,
                                 className: 'custom-div-icon',
                                 iconSize: [30, 30],
                                 iconAnchor: [15, 15]
                             })
                         }).bindPopup(`<b>Start (Stage ${stageNumber}):</b> ${stage.stageName}`);
                     } else if (i === stages.length - 1) {
-                        // End marker (red)
+                        // End marker (RCB Gold)
                         marker = L.marker(latLng, {
                             icon: L.divIcon({
-                                html: `<div style="background: #e74c3c; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${stageNumber}</div>`,
+                                html: `<div style="background: var(--rcb-gold); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: var(--rcb-black); font-weight: bold;">${stageNumber}</div>`,
                                 className: 'custom-div-icon',
                                 iconSize: [30, 30],
                                 iconAnchor: [15, 15]
                             })
                         }).bindPopup(`<b>End (Stage ${stageNumber}):</b> ${stage.stageName}`);
                     } else {
-                        // Intermediate markers (blue)
+                        // Intermediate markers (RCB Black/Dark Grey)
                         marker = L.marker(latLng, {
                             icon: L.divIcon({
-                                html: `<div style="background: #3498db; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${stageNumber}</div>`,
+                                html: `<div style="background: var(--rcb-black); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: var(--rcb-gold); font-weight: bold;">${stageNumber}</div>`,
                                 className: 'custom-div-icon',
                                 iconSize: [24, 24],
                                 iconAnchor: [12, 12]
@@ -336,12 +370,12 @@ if (!$route || !isset($route['id'])) {
             });
 
             if (bounds.length > 0) {
-                // Add route path
+                // Add route path (RCB Black with Gold dashes)
                 L.polyline(pathCoordinates, {
-                    color: '#00008B',
+                    color: 'var(--rcb-black)',
                     weight: 4,
                     opacity: 0.8,
-                    dashArray: '5, 5',
+                    dashArray: '8, 8', /* Slightly longer dashes for a distinct look */
                     lineJoin: 'round'
                 }).addTo(map);
                 

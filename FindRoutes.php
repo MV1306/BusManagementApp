@@ -9,12 +9,20 @@
 
     <style>
         :root {
-            --primary-color: #4361ee;
-            --secondary-color: #3f37c9;
-            --success-color: #4cc9f0;
-            --danger-color: #f72585;
-            --light-color: #f8f9fa;
-            --dark-color: #212529;
+            /* RCB Colors */
+            --rcb-red: #CE1126;
+            --rcb-gold: #F7D100;
+            --rcb-black: #2F2F2F;
+            --rcb-dark-grey: #4A4A4A;
+            --rcb-light-grey: #E0E0E0;
+            --rcb-white: #FFFFFF;
+
+            --primary-color: var(--rcb-red);
+            --secondary-color: #A90E20; /* A darker shade of RCB red */
+            --success-color: #4CAF50; /* Standard green for success, or pick a relevant RCB shade */
+            --danger-color: var(--rcb-gold); /* Using gold for danger/attention, as it contrasts well with red */
+            --light-color: var(--rcb-light-grey);
+            --dark-color: var(--rcb-black);
             --border-radius: 12px;
             --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
             --transition: all 0.3s ease;
@@ -22,8 +30,8 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background-color: #f5f7fa;
-            color: #2c3e50;
+            background-color: var(--rcb-light-grey);
+            color: var(--rcb-dark-grey);
             line-height: 1.6;
         }
 
@@ -54,7 +62,7 @@
         }
 
         .search-card {
-            background-color: white;
+            background-color: var(--rcb-white);
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             padding: 2rem;
@@ -78,12 +86,20 @@
             padding: 0.75rem 1rem;
             border: 1px solid #e0e0e0;
             transition: var(--transition);
+            color: var(--rcb-black); /* Text color for inputs */
         }
 
         .form-control:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(var(--rcb-red-rgb), 0.25); /* Using RGB for rgba() */
         }
+        /* Define RGB values for RCB colors */
+        :root {
+            --rcb-red-rgb: 206, 17, 38;
+            --rcb-gold-rgb: 247, 209, 0;
+            --rcb-black-rgb: 47, 47, 47;
+        }
+
 
         .suggestions-container {
             position: relative;
@@ -95,7 +111,7 @@
             max-height: 300px;
             overflow-y: auto;
             z-index: 1000;
-            background: white;
+            background: var(--rcb-white);
             border: 1px solid #e0e0e0;
             border-top: none;
             border-radius: 0 0 var(--border-radius) var(--border-radius);
@@ -113,6 +129,7 @@
             cursor: pointer;
             transition: var(--transition);
             border-bottom: 1px solid #f0f0f0;
+            color: var(--rcb-dark-grey);
         }
 
         .suggestion-item:last-child {
@@ -122,7 +139,7 @@
         .suggestion-item:hover,
         .suggestion-item.active {
             background-color: var(--primary-color);
-            color: white;
+            color: var(--rcb-white);
         }
 
         .btn-action {
@@ -139,6 +156,7 @@
         .btn-submit {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
+            color: var(--rcb-white);
         }
 
         .btn-submit:hover {
@@ -148,19 +166,19 @@
         }
 
         .btn-clear {
-            background-color: white;
-            border: 1px solid #e0e0e0;
-            color: var(--dark-color);
+            background-color: var(--rcb-gold);
+            border: 1px solid var(--rcb-gold);
+            color: var(--rcb-black);
         }
 
         .btn-clear:hover {
-            background-color: #f8f9fa;
-            border-color: #d0d0d0;
+            background-color: #D8B700; /* Slightly darker gold on hover */
+            border-color: #D8B700;
             transform: translateY(-2px);
         }
 
         .route-card {
-            background: white;
+            background: var(--rcb-white);
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             padding: 1.5rem;
@@ -191,7 +209,7 @@
 
         .info-label {
             font-weight: 600;
-            color: #6c757d;
+            color: var(--rcb-dark-grey); /* Changed from generic grey */
             display: inline-block;
             min-width: 50px;
         }
@@ -204,7 +222,7 @@
 
         .stages-list li {
             padding: 0.5rem 0;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid var(--rcb-light-grey);
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -220,21 +238,25 @@
         }
 
         .error-message {
-            background: #f8d7da;
-            color: #721c24;
+            background: #FCE4EC; /* Light pink from a standard color palette that blends well */
+            color: var(--rcb-red);
             padding: 1rem;
             border-radius: var(--border-radius);
             margin: 2rem auto;
             max-width: 600px;
             text-align: center;
             font-weight: 600;
+            border: 1px solid var(--rcb-red);
         }
 
         .no-results {
             text-align: center;
             padding: 2rem;
-            color: #6c757d;
+            color: var(--rcb-dark-grey);
             font-size: 1.1rem;
+            background: var(--rcb-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
         }
 
         @media (max-width: 768px) {

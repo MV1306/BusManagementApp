@@ -13,20 +13,34 @@ $apiBaseUrl = $config['api_base_url'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4361ee;
-            --primary-hover: #3a56d4;
-            --success-color: #2b9348;
-            --error-color: #ef233c;
-            --light-bg: #f8f9fa;
-            --dark-text: #212529;
-            --muted-text: #6c757d;
-            --border-radius: 0.5rem;
-            --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+            /* RCB Colors */
+            --rcb-red: #CE1126;
+            --rcb-gold: #F7D100;
+            --rcb-black: #2F2F2F;
+            --rcb-dark-grey: #4A4A4A;
+            --rcb-light-grey: #E0E0E0;
+            --rcb-white: #FFFFFF;
+
+            --primary-color: var(--rcb-red);
+            --primary-hover: #A90E20; /* A darker shade of RCB red */
+            --success-color: #4CAF50; /* Standard green for success */
+            --error-color: var(--rcb-gold); /* Using gold for attention/error */
+            --light-bg: var(--rcb-light-grey);
+            --dark-text: var(--rcb-black);
+            --muted-text: var(--rcb-dark-grey);
+            --border-radius: 0.75rem; /* Slightly larger border radius for a softer look */
+            --box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.12); /* More prominent shadow */
             --transition: all 0.3s ease;
+        }
+        /* Define RGB values for RCB colors */
+        :root {
+            --rcb-red-rgb: 206, 17, 38;
+            --rcb-gold-rgb: 247, 209, 0;
+            --rcb-black-rgb: 47, 47, 47;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background-color: var(--light-bg);
             color: var(--dark-text);
             padding-top: 2rem;
@@ -36,10 +50,11 @@ $apiBaseUrl = $config['api_base_url'];
         .fare-container {
             max-width: 700px;
             margin: auto;
-            background-color: white;
-            padding: 2rem;
+            background-color: var(--rcb-white);
+            padding: 2.5rem; /* Increased padding */
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
+            border: 1px solid rgba(var(--rcb-red-rgb), 0.1); /* Subtle border for definition */
         }
 
         @media (max-width: 768px) {
@@ -51,114 +66,140 @@ $apiBaseUrl = $config['api_base_url'];
 
         h2 {
             text-align: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem; /* Increased margin-bottom */
             color: var(--primary-color);
-            font-weight: 600;
+            font-weight: 700; /* Bolder font weight */
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            gap: 0.75rem; /* Increased gap */
         }
 
         .form-label {
-            font-weight: 500;
-            margin-bottom: 0.5rem;
+            font-weight: 600; /* Bolder label font weight */
+            margin-bottom: 0.6rem;
             color: var(--dark-text);
         }
 
         .form-control, .form-select {
-            padding: 0.75rem 1rem;
+            padding: 0.85rem 1.15rem; /* Slightly larger padding */
             border-radius: var(--border-radius);
             border: 1px solid #ced4da;
             transition: var(--transition);
+            color: var(--dark-text); /* Ensure input text is readable */
         }
 
         .form-control:focus, .form-select:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+            box-shadow: 0 0 0 0.25rem rgba(var(--rcb-red-rgb), 0.25);
         }
 
         .btn-calculate {
             background-color: var(--primary-color);
             border: none;
-            padding: 0.75rem 1.5rem;
-            font-weight: 500;
+            padding: 0.85rem 1.8rem; /* Larger button padding */
+            font-weight: 600; /* Bolder button text */
             transition: var(--transition);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
             width: 100%;
+            border-radius: 50px; /* Pill-shaped button */
+            color: var(--rcb-white);
         }
 
         .btn-calculate:hover {
             background-color: var(--primary-hover);
+            transform: translateY(-2px); /* Slight lift effect */
+            box-shadow: 0 4px 10px rgba(var(--rcb-red-rgb), 0.3);
         }
 
         .result-card {
-            margin-top: 1.5rem;
-            padding: 1.5rem;
+            margin-top: 2rem; /* Increased margin-top */
+            padding: 2rem; /* Increased padding */
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             display: none;
         }
 
         .result-success {
-            background-color: rgba(43, 147, 72, 0.1);
-            border-left: 4px solid var(--success-color);
+            background-color: rgba(76, 175, 80, 0.1); /* Standard success green with transparency */
+            border-left: 5px solid var(--success-color); /* Thicker border */
         }
 
         .result-error {
-            background-color: rgba(239, 35, 60, 0.1);
-            border-left: 4px solid var(--error-color);
+            background-color: rgba(var(--rcb-gold-rgb), 0.15); /* RCB Gold with transparency */
+            border-left: 5px solid var(--error-color); /* Thicker border with RCB Gold */
         }
 
         .result-title {
-            font-weight: 600;
-            margin-bottom: 1rem;
+            font-weight: 700; /* Bolder title font weight */
+            margin-bottom: 1.25rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
             color: var(--dark-text);
+            font-size: 1.2rem;
+        }
+        .result-title .bi {
+            font-size: 1.5rem;
+            color: inherit; /* Inherit color from parent */
+        }
+
+        .result-success .result-title .bi {
+            color: var(--success-color);
+        }
+
+        .result-error .result-title .bi {
+            color: var(--error-color);
         }
 
         .result-details {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Adjusted minwidth for items */
+            gap: 1.5rem; /* Increased gap between items */
         }
 
         .result-item {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0; /* Remove default margin */
+            padding-bottom: 0.5rem; /* Add some internal padding */
+            border-bottom: 1px dashed var(--rcb-light-grey); /* Dotted separator */
+        }
+        .result-item:last-child {
+            border-bottom: none;
         }
 
         .result-label {
-            font-weight: 500;
+            font-weight: 600; /* Bolder label */
             color: var(--muted-text);
+            font-size: 0.95rem;
         }
 
         .result-value {
-            font-weight: 600;
+            font-weight: 700; /* Even bolder value */
             color: var(--dark-text);
+            font-size: 1.1rem;
         }
 
         .total-fare {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px dashed #ccc;
-            font-size: 1.25rem;
-            font-weight: 700;
+            margin-top: 1.5rem; /* Increased margin */
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--rcb-light-grey); /* Solid border for emphasis */
+            font-size: 1.5rem; /* Larger font size */
+            font-weight: 800; /* Extra bold */
             color: var(--primary-color);
+            text-align: center;
         }
 
         .loading-spinner {
             display: inline-block;
-            width: 1.25rem;
-            height: 1.25rem;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            width: 1.5rem; /* Larger spinner */
+            height: 1.5rem;
+            border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
+            border-top-color: var(--rcb-white); /* Spinner color matches button text */
+            animation: spin 0.8s ease-in-out infinite; /* Faster spin */
         }
 
         @keyframes spin {
@@ -167,7 +208,7 @@ $apiBaseUrl = $config['api_base_url'];
 
         select[disabled] {
             background-color: #e9ecef;
-            opacity: 1;
+            opacity: 0.8; /* Slightly less opaque */
         }
     </style>
 </head>
