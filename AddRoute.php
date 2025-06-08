@@ -1,4 +1,7 @@
 <?php
+require_once 'AdminAuth.php';
+
+checkAuth();
 $config = include('config.php');
 $apiBaseUrl = $config['api_base_url'];
 ?>

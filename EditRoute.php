@@ -1,4 +1,7 @@
 <?php
+require_once 'AdminAuth.php';
+
+checkAuth();
 $routeId = $_GET['id'] ?? null;
 if (!$routeId) {
     die("Route ID not specified");

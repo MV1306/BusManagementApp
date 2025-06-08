@@ -1,3 +1,8 @@
+<?php
+require_once 'AdminAuth.php';
+
+checkAuth();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

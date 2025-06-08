@@ -22,14 +22,14 @@ $apiBaseUrl = $config['api_base_url'];
             --rcb-white: #FFFFFF;
 
             --primary-color: var(--rcb-red);
-            --primary-hover: #A90E20; /* A darker shade of RCB red */
-            --success-color: #4CAF50; /* Standard green for success */
-            --error-color: var(--rcb-gold); /* Using gold for attention/error */
+            --primary-hover: #A90E20;
+            --success-color: #4CAF50;
+            --error-color: var(--rcb-gold);
             --light-bg: var(--rcb-light-grey);
             --dark-text: var(--rcb-black);
             --muted-text: var(--rcb-dark-grey);
-            --border-radius: 0.75rem; /* Slightly larger border radius for a softer look */
-            --box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.12); /* More prominent shadow */
+            --border-radius: 0.75rem;
+            --box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.12);
             --transition: all 0.3s ease;
         }
         /* Define RGB values for RCB colors */
@@ -51,10 +51,10 @@ $apiBaseUrl = $config['api_base_url'];
             max-width: 700px;
             margin: auto;
             background-color: var(--rcb-white);
-            padding: 2.5rem; /* Increased padding */
+            padding: 2.5rem;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            border: 1px solid rgba(var(--rcb-red-rgb), 0.1); /* Subtle border for definition */
+            border: 1px solid rgba(var(--rcb-red-rgb), 0.1);
         }
 
         @media (max-width: 768px) {
@@ -66,27 +66,27 @@ $apiBaseUrl = $config['api_base_url'];
 
         h2 {
             text-align: center;
-            margin-bottom: 2rem; /* Increased margin-bottom */
+            margin-bottom: 2rem;
             color: var(--primary-color);
-            font-weight: 700; /* Bolder font weight */
+            font-weight: 700;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.75rem; /* Increased gap */
+            gap: 0.75rem;
         }
 
         .form-label {
-            font-weight: 600; /* Bolder label font weight */
+            font-weight: 600;
             margin-bottom: 0.6rem;
             color: var(--dark-text);
         }
 
         .form-control, .form-select {
-            padding: 0.85rem 1.15rem; /* Slightly larger padding */
+            padding: 0.85rem 1.15rem;
             border-radius: var(--border-radius);
             border: 1px solid #ced4da;
             transition: var(--transition);
-            color: var(--dark-text); /* Ensure input text is readable */
+            color: var(--dark-text);
         }
 
         .form-control:focus, .form-select:focus {
@@ -97,44 +97,44 @@ $apiBaseUrl = $config['api_base_url'];
         .btn-calculate {
             background-color: var(--primary-color);
             border: none;
-            padding: 0.85rem 1.8rem; /* Larger button padding */
-            font-weight: 600; /* Bolder button text */
+            padding: 0.85rem 1.8rem;
+            font-weight: 600;
             transition: var(--transition);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.75rem;
             width: 100%;
-            border-radius: 50px; /* Pill-shaped button */
+            border-radius: 50px;
             color: var(--rcb-white);
         }
 
         .btn-calculate:hover {
             background-color: var(--primary-hover);
-            transform: translateY(-2px); /* Slight lift effect */
+            transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(var(--rcb-red-rgb), 0.3);
         }
 
         .result-card {
-            margin-top: 2rem; /* Increased margin-top */
-            padding: 2rem; /* Increased padding */
+            margin-top: 2rem;
+            padding: 2rem;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             display: none;
         }
 
         .result-success {
-            background-color: rgba(76, 175, 80, 0.1); /* Standard success green with transparency */
-            border-left: 5px solid var(--success-color); /* Thicker border */
+            background-color: rgba(76, 175, 80, 0.1);
+            border-left: 5px solid var(--success-color);
         }
 
         .result-error {
-            background-color: rgba(var(--rcb-gold-rgb), 0.15); /* RCB Gold with transparency */
-            border-left: 5px solid var(--error-color); /* Thicker border with RCB Gold */
+            background-color: rgba(var(--rcb-gold-rgb), 0.15);
+            border-left: 5px solid var(--error-color);
         }
 
         .result-title {
-            font-weight: 700; /* Bolder title font weight */
+            font-weight: 700;
             margin-bottom: 1.25rem;
             display: flex;
             align-items: center;
@@ -144,7 +144,7 @@ $apiBaseUrl = $config['api_base_url'];
         }
         .result-title .bi {
             font-size: 1.5rem;
-            color: inherit; /* Inherit color from parent */
+            color: inherit;
         }
 
         .result-success .result-title .bi {
@@ -157,49 +157,49 @@ $apiBaseUrl = $config['api_base_url'];
 
         .result-details {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Adjusted minwidth for items */
-            gap: 1.5rem; /* Increased gap between items */
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
         }
 
         .result-item {
-            margin-bottom: 0; /* Remove default margin */
-            padding-bottom: 0.5rem; /* Add some internal padding */
-            border-bottom: 1px dashed var(--rcb-light-grey); /* Dotted separator */
+            margin-bottom: 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed var(--rcb-light-grey);
         }
         .result-item:last-child {
             border-bottom: none;
         }
 
         .result-label {
-            font-weight: 600; /* Bolder label */
+            font-weight: 600;
             color: var(--muted-text);
             font-size: 0.95rem;
         }
 
         .result-value {
-            font-weight: 700; /* Even bolder value */
+            font-weight: 700;
             color: var(--dark-text);
             font-size: 1.1rem;
         }
 
         .total-fare {
-            margin-top: 1.5rem; /* Increased margin */
+            margin-top: 1.5rem;
             padding-top: 1.5rem;
-            border-top: 2px solid var(--rcb-light-grey); /* Solid border for emphasis */
-            font-size: 1.5rem; /* Larger font size */
-            font-weight: 800; /* Extra bold */
+            border-top: 2px solid var(--rcb-light-grey);
+            font-size: 1.5rem;
+            font-weight: 800;
             color: var(--primary-color);
             text-align: center;
         }
 
         .loading-spinner {
             display: inline-block;
-            width: 1.5rem; /* Larger spinner */
+            width: 1.5rem;
             height: 1.5rem;
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top-color: var(--rcb-white); /* Spinner color matches button text */
-            animation: spin 0.8s ease-in-out infinite; /* Faster spin */
+            border-top-color: var(--rcb-white);
+            animation: spin 0.8s ease-in-out infinite;
         }
 
         @keyframes spin {
@@ -208,7 +208,39 @@ $apiBaseUrl = $config['api_base_url'];
 
         select[disabled] {
             background-color: #e9ecef;
-            opacity: 0.8; /* Slightly less opaque */
+            opacity: 0.8;
+        }
+
+        /* Search results dropdown styles */
+        #routeCodeResults {
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+            border: 1px solid rgba(0,0,0,0.15);
+            display: none;
+        }
+        
+        #routeCodeResults .list-group-item {
+            border-radius: 0;
+            border-left: none;
+            border-right: none;
+            cursor: pointer;
+            padding: 0.75rem 1.25rem;
+        }
+        
+        #routeCodeResults .list-group-item:first-child {
+            border-top: none;
+        }
+        
+        #routeCodeResults .list-group-item:hover {
+            background-color: var(--light-bg);
+        }
+
+        .search-container {
+            position: relative;
         }
     </style>
 </head>
@@ -221,11 +253,12 @@ $apiBaseUrl = $config['api_base_url'];
         <h2><i class="bi bi-calculator-fill"></i> Calculate Bus Fare</h2>
 
         <form id="fareForm">
-            <div class="mb-3">
+            <div class="mb-3 search-container">
                 <label for="routeCode" class="form-label">Route Code</label>
-                <select id="routeCode" name="routeCode" class="form-select" required>
-                    <option value="">Loading route codes...</option>
-                </select>
+                <input type="text" id="routeCode" name="routeCode" class="form-control" 
+                       placeholder="Start typing to search routes..." required
+                       autocomplete="off">
+                <div id="routeCodeResults" class="list-group mt-2"></div>
             </div>
 
             <div class="mb-3">
@@ -243,14 +276,14 @@ $apiBaseUrl = $config['api_base_url'];
             <div class="mb-3">
                 <label for="startStage" class="form-label">Start Stage</label>
                 <select id="startStage" name="startStage" class="form-select" disabled required>
-                    <option value="">Select Route Code first</option>
+                    <option value="">Select a route first</option>
                 </select>
             </div>
 
             <div class="mb-3">
                 <label for="endStage" class="form-label">End Stage</label>
                 <select id="endStage" name="endStage" class="form-select" disabled required>
-                    <option value="">Select Route Code first</option>
+                    <option value="">Select a route first</option>
                 </select>
             </div>
 
@@ -291,7 +324,8 @@ $apiBaseUrl = $config['api_base_url'];
 const API_BASE_URL = "<?php echo $apiBaseUrl; ?>";
 
 document.addEventListener('DOMContentLoaded', function () {
-    const routeCodeSelect = document.getElementById('routeCode');
+    const routeCodeInput = document.getElementById('routeCode');
+    const routeCodeResults = document.getElementById('routeCodeResults');
     const busTypeSelect = document.getElementById('busType');
     const startStageSelect = document.getElementById('startStage');
     const endStageSelect = document.getElementById('endStage');
@@ -302,41 +336,79 @@ document.addEventListener('DOMContentLoaded', function () {
     const totalFareDiv = document.getElementById('totalFare');
     const errorMessageSpan = document.getElementById('errorMessage');
     const calculateBtn = document.getElementById('calculateBtn');
+    let selectedRouteCode = '';
+    let debounceTimer;
 
-    // Load route codes
-    fetch(`${API_BASE_URL}GetRouteCodes`)
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to load route codes');
-            return response.json();
-        })
-        .then(data => {
-            routeCodeSelect.innerHTML = '<option value="">Select Route Code</option>';
-            data.forEach(code => {
-                const option = document.createElement('option');
-                option.value = code;
-                option.textContent = code;
-                routeCodeSelect.appendChild(option);
-            });
-        })
-        .catch(error => {
-            console.error('Error fetching route codes:', error);
-            routeCodeSelect.innerHTML = '<option value="">Error loading route codes</option>';
-        });
-
-    // Handle route code change
-    routeCodeSelect.addEventListener('change', function () {
-        const selectedRouteCode = this.value;
+    // Handle route code input with debounce
+    routeCodeInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const searchText = this.value.trim();
         
+        if (searchText.length < 2) {
+            routeCodeResults.style.display = 'none';
+            return;
+        }
+        
+        debounceTimer = setTimeout(() => {
+            searchRoutes(searchText);
+        }, 300);
+    });
+
+    // Handle clicks outside to close dropdown
+    document.addEventListener('click', function(e) {
+        if (!routeCodeInput.contains(e.target) && !routeCodeResults.contains(e.target)) {
+            routeCodeResults.style.display = 'none';
+        }
+    });
+
+    function searchRoutes(searchText) {
+        fetch(`${API_BASE_URL}SearchRoutes/${encodeURIComponent(searchText)}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to search routes');
+                return response.json();
+            })
+            .then(data => {
+                routeCodeResults.innerHTML = '';
+                
+                if (data.length === 0) {
+                    const noResults = document.createElement('div');
+                    noResults.className = 'list-group-item';
+                    noResults.textContent = 'No routes found';
+                    routeCodeResults.appendChild(noResults);
+                } else {
+                    data.forEach(route => {
+                        const item = document.createElement('button');
+                        item.type = 'button';
+                        item.className = 'list-group-item list-group-item-action';
+                        item.textContent = route;
+                        item.addEventListener('click', function() {
+                            routeCodeInput.value = route;
+                            selectedRouteCode = route;
+                            routeCodeResults.style.display = 'none';
+                            loadStagesForRoute(route);
+                        });
+                        routeCodeResults.appendChild(item);
+                    });
+                }
+                
+                routeCodeResults.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error searching routes:', error);
+                routeCodeResults.innerHTML = '<div class="list-group-item">No Routes Found</div>';
+                routeCodeResults.style.display = 'block';
+            });
+    }
+
+    function loadStagesForRoute(routeCode) {
         // Reset and disable stage selects
         startStageSelect.innerHTML = '<option value="">Loading stages...</option>';
         endStageSelect.innerHTML = '<option value="">Loading stages...</option>';
         startStageSelect.disabled = true;
         endStageSelect.disabled = true;
 
-        if (!selectedRouteCode) return;
-
         // Fetch stages for selected route
-        fetch(`${API_BASE_URL}GetRouteStagesByCode/${encodeURIComponent(selectedRouteCode)}`)
+        fetch(`${API_BASE_URL}GetRouteStagesByCode/${encodeURIComponent(routeCode)}`)
             .then(response => {
                 if (!response.ok) throw new Error('Failed to load stages');
                 return response.json();
@@ -369,13 +441,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 startStageSelect.disabled = false;
                 endStageSelect.disabled = false;
             });
-    });
+    }
 
     // Handle form submission
     document.getElementById('fareForm').addEventListener('submit', function (e) {
         e.preventDefault();
 
-        const routeCode = routeCodeSelect.value;
+        const routeCode = selectedRouteCode;
         const busType = busTypeSelect.value;
         const startStage = startStageSelect.value;
         const endStage = endStageSelect.value;
