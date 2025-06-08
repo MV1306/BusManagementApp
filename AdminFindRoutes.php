@@ -7,87 +7,107 @@ checkAuth();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Find Routes Between Stages</title>
+    <title>Admin - Find Routes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --primary-color: #4361ee;
-            --secondary-color: #3f37c9;
-            --success-color: #4cc9f0;
-            --danger-color: #f72585;
-            --light-color: #f8f9fa;
-            --dark-color: #212529;
-            --border-radius: 12px;
-            --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-            --transition: all 0.3s ease;
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --light-gray: #e2e8f0;
+            --card-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --card-shadow-hover: 0 14px 28px rgba(0,0,0,0.12), 0 10px 10px rgba(0,0,0,0.10);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background-color: #f5f7fa;
-            color: #2c3e50;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark);
             line-height: 1.6;
         }
 
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
         .page-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 3rem 1rem;
+            margin-bottom: 2rem;
             text-align: center;
-            margin: 2rem 0 3rem;
             position: relative;
+            overflow: hidden;
         }
 
-        .page-header h2 {
-            font-weight: 700;
-            color: var(--dark-color);
-            position: relative;
-            display: inline-block;
-            padding-bottom: 0.5rem;
-        }
-
-        .page-header h2::after {
+        .page-header::before {
             content: '';
             position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: var(--primary-color);
-            border-radius: 2px;
+            background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+
+        .page-header h1 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .page-header p {
+            font-weight: 300;
+            opacity: 0.9;
+            font-size: 1.1rem;
+            position: relative;
+        }
+
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto 3rem;
         }
 
         .search-card {
-            background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
             padding: 2rem;
-            margin-bottom: 3rem;
-            border: none;
             transition: var(--transition);
+            border: none;
         }
 
         .search-card:hover {
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--card-shadow-hover);
         }
 
         .form-label {
             font-weight: 600;
+            color: var(--dark);
             margin-bottom: 0.75rem;
-            color: var(--dark-color);
         }
 
         .form-control {
-            border-radius: var(--border-radius);
+            border-radius: 10px;
             padding: 0.75rem 1rem;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--light-gray);
             transition: var(--transition);
         }
 
         .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
         }
 
         .suggestions-container {
@@ -101,12 +121,12 @@ checkAuth();
             overflow-y: auto;
             z-index: 1000;
             background: white;
-            border: 1px solid #e0e0e0;
-            border-top: none;
-            border-radius: 0 0 var(--border-radius) var(--border-radius);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             margin-top: -1px;
             display: none;
+            border: 1px solid var(--light-gray);
+            border-top: none;
         }
 
         .suggestions-list.show {
@@ -117,7 +137,7 @@ checkAuth();
             padding: 0.75rem 1rem;
             cursor: pointer;
             transition: var(--transition);
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid var(--light-gray);
         }
 
         .suggestion-item:last-child {
@@ -126,7 +146,7 @@ checkAuth();
 
         .suggestion-item:hover,
         .suggestion-item.active {
-            background-color: var(--primary-color);
+            background-color: var(--primary);
             color: white;
         }
 
@@ -141,49 +161,62 @@ checkAuth();
             gap: 0.5rem;
         }
 
-        .btn-submit {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
         }
 
-        .btn-submit:hover {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
             transform: translateY(-2px);
         }
 
-        .btn-clear {
+        .btn-outline {
             background-color: white;
-            border: 1px solid #e0e0e0;
-            color: var(--dark-color);
+            border: 1px solid var(--light-gray);
+            color: var(--dark);
         }
 
-        .btn-clear:hover {
-            background-color: #f8f9fa;
-            border-color: #d0d0d0;
-            transform: translateY(-2px);
+        .btn-outline:hover {
+            background-color: #f8fafc;
+            border-color: var(--gray);
         }
 
         .route-card {
             background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            border: none;
             transition: var(--transition);
             height: 100%;
+            border: none;
+            position: relative;
+            overflow: hidden;
         }
 
         .route-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .route-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0 16px 0 16px;
+            font-weight: 600;
+            font-size: 0.9rem;
         }
 
         .route-header {
             font-size: 1.25rem;
             font-weight: 700;
-            color: var(--primary-color);
+            color: var(--primary);
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
@@ -196,7 +229,7 @@ checkAuth();
 
         .info-label {
             font-weight: 600;
-            color: #6c757d;
+            color: var(--gray);
             display: inline-block;
             min-width: 50px;
         }
@@ -208,11 +241,11 @@ checkAuth();
         }
 
         .stages-list li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--light-gray);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
         }
 
         .stages-list li:last-child {
@@ -220,36 +253,77 @@ checkAuth();
         }
 
         .stage-icon {
-            color: var(--primary-color);
+            color: var(--primary);
             font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .stage-name {
+            flex-grow: 1;
         }
 
         .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 1rem;
-            border-radius: var(--border-radius);
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 1.5rem;
+            border-radius: 16px;
             margin: 2rem auto;
-            max-width: 600px;
+            max-width: 800px;
             text-align: center;
             font-weight: 600;
+            box-shadow: var(--card-shadow);
         }
 
         .no-results {
-            text-align: center;
+            background: white;
             padding: 2rem;
-            color: #6c757d;
+            border-radius: 16px;
+            text-align: center;
+            color: var(--gray);
             font-size: 1.1rem;
+            box-shadow: var(--card-shadow);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .no-results i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .footer {
+            background: white;
+            padding: 1.5rem;
+            margin-top: 3rem;
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
         }
 
         @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
             .search-card {
                 padding: 1.5rem;
             }
             
             .btn-action {
                 width: 100%;
-                margin-bottom: 0.5rem;
+                margin-bottom: 0.75rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .page-header {
+                padding: 2rem 1rem;
+            }
+            
+            .page-header h1 {
+                font-size: 1.75rem;
             }
             
             .route-header {
@@ -261,40 +335,47 @@ checkAuth();
 <body>
 <?php include 'AdminNavbar.php'; ?>
 
-<div class="container py-4">
-    <div class="page-header">
-        <h2>Find Bus Routes Between Stages</h2>
+<header class="page-header">
+    <div class="container">
+        <h1>Find Routes Between Stages</h1>
+        <p>Discover available bus routes connecting your desired locations</p>
     </div>
+</header>
 
-    <div class="search-card">
-        <form id="routeForm" method="GET" action="">
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <div class="suggestions-container">
-                        <label for="fromStage" class="form-label">From Stage</label>
-                        <input type="text" class="form-control" id="fromStage" name="fromStage" autocomplete="off" required
-                            value="<?= htmlspecialchars($_GET['fromStage'] ?? '') ?>">
-                        <div id="fromStageList" class="suggestions-list"></div>
+<main class="container">
+    <div class="search-container">
+        <div class="search-card">
+            <form id="routeForm" method="GET" action="">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="suggestions-container">
+                            <label for="fromStage" class="form-label">Departure Stage</label>
+                            <input type="text" class="form-control" id="fromStage" name="fromStage" autocomplete="off" required
+                                value="<?= htmlspecialchars($_GET['fromStage'] ?? '') ?>"
+                                placeholder="Enter starting point">
+                            <div id="fromStageList" class="suggestions-list"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="suggestions-container">
+                            <label for="toStage" class="form-label">Destination Stage</label>
+                            <input type="text" class="form-control" id="toStage" name="toStage" autocomplete="off" required
+                                value="<?= htmlspecialchars($_GET['toStage'] ?? '') ?>"
+                                placeholder="Enter destination">
+                            <div id="toStageList" class="suggestions-list"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="suggestions-container">
-                        <label for="toStage" class="form-label">To Stage</label>
-                        <input type="text" class="form-control" id="toStage" name="toStage" autocomplete="off" required
-                            value="<?= htmlspecialchars($_GET['toStage'] ?? '') ?>">
-                        <div id="toStageList" class="suggestions-list"></div>
-                    </div>
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mt-4">
+                    <button type="submit" class="btn btn-primary btn-action">
+                        <i class="bi bi-search"></i> Find Routes
+                    </button>
+                    <button type="button" id="clearBtn" class="btn btn-outline btn-action">
+                        <i class="bi bi-x-circle"></i> Clear
+                    </button>
                 </div>
-            </div>
-            <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mt-4">
-                <button type="submit" class="btn btn-primary btn-action btn-submit">
-                    <i class="bi bi-search"></i> Find Routes
-                </button>
-                <button type="button" id="clearBtn" class="btn btn-action btn-clear">
-                    <i class="bi bi-x-circle"></i> Clear
-                </button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 
     <div id="routeResults">
@@ -323,32 +404,33 @@ checkAuth();
         $response = curl_exec($curl);
 
         if (curl_errno($curl)) {
-            echo "<div class='error-message'><i class='bi bi-exclamation-triangle-fill me-2'></i> cURL error: " . htmlspecialchars(curl_error($curl)) . "</div>";
+            echo "<div class='error-message'><i class='bi bi-exclamation-triangle-fill me-2'></i> Error connecting to server: " . htmlspecialchars(curl_error($curl)) . "</div>";
         } else {
             $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             if ($http_code != 200) {
-                echo "<div class='error-message'><i class='bi bi-exclamation-triangle-fill me-2'></i> API returned HTTP code $http_code.</div>";
+                echo "<div class='error-message'><i class='bi bi-exclamation-triangle-fill me-2'></i> Server returned an error (HTTP $http_code). Please try again.</div>";
             } else {
                 $data = json_decode($response, true);
                 if (is_null($data)) {
-                    echo "<div class='error-message'><i class='bi bi-exclamation-triangle-fill me-2'></i> No routes found between the given stages.</div>";
+                    echo "<div class='no-results'><i class='bi bi-info-circle-fill'></i><p class='mt-3'>No routes found between the specified stages</p></div>";
                 } elseif (empty($data)) {
-                    echo "<div class='no-results'><i class='bi bi-info-circle-fill me-2'></i> No routes found between the given stages.</div>";
+                    echo "<div class='no-results'><i class='bi bi-info-circle-fill'></i><p class='mt-3'>No routes found between the specified stages</p></div>";
                 } else {
                     echo '<div class="row g-4">';
                     foreach ($data as $route) {
                         echo '<div class="col-lg-4 col-md-6">';
                         echo '<div class="route-card">';
-                        echo '<div class="route-header"><i class="bi bi-bus-front"></i> Route: ' . htmlspecialchars($route['code']) . '</div>';
+                        echo '<div class="route-badge">Route</div>';
+                        echo '<div class="route-header"><i class="bi bi-bus-front"></i> ' . htmlspecialchars($route['code']) . '</div>';
                         echo '<div class="route-info">';
                         echo '<p><span class="info-label">From:</span> ' . htmlspecialchars($route['from']) . '</p>';
                         echo '<p><span class="info-label">To:</span> ' . htmlspecialchars($route['to']) . '</p>';
                         echo '</div>';
                         echo '<hr>';
-                        echo '<h6 class="fw-semibold"><i class="bi bi-signpost-split"></i> Stages</h6>';
+                        echo '<h6 class="fw-semibold"><i class="bi bi-signpost-split"></i> Route Stages</h6>';
                         echo '<ul class="stages-list">';
                         foreach ($route['stages'] as $stage) {
-                            echo '<li><i class="bi bi-geo-alt-fill stage-icon"></i>' . htmlspecialchars($stage['stageName']) . '</li>';
+                            echo '<li><i class="bi bi-geo-alt-fill stage-icon"></i><span class="stage-name">' . htmlspecialchars($stage['stageName']) . '</span></li>';
                         }
                         echo '</ul>';
                         echo '</div>';
@@ -362,7 +444,13 @@ checkAuth();
     }
     ?>
     </div>
-</div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        &copy; <?php echo date("Y"); ?> Bus Management System. All rights reserved.
+    </div>
+</footer>
 
 <script>
     const API_BASE_URL = "<?php echo $apiBaseUrl; ?>";

@@ -11,23 +11,33 @@ $apiBaseUrl = $config['api_base_url'];
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Add New Route with Stages</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Admin - Add Route</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
     <style>
         :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --secondary: #3f37c9;
-            --success: #4cc9f0;
-            --danger: #f72585;
-            --warning: #f8961e;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --light-gray: #e9ecef;
-            --border-radius: 12px;
-            --box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --primary: #6366f1;
+            --primary-light: #a5b4fc;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --light: #f9fafb;
+            --dark: #111827;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --border-radius: 0.5rem;
+            --border-radius-lg: 0.75rem;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --transition: all 0.2s ease-in-out;
         }
 
         * {
@@ -37,50 +47,38 @@ $apiBaseUrl = $config['api_base_url'];
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f5f7ff;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gray-100);
             color: var(--dark);
-            line-height: 1.6;
+            line-height: 1.5;
             min-height: 100vh;
-            padding: 0;
-            margin: 0;
         }
 
         .container {
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 1.5rem;
         }
 
         .page-header {
             text-align: center;
-            margin: 30px 0 40px;
+            margin-bottom: 2.5rem;
         }
 
         .page-header h2 {
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 15px;
-            position: relative;
+            color: var(--dark);
+            margin-bottom: 0.75rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             display: inline-block;
         }
 
-        .page-header h2::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--success));
-            border-radius: 2px;
-        }
-
         .page-header p {
-            color: var(--gray);
+            color: var(--gray-500);
             font-size: 1rem;
             max-width: 700px;
             margin: 0 auto;
@@ -88,53 +86,62 @@ $apiBaseUrl = $config['api_base_url'];
 
         .card {
             background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 30px;
-            margin-bottom: 30px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
             transition: var(--transition);
+            border: 1px solid var(--gray-200);
         }
 
         .card:hover {
-            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            box-shadow: var(--shadow-md);
         }
 
         .card-title {
-            font-size: 1.4rem;
+            font-size: 1.25rem;
             font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-title i {
             color: var(--primary);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--light-gray);
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 1.25rem;
             position: relative;
         }
 
         .form-label {
             display: block;
             font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--dark);
-            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+            font-size: 0.875rem;
         }
 
         .form-control {
             width: 100%;
-            padding: 12px 15px;
-            font-size: 1rem;
-            border: 1px solid var(--light-gray);
+            padding: 0.75rem 1rem;
+            font-size: 0.9375rem;
+            border: 1px solid var(--gray-300);
             border-radius: var(--border-radius);
             transition: var(--transition);
-            background-color: var(--light);
+            background-color: white;
+            color: var(--dark);
         }
 
         .form-control:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
             background-color: white;
         }
 
@@ -142,18 +149,19 @@ $apiBaseUrl = $config['api_base_url'];
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 12px 24px;
-            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9375rem;
             font-weight: 500;
             border-radius: var(--border-radius);
             cursor: pointer;
             transition: var(--transition);
             border: none;
             text-decoration: none;
+            gap: 0.5rem;
         }
 
         .btn i {
-            margin-right: 8px;
+            font-size: 1rem;
         }
 
         .btn-primary {
@@ -163,17 +171,19 @@ $apiBaseUrl = $config['api_base_url'];
 
         .btn-primary:hover {
             background-color: var(--primary-dark);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
         }
 
         .btn-success {
-            background-color: #4cc9f0;
+            background-color: var(--success);
             color: white;
         }
 
         .btn-success:hover {
-            background-color: #3ab5db;
-            transform: translateY(-2px);
+            background-color: #0d9f6e;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
         }
 
         .btn-danger {
@@ -182,37 +192,49 @@ $apiBaseUrl = $config['api_base_url'];
         }
 
         .btn-danger:hover {
-            background-color: #e5177a;
-            transform: translateY(-2px);
+            background-color: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
         }
 
         .btn-secondary {
-            background-color: var(--gray);
+            background-color: var(--gray-500);
             color: white;
         }
 
         .btn-secondary:hover {
-            background-color: #5a6268;
-            transform: translateY(-2px);
+            background-color: var(--gray-700);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--gray-100);
+            border-color: var(--gray-400);
         }
 
         .btn-sm {
-            padding: 8px 16px;
-            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.8125rem;
         }
 
         .table-responsive {
             overflow-x: auto;
-            margin: 25px 0;
+            margin: 1.5rem 0;
             border-radius: var(--border-radius);
-            box-shadow: 0 0 0 1px var(--light-gray);
             position: relative;
-            overflow: visible;
         }
 
         .table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             min-width: 600px;
         }
 
@@ -220,46 +242,55 @@ $apiBaseUrl = $config['api_base_url'];
             background-color: var(--primary);
             color: white;
             font-weight: 500;
-            padding: 15px;
+            padding: 0.75rem 1rem;
             text-align: left;
+            position: sticky;
+            top: 0;
+        }
+
+        .table th:first-child {
+            border-top-left-radius: var(--border-radius);
+        }
+
+        .table th:last-child {
+            border-top-right-radius: var(--border-radius);
         }
 
         .table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--light-gray);
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--gray-200);
             vertical-align: middle;
             position: relative;
+            background-color: white;
         }
 
-        .table tr:last-child td {
-            border-bottom: none;
+        .table tr:first-child td {
+            border-top: 1px solid var(--gray-200);
         }
 
-        .table tr:nth-child(even) {
-            background-color: rgba(248, 249, 250, 0.5);
-        }
-
-        .table tr:hover {
-            background-color: rgba(67, 97, 238, 0.05);
+        .table tr:hover td {
+            background-color: var(--gray-100);
         }
 
         .table input {
             width: 100%;
-            padding: 8px 12px;
-            border: 1px solid var(--light-gray);
-            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
             transition: var(--transition);
+            font-size: 0.875rem;
         }
 
         .table input:focus {
             outline: none;
-            border-color: var(--primary);
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
         }
 
         .action-buttons {
             display: flex;
-            gap: 15px;
-            margin-top: 25px;
+            gap: 1rem;
+            margin-top: 2rem;
         }
 
         .action-buttons .btn {
@@ -267,39 +298,54 @@ $apiBaseUrl = $config['api_base_url'];
         }
 
         .message {
-            padding: 15px;
+            padding: 1rem;
             border-radius: var(--border-radius);
-            margin: 20px 0;
+            margin: 1.5rem 0;
             text-align: center;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
         }
 
         .message.error {
-            background-color: #ffebee;
+            background-color: #fee2e2;
             color: var(--danger);
-            border: 1px solid #ffcdd2;
+            border: 1px solid #fecaca;
         }
 
         .message.success {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9;
+            background-color: #d1fae5;
+            color: var(--success);
+            border: 1px solid #a7f3d0;
+        }
+
+        .message.info {
+            background-color: #dbeafe;
+            color: var(--info);
+            border: 1px solid #bfdbfe;
         }
 
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
-            color: var(--gray);
+            padding: 2.5rem 1.5rem;
+            color: var(--gray-500);
+            border: 1px dashed var(--gray-300);
+            border-radius: var(--border-radius);
+            margin: 1.5rem 0;
+            background-color: var(--gray-100);
         }
 
         .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: var(--light-gray);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--gray-300);
         }
 
         .empty-state p {
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
+            color: var(--gray-500);
         }
 
         /* Autocomplete styles */
@@ -309,10 +355,10 @@ $apiBaseUrl = $config['api_base_url'];
             width: calc(100% - 2px);
             max-height: 200px;
             overflow-y: auto;
-            border: 1px solid var(--light-gray);
+            border: 1px solid var(--gray-300);
             border-top: none;
             border-radius: 0 0 var(--border-radius) var(--border-radius);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-sm);
             z-index: 1000;
             display: none;
             left: 0;
@@ -320,13 +366,14 @@ $apiBaseUrl = $config['api_base_url'];
         }
 
         .autocomplete-item {
-            padding: 10px 15px;
+            padding: 0.75rem 1rem;
             cursor: pointer;
             transition: var(--transition);
+            font-size: 0.875rem;
         }
 
         .autocomplete-item:hover {
-            background-color: var(--light);
+            background-color: var(--gray-100);
         }
 
         /* Animations */
@@ -335,67 +382,71 @@ $apiBaseUrl = $config['api_base_url'];
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
         .animate-in {
-            animation: fadeIn 0.4s ease-out forwards;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .animate-pop {
+            animation: fadeInScale 0.2s ease-out forwards;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: 9999px;
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
         }
 
         /* Responsive adjustments */
         @media (max-width: 992px) {
             .container {
-                padding: 15px;
+                padding: 1.25rem;
             }
             
             .page-header h2 {
-                font-size: 1.8rem;
+                font-size: 1.75rem;
             }
             
             .card {
-                padding: 25px;
+                padding: 1.5rem;
             }
         }
 
         @media (max-width: 768px) {
             .page-header h2 {
-                font-size: 1.6rem;
+                font-size: 1.5rem;
             }
             
             .card {
-                padding: 20px;
-            }
-            
-            .form-control {
-                padding: 10px 12px;
-            }
-            
-            .btn {
-                padding: 10px 18px;
+                padding: 1.25rem;
             }
             
             .action-buttons {
                 flex-direction: column;
-                gap: 10px;
             }
         }
 
         @media (max-width: 576px) {
             .page-header h2 {
-                font-size: 1.4rem;
+                font-size: 1.375rem;
             }
             
             .page-header p {
-                font-size: 0.9rem;
+                font-size: 0.9375rem;
             }
             
             .card-title {
-                font-size: 1.2rem;
-            }
-            
-            .form-label {
-                font-size: 0.9rem;
-            }
-            
-            .form-control {
-                font-size: 0.9rem;
+                font-size: 1.125rem;
             }
         }
     </style>
@@ -406,31 +457,39 @@ $apiBaseUrl = $config['api_base_url'];
 <?php include 'AdminNavbar.php'; ?>
 
 <div class="container">
-    <div class="page-header animate-in">
+    <div class="page-header animate-pop">
         <h2>Create New Route</h2>
-        <p>Add a new bus route with all its intermediate stages and distances</p>
+        <p>Define a new bus route with all its intermediate stops and distances</p>
     </div>
 
-    <div class="card animate-in" style="animation-delay: 0.1s;">
-        <h3 class="card-title">Route Information</h3>
+    <div class="card animate-pop" style="animation-delay: 0.1s;">
+        <h3 class="card-title">
+            <i class="fas fa-route"></i>
+            Route Information
+        </h3>
         
         <form id="addRouteForm" onsubmit="event.preventDefault(); saveRoute();">
-            <div class="form-group">
-                <label for="code" class="form-label">Route Code</label>
-                <input type="text" id="code" name="code" class="form-control" required placeholder="E.g., RT-101" />
+            <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                <div class="form-group">
+                    <label for="code" class="form-label">Route Code <span class="badge">Required</span></label>
+                    <input type="text" id="code" autocomplete="off" name="code" class="form-control" required placeholder="E.g., RT-101" />
+                </div>
+                
+                <div class="form-group">
+                    <label for="from" class="form-label">Starting Point <span class="badge">Required</span></label>
+                    <input type="text" id="from" name="from" class="form-control" required placeholder="Where the route begins" autocomplete="off" />
+                </div>
+                
+                <div class="form-group">
+                    <label for="to" class="form-label">Ending Point <span class="badge">Required</span></label>
+                    <input type="text" id="to" name="to" class="form-control" required placeholder="Where the route ends" autocomplete="off" />
+                </div>
             </div>
             
-            <div class="form-group">
-                <label for="from" class="form-label">Starting Point</label>
-                <input type="text" id="from" name="from" class="form-control" required placeholder="Where the route begins" autocomplete="off" />
-            </div>
-            
-            <div class="form-group">
-                <label for="to" class="form-label">Destination</label>
-                <input type="text" id="to" name="to" class="form-control" required placeholder="Where the route ends" autocomplete="off" />
-            </div>
-            
-            <h3 class="card-title" style="margin-top: 30px;">Route Stages</h3>
+            <h3 class="card-title" style="margin-top: 2rem;">
+                <i class="fas fa-map-marker-alt"></i>
+                Route Stages
+            </h3>
             
             <div class="table-responsive">
                 <table class="table">
@@ -456,7 +515,7 @@ $apiBaseUrl = $config['api_base_url'];
                 </button>
             </div>
             
-            <button type="button" class="btn btn-primary" onclick="addStageRow()" style="margin-top: 15px;">
+            <button type="button" class="btn btn-outline" onclick="addStageRow()" style="margin-top: 1rem;">
                 <i class="fas fa-plus"></i> Add Another Stage
             </button>
             
@@ -511,7 +570,7 @@ $apiBaseUrl = $config['api_base_url'];
         row.innerHTML = `
             <td><input type="text" class="form-control stageName" placeholder="Enter stage name" value="${stageName}" required autocomplete="off"></td>
             <td><input type="number" class="form-control stageOrder" placeholder="Order" value="${stageOrder}" min="1" required></td>
-            <td><input type="number" class="form-control distanceFromStart" placeholder="0" step="1" value="${distance}" min="0" required></td>
+            <td><input type="number" class="form-control distanceFromStart" placeholder="0" step="0.1" value="${distance}" min="0" required></td>
             <td><button type="button" class="btn btn-danger btn-sm" onclick="removeStageRow(this)"><i class="fas fa-trash"></i> Remove</button></td>
         `;
         tbody.appendChild(row);
@@ -640,7 +699,7 @@ $apiBaseUrl = $config['api_base_url'];
         const to = document.getElementById('to').value.trim();
 
         if (!code || !from || !to) {
-            showMessage('Please fill all route fields.', 'error');
+            showMessage('Please fill all required route fields.', 'error');
             return;
         }
 
@@ -709,7 +768,7 @@ $apiBaseUrl = $config['api_base_url'];
         const messageEl = document.getElementById('message');
         messageEl.textContent = text;
         messageEl.className = `message ${type}`;
-        messageEl.style.display = 'block';
+        messageEl.style.display = 'flex';
         
         // Auto-hide success messages after 3 seconds
         if (type === 'success') {
