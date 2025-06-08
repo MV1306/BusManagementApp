@@ -114,10 +114,10 @@
             overflow-y: auto;
             z-index: 1000;
             background: white;
-            border: 1px solid var(--gray-300);
+            border: 1px solid var(--primary-light);
             border-top: none;
             border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm);
-            box-shadow: var(--box-shadow);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.15);
             margin-top: -1px;
             display: none;
         }
@@ -133,16 +133,60 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             color: var(--dark-color);
             font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
-        .suggestion-item:last-child {
-            border-bottom: none;
+        .suggestion-item:before {
+            content: '\F3EE';
+            font-family: 'bootstrap-icons';
+            color: var(--primary-light);
+            font-size: 0.9rem;
         }
 
         .suggestion-item:hover,
         .suggestion-item.active {
-            background-color: var(--primary-color);
-            color: white;
+            background-color: rgba(67, 97, 238, 0.08);
+            color: var(--primary-color);
+        }
+
+        .suggestion-item:hover:before,
+        .suggestion-item.active:before {
+            color: var(--primary-color);
+        }
+
+        .suggestion-item .highlight {
+            font-weight: 600;
+            color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.1);
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .loading-suggestion {
+            padding: 1rem;
+            text-align: center;
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .loading-spinner {
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--gray-300);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .btn-action {
@@ -169,6 +213,22 @@
             background-color: var(--secondary-color);
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-submit.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-submit.loading:after {
+            content: '';
+            position: absolute;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid white;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
 
         .btn-clear {
@@ -304,6 +364,22 @@
             color: var(--primary-light);
         }
 
+        .loading-results {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-600);
+        }
+
+        .loading-results .spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid var(--gray-300);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
         /* Modern scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
@@ -400,7 +476,7 @@
                 </div>
             </div>
             <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mt-4 pt-2">
-                <button type="submit" class="btn btn-action btn-submit">
+                <button type="submit" id="submitBtn" class="btn btn-action btn-submit">
                     <i class="bi bi-search"></i> Find Routes
                 </button>
                 <button type="button" id="clearBtn" class="btn btn-action btn-clear">
@@ -506,6 +582,16 @@
         }
     }
 
+    function highlightMatch(text, query) {
+        if (!query) return text;
+        const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+        return text.replace(regex, '<span class="highlight">$1</span>');
+    }
+
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
     function setupAutocomplete(inputId, listId) {
         const input = document.getElementById(inputId);
         const list = document.getElementById(listId);
@@ -518,17 +604,21 @@
                 return;
             }
             
+            // Show loading state
+            list.innerHTML = '<div class="loading-suggestion"><div class="loading-spinner"></div> Searching...</div>';
+            list.classList.add('show');
+            
             const results = await fetchStages(query);
             if (!Array.isArray(results) || results.length === 0) {
-                list.classList.remove('show');
+                list.innerHTML = '<div class="loading-suggestion">No results found</div>';
                 return;
             }
             
             list.innerHTML = results.map(stage => {
                 const name = typeof stage === 'string' ? stage : stage.stageName || '';
-                return `<div class="suggestion-item">${name}</div>`;
+                return `<div class="suggestion-item">${highlightMatch(name, query)}</div>`;
             }).join('');
-            list.classList.add('show');
+            
             activeIndex = -1;
             
             const items = list.querySelectorAll('.suggestion-item');
@@ -536,6 +626,13 @@
                 item.addEventListener('click', () => {
                     input.value = item.textContent;
                     list.classList.remove('show');
+                    input.focus();
+                });
+                
+                item.addEventListener('mouseenter', () => {
+                    items.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    activeIndex = index;
                 });
             });
         }, 300));
@@ -571,10 +668,26 @@
                 list.classList.remove('show');
             }
         });
+        
+        // Show suggestions when input is focused
+        input.addEventListener('focus', async () => {
+            if (input.value.trim() && !list.classList.contains('show')) {
+                const query = input.value.trim();
+                list.innerHTML = '<div class="loading-suggestion"><div class="loading-spinner"></div> Searching...</div>';
+                list.classList.add('show');
+                
+                const results = await fetchStages(query);
+                if (results.length > 0) {
+                    list.innerHTML = results.map(stage => {
+                        const name = typeof stage === 'string' ? stage : stage.stageName || '';
+                        return `<div class="suggestion-item">${highlightMatch(name, query)}</div>`;
+                    }).join('');
+                } else {
+                    list.innerHTML = '<div class="loading-suggestion">No results found</div>';
+                }
+            }
+        });
     }
-
-    setupAutocomplete('fromStage', 'fromStageList');
-    setupAutocomplete('toStage', 'toStageList');
 
     document.getElementById('clearBtn').addEventListener('click', () => {
         document.getElementById('fromStage').value = '';
@@ -584,6 +697,39 @@
         document.getElementById('routeResults').innerHTML = '';
         window.location.href = window.location.pathname;
     });
+
+    // Form submission with loading state
+    document.getElementById('routeForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const fromStage = document.getElementById('fromStage').value.trim();
+        const toStage = document.getElementById('toStage').value.trim();
+        
+        if (!fromStage || !toStage) {
+            return;
+        }
+        
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.innerHTML = '';
+        submitBtn.classList.add('loading');
+        
+        // Show loading state in results area
+        document.getElementById('routeResults').innerHTML = `
+            <div class="loading-results">
+                <div class="spinner"></div>
+                <p>Finding routes between ${fromStage} and ${toStage}...</p>
+            </div>
+        `;
+        
+        // Submit the form after a small delay to allow the UI to update
+        setTimeout(() => {
+            e.target.submit();
+        }, 100);
+    });
+
+    // Initialize autocomplete for both inputs
+    setupAutocomplete('fromStage', 'fromStageList');
+    setupAutocomplete('toStage', 'toStageList');
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

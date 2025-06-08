@@ -7,107 +7,105 @@ checkAuth();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin - Find Routes</title>
+    <title>Find Routes Between Stages</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-light: #6366f1;
-            --primary-dark: #4338ca;
-            --secondary: #10b981;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --gray: #64748b;
-            --light-gray: #e2e8f0;
-            --card-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-            --card-shadow-hover: 0 14px 28px rgba(0,0,0,0.12), 0 10px 10px rgba(0,0,0,0.10);
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            /* Modern color palette */
+            --primary-color: #4361ee;
+            --primary-light: #4895ef;
+            --secondary-color: #3f37c9;
+            --accent-color: #f72585;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #f94144;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-600: #6c757d;
+            --gray-300: #dee2e6;
+            
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --box-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #f1f5f9;
-            color: var(--dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #f5f7ff;
+            color: var(--dark-color);
             line-height: 1.6;
         }
 
-        .navbar {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
         .page-header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 3rem 1rem;
-            margin-bottom: 2rem;
             text-align: center;
+            margin: 2rem 0 3rem;
             position: relative;
-            overflow: hidden;
         }
 
-        .page-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 70%);
-        }
-
-        .page-header h1 {
+        .page-header h2 {
             font-weight: 700;
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
+            color: var(--dark-color);
             position: relative;
-        }
-
-        .page-header p {
-            font-weight: 300;
-            opacity: 0.9;
-            font-size: 1.1rem;
-            position: relative;
-        }
-
-        .search-container {
-            max-width: 800px;
-            margin: 0 auto 3rem;
+            display: inline-block;
+            padding-bottom: 0.5rem;
+            font-size: 2rem;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
         }
 
         .search-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: var(--card-shadow);
-            padding: 2rem;
-            transition: var(--transition);
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2.5rem;
+            margin-bottom: 3rem;
             border: none;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .search-card:hover {
-            box-shadow: var(--card-shadow-hover);
+            box-shadow: var(--box-shadow-lg);
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.95);
         }
 
         .form-label {
             font-weight: 600;
-            color: var(--dark);
             margin-bottom: 0.75rem;
+            color: var(--dark-color);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .form-control {
-            border-radius: 10px;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius-sm);
+            padding: 0.75rem 1.25rem;
+            border: 1px solid var(--gray-300);
             transition: var(--transition);
+            font-size: 1rem;
+            background-color: rgba(255, 255, 255, 0.8);
         }
 
         .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
+            background-color: white;
         }
 
         .suggestions-container {
@@ -121,12 +119,12 @@ checkAuth();
             overflow-y: auto;
             z-index: 1000;
             background: white;
-            border-radius: 0 0 10px 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid var(--primary-light);
+            border-top: none;
+            border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.15);
             margin-top: -1px;
             display: none;
-            border: 1px solid var(--light-gray);
-            border-top: none;
         }
 
         .suggestions-list.show {
@@ -134,248 +132,349 @@ checkAuth();
         }
 
         .suggestion-item {
-            padding: 0.75rem 1rem;
+            padding: 0.75rem 1.25rem;
             cursor: pointer;
             transition: var(--transition);
-            border-bottom: 1px solid var(--light-gray);
-        }
-
-        .suggestion-item:last-child {
-            border-bottom: none;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            color: var(--dark-color);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
         .suggestion-item:hover,
         .suggestion-item.active {
-            background-color: var(--primary);
-            color: white;
+            background-color: rgba(67, 97, 238, 0.08);
+            color: var(--primary-color);
+        }
+
+        .suggestion-item .highlight {
+            font-weight: 600;
+            color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
+        .loading-suggestion {
+            padding: 1rem;
+            text-align: center;
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .loading-spinner {
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--gray-300);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .btn-action {
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
+            padding: 0.875rem 1.75rem;
+            border-radius: var(--border-radius-sm);
             font-weight: 600;
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            border: none;
         }
 
-        .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
+        .btn-submit {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 14px rgba(67, 97, 238, 0.3);
         }
 
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
+        .btn-submit:hover {
+            background-color: var(--secondary-color);
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
         }
 
-        .btn-outline {
+        .btn-submit.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-submit.loading:after {
+            content: '';
+            position: absolute;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid white;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .btn-clear {
             background-color: white;
-            border: 1px solid var(--light-gray);
-            color: var(--dark);
+            color: var(--gray-600);
+            border: 1px solid var(--gray-300);
         }
 
-        .btn-outline:hover {
-            background-color: #f8fafc;
-            border-color: var(--gray);
+        .btn-clear:hover {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            transform: translateY(-2px);
+            border-color: var(--gray-600);
         }
 
         .route-card {
             background: white;
-            border-radius: 16px;
-            box-shadow: var(--card-shadow);
-            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.75rem;
             margin-bottom: 1.5rem;
+            border: none;
             transition: var(--transition);
             height: 100%;
-            border: none;
             position: relative;
             overflow: hidden;
         }
 
-        .route-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--card-shadow-hover);
-        }
-
-        .route-badge {
+        .route-card::before {
+            content: '';
             position: absolute;
             top: 0;
-            right: 0;
-            background: var(--primary);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0 16px 0 16px;
-            font-weight: 600;
-            font-size: 0.9rem;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), var(--accent-color));
+        }
+
+        .route-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow-lg);
         }
 
         .route-header {
-            font-size: 1.25rem;
+            font-size: 1.35rem;
             font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 1rem;
+            color: var(--primary-color);
+            margin-bottom: 1.25rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
         }
 
         .route-info {
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
         }
 
         .info-label {
             font-weight: 600;
-            color: var(--gray);
+            color: var(--gray-600);
             display: inline-block;
             min-width: 50px;
+            font-size: 0.9rem;
         }
 
         .stages-list {
             list-style: none;
             padding-left: 0;
-            margin-top: 1rem;
+            margin-top: 1.25rem;
         }
 
         .stages-list li {
             padding: 0.75rem 0;
-            border-bottom: 1px solid var(--light-gray);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            position: relative;
+            padding-left: 1.5rem;
         }
 
         .stages-list li:last-child {
             border-bottom: none;
         }
 
-        .stage-icon {
-            color: var(--primary);
-            font-size: 1.1rem;
-            flex-shrink: 0;
+        .stages-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
         }
 
-        .stage-name {
-            flex-grow: 1;
+        .stage-icon {
+            color: var(--primary-color);
+            font-size: 1.1rem;
         }
 
         .error-message {
-            background: #fee2e2;
-            color: #b91c1c;
-            padding: 1.5rem;
-            border-radius: 16px;
+            background: #fff0f3;
+            color: var(--danger-color);
+            padding: 1.25rem;
+            border-radius: var(--border-radius);
             margin: 2rem auto;
-            max-width: 800px;
+            max-width: 600px;
             text-align: center;
             font-weight: 600;
-            box-shadow: var(--card-shadow);
+            border: 1px solid #ffccd5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
         }
 
         .no-results {
-            background: white;
-            padding: 2rem;
-            border-radius: 16px;
             text-align: center;
-            color: var(--gray);
+            padding: 2.5rem;
+            color: var(--gray-600);
             font-size: 1.1rem;
-            box-shadow: var(--card-shadow);
-            max-width: 800px;
-            margin: 0 auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
         }
 
         .no-results i {
             font-size: 2rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
+            color: var(--primary-light);
         }
 
-        .footer {
-            background: white;
-            padding: 1.5rem;
-            margin-top: 3rem;
+        .loading-results {
             text-align: center;
-            color: var(--gray);
-            font-size: 0.9rem;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            padding: 3rem;
+            color: var(--gray-600);
         }
 
+        .loading-results .spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid var(--gray-300);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        /* Modern scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .route-card {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        /* Responsive adjustments */
         @media (max-width: 768px) {
-            .page-header h1 {
-                font-size: 2rem;
-            }
-            
             .search-card {
-                padding: 1.5rem;
+                padding: 1.75rem;
             }
             
             .btn-action {
                 width: 100%;
                 margin-bottom: 0.75rem;
             }
-        }
-
-        @media (max-width: 576px) {
-            .page-header {
-                padding: 2rem 1rem;
-            }
-            
-            .page-header h1 {
-                font-size: 1.75rem;
-            }
             
             .route-header {
-                font-size: 1.1rem;
+                font-size: 1.2rem;
             }
+            
+            .page-header h2 {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* Gradient background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f5f7ff 0%, #f8f9fa 100%);
+            z-index: -1;
         }
     </style>
 </head>
 <body>
 <?php include 'AdminNavbar.php'; ?>
 
-<header class="page-header">
-    <div class="container">
-        <h1>Find Routes Between Stages</h1>
-        <p>Discover available bus routes connecting your desired locations</p>
+<div class="container py-5">
+    <div class="page-header">
+        <h2>Find Bus Routes Between Stages</h2>
+        <p class="text-muted mt-2">Discover the best routes connecting your locations</p>
     </div>
-</header>
 
-<main class="container">
-    <div class="search-container">
-        <div class="search-card">
-            <form id="routeForm" method="GET" action="">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="suggestions-container">
-                            <label for="fromStage" class="form-label">Departure Stage</label>
-                            <input type="text" class="form-control" id="fromStage" name="fromStage" autocomplete="off" required
-                                value="<?= htmlspecialchars($_GET['fromStage'] ?? '') ?>"
-                                placeholder="Enter starting point">
-                            <div id="fromStageList" class="suggestions-list"></div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="suggestions-container">
-                            <label for="toStage" class="form-label">Destination Stage</label>
-                            <input type="text" class="form-control" id="toStage" name="toStage" autocomplete="off" required
-                                value="<?= htmlspecialchars($_GET['toStage'] ?? '') ?>"
-                                placeholder="Enter destination">
-                            <div id="toStageList" class="suggestions-list"></div>
-                        </div>
+    <div class="search-card">
+        <form id="routeForm" method="GET" action="">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="suggestions-container">
+                        <label for="fromStage" class="form-label">
+                            <i class="bi bi-geo-alt"></i> From Stage
+                        </label>
+                        <input type="text" class="form-control" id="fromStage" name="fromStage" autocomplete="off" required
+                            value="<?= htmlspecialchars($_GET['fromStage'] ?? '') ?>" placeholder="Enter starting point">
+                        <div id="fromStageList" class="suggestions-list"></div>
                     </div>
                 </div>
-                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mt-4">
-                    <button type="submit" class="btn btn-primary btn-action">
-                        <i class="bi bi-search"></i> Find Routes
-                    </button>
-                    <button type="button" id="clearBtn" class="btn btn-outline btn-action">
-                        <i class="bi bi-x-circle"></i> Clear
-                    </button>
+                <div class="col-md-6">
+                    <div class="suggestions-container">
+                        <label for="toStage" class="form-label">
+                            <i class="bi bi-geo-alt-fill"></i> To Stage
+                        </label>
+                        <input type="text" class="form-control" id="toStage" name="toStage" autocomplete="off" required
+                            value="<?= htmlspecialchars($_GET['toStage'] ?? '') ?>" placeholder="Enter destination">
+                        <div id="toStageList" class="suggestions-list"></div>
+                    </div>
                 </div>
-            </form>
-        </div>
+            </div>
+            <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mt-4 pt-2">
+                <button type="submit" id="submitBtn" class="btn btn-action btn-submit">
+                    <i class="bi bi-search"></i> Find Routes
+                </button>
+                <button type="button" id="clearBtn" class="btn btn-action btn-clear">
+                    <i class="bi bi-arrow-counterclockwise"></i> Reset
+                </button>
+            </div>
+        </form>
     </div>
 
     <div id="routeResults">
@@ -404,33 +503,38 @@ checkAuth();
         $response = curl_exec($curl);
 
         if (curl_errno($curl)) {
-            echo "<div class='error-message'><i class='bi bi-exclamation-triangle-fill me-2'></i> Error connecting to server: " . htmlspecialchars(curl_error($curl)) . "</div>";
+            echo "<div class='error-message'><i class='bi bi-exclamation-triangle-fill'></i> cURL error: " . htmlspecialchars(curl_error($curl)) . "</div>";
         } else {
             $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             if ($http_code != 200) {
-                echo "<div class='error-message'><i class='bi bi-exclamation-triangle-fill me-2'></i> Server returned an error (HTTP $http_code). Please try again.</div>";
+                echo "<div class='error-message'><i class='bi bi-exclamation-triangle-fill'></i> API returned HTTP code $http_code.</div>";
             } else {
                 $data = json_decode($response, true);
                 if (is_null($data)) {
-                    echo "<div class='no-results'><i class='bi bi-info-circle-fill'></i><p class='mt-3'>No routes found between the specified stages</p></div>";
+                    echo "<div class='error-message'><i class='bi bi-exclamation-triangle-fill'></i> No routes found between the given stages.</div>";
                 } elseif (empty($data)) {
-                    echo "<div class='no-results'><i class='bi bi-info-circle-fill'></i><p class='mt-3'>No routes found between the specified stages</p></div>";
+                    echo "<div class='no-results'>
+                            <i class='bi bi-map'></i>
+                            <div>No routes found between the given stages</div>
+                            <small class='text-muted'>Try different locations or check your spelling</small>
+                          </div>";
                 } else {
                     echo '<div class="row g-4">';
-                    foreach ($data as $route) {
+                    foreach ($data as $index => $route) {
+                        // Add delay to animation
+                        $animationDelay = $index * 0.1;
                         echo '<div class="col-lg-4 col-md-6">';
-                        echo '<div class="route-card">';
-                        echo '<div class="route-badge">Route</div>';
-                        echo '<div class="route-header"><i class="bi bi-bus-front"></i> ' . htmlspecialchars($route['code']) . '</div>';
+                        echo '<div class="route-card" style="animation-delay: '.$animationDelay.'s">';
+                        echo '<div class="route-header"><i class="bi bi-bus-front"></i> Route: ' . htmlspecialchars($route['code']) . '</div>';
                         echo '<div class="route-info">';
                         echo '<p><span class="info-label">From:</span> ' . htmlspecialchars($route['from']) . '</p>';
                         echo '<p><span class="info-label">To:</span> ' . htmlspecialchars($route['to']) . '</p>';
                         echo '</div>';
                         echo '<hr>';
-                        echo '<h6 class="fw-semibold"><i class="bi bi-signpost-split"></i> Route Stages</h6>';
+                        echo '<h6 class="fw-semibold"><i class="bi bi-signpost-split"></i> Stages</h6>';
                         echo '<ul class="stages-list">';
                         foreach ($route['stages'] as $stage) {
-                            echo '<li><i class="bi bi-geo-alt-fill stage-icon"></i><span class="stage-name">' . htmlspecialchars($stage['stageName']) . '</span></li>';
+                            echo '<li><i class="bi bi-dot"></i>' . htmlspecialchars($stage['stageName']) . '</li>';
                         }
                         echo '</ul>';
                         echo '</div>';
@@ -444,13 +548,7 @@ checkAuth();
     }
     ?>
     </div>
-</main>
-
-<footer class="footer">
-    <div class="container">
-        &copy; <?php echo date("Y"); ?> Bus Management System. All rights reserved.
-    </div>
-</footer>
+</div>
 
 <script>
     const API_BASE_URL = "<?php echo $apiBaseUrl; ?>";
@@ -475,6 +573,17 @@ checkAuth();
         }
     }
 
+    function highlightMatch(text, query) {
+        if (!query) return text;
+        const escapedQuery = escapeRegExp(query);
+        const regex = new RegExp(`(${escapedQuery})`, 'gi');
+        return text.replace(regex, '<span class="highlight">$1</span>');
+    }
+
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '');
+    }
+
     function setupAutocomplete(inputId, listId) {
         const input = document.getElementById(inputId);
         const list = document.getElementById(listId);
@@ -487,17 +596,21 @@ checkAuth();
                 return;
             }
             
+            // Show loading state
+            list.innerHTML = '<div class="loading-suggestion"><div class="loading-spinner"></div> Searching...</div>';
+            list.classList.add('show');
+            
             const results = await fetchStages(query);
             if (!Array.isArray(results) || results.length === 0) {
-                list.classList.remove('show');
+                list.innerHTML = '<div class="loading-suggestion">No results found</div>';
                 return;
             }
             
             list.innerHTML = results.map(stage => {
                 const name = typeof stage === 'string' ? stage : stage.stageName || '';
-                return `<div class="suggestion-item">${name}</div>`;
+                return `<div class="suggestion-item">${highlightMatch(name, query)}</div>`;
             }).join('');
-            list.classList.add('show');
+            
             activeIndex = -1;
             
             const items = list.querySelectorAll('.suggestion-item');
@@ -505,6 +618,13 @@ checkAuth();
                 item.addEventListener('click', () => {
                     input.value = item.textContent;
                     list.classList.remove('show');
+                    input.focus();
+                });
+                
+                item.addEventListener('mouseenter', () => {
+                    items.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    activeIndex = index;
                 });
             });
         }, 300));
@@ -540,10 +660,26 @@ checkAuth();
                 list.classList.remove('show');
             }
         });
+        
+        // Show suggestions when input is focused
+        input.addEventListener('focus', async () => {
+            if (input.value.trim() && !list.classList.contains('show')) {
+                const query = input.value.trim();
+                list.innerHTML = '<div class="loading-suggestion"><div class="loading-spinner"></div> Searching...</div>';
+                list.classList.add('show');
+                
+                const results = await fetchStages(query);
+                if (results.length > 0) {
+                    list.innerHTML = results.map(stage => {
+                        const name = typeof stage === 'string' ? stage : stage.stageName || '';
+                        return `<div class="suggestion-item">${highlightMatch(name, query)}</div>`;
+                    }).join('');
+                } else {
+                    list.innerHTML = '<div class="loading-suggestion">No results found</div>';
+                }
+            }
+        });
     }
-
-    setupAutocomplete('fromStage', 'fromStageList');
-    setupAutocomplete('toStage', 'toStageList');
 
     document.getElementById('clearBtn').addEventListener('click', () => {
         document.getElementById('fromStage').value = '';
@@ -553,6 +689,39 @@ checkAuth();
         document.getElementById('routeResults').innerHTML = '';
         window.location.href = window.location.pathname;
     });
+
+    // Form submission with loading state
+    document.getElementById('routeForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const fromStage = document.getElementById('fromStage').value.trim();
+        const toStage = document.getElementById('toStage').value.trim();
+        
+        if (!fromStage || !toStage) {
+            return;
+        }
+        
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.innerHTML = '';
+        submitBtn.classList.add('loading');
+        
+        // Show loading state in results area
+        document.getElementById('routeResults').innerHTML = `
+            <div class="loading-results">
+                <div class="spinner"></div>
+                <p>Finding routes between ${fromStage} and ${toStage}...</p>
+            </div>
+        `;
+        
+        // Submit the form after a small delay to allow the UI to update
+        setTimeout(() => {
+            e.target.submit();
+        }, 100);
+    });
+
+    // Initialize autocomplete for both inputs
+    setupAutocomplete('fromStage', 'fromStageList');
+    setupAutocomplete('toStage', 'toStageList');
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

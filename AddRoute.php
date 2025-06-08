@@ -373,7 +373,13 @@ $apiBaseUrl = $config['api_base_url'];
         }
 
         .autocomplete-item:hover {
-            background-color: var(--gray-100);
+            background-color: var(--gray-300);         
+        }
+
+
+        .search-highlight {
+            font-weight: 600;
+            color: var(--primary);
         }
 
         /* Animations */
@@ -627,6 +633,13 @@ $apiBaseUrl = $config['api_base_url'];
         });
     }
 
+    function highlightMatch(text, query) {
+        if (!query) return text;
+        
+        const regex = new RegExp(`(${query})`, 'gi');
+        return text.replace(regex, '<span class="search-highlight">$1</span>');
+    }
+
     function setupTypeahead(inputElement) {
         let timeout;
         let dropdown;
@@ -667,7 +680,7 @@ $apiBaseUrl = $config['api_base_url'];
                 stages.forEach(stage => {
                     const item = document.createElement('div');
                     item.className = 'autocomplete-item';
-                    item.textContent = stage;
+                    item.innerHTML = highlightMatch(stage, query);
                     item.addEventListener('click', () => {
                         inputElement.value = stage;
                         dropdown.style.display = 'none';
