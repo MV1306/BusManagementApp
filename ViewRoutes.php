@@ -470,7 +470,7 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+<!-- <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
         <a class="navbar-brand" href="#">
             <i class="bi bi-bus-front me-2"></i> Bus Route Manager
@@ -498,7 +498,9 @@ $routesPage = array_slice($filteredRoutes, $start, $limit);
             </ul>
         </div>
     </div>
-</nav>
+</nav> -->
+
+<?php include 'navbar.php'; ?>
 
 <div class="container main-container animate__animated animate__fadeIn">
     <!-- Modern Filter Section at Top -->
