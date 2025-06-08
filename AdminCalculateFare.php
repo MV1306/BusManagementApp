@@ -1,4 +1,9 @@
 <?php
+
+require_once 'AdminAuth.php';
+
+checkAuth();
+
 $config = include('config.php');
 
 $apiBaseUrl = $config['api_base_url'];
@@ -12,6 +17,7 @@ $apiBaseUrl = $config['api_base_url'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        /* Your existing CSS remains unchanged */
         :root {
             --primary-color: #4361ee;
             --primary-hover: #3a56d4;
@@ -169,6 +175,34 @@ $apiBaseUrl = $config['api_base_url'];
             background-color: #e9ecef;
             opacity: 1;
         }
+        
+        /* Add these new styles for search functionality */
+        .search-container {
+            position: relative;
+        }
+        
+        #routeCodeResults {
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            display: none;
+        }
+        
+        .route-option {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .route-option:hover {
+            background-color: var(--light-bg);
+        }
     </style>
 </head>
 <body>
@@ -180,11 +214,12 @@ $apiBaseUrl = $config['api_base_url'];
         <h2><i class="bi bi-calculator-fill"></i> Calculate Bus Fare</h2>
 
         <form id="fareForm">
-            <div class="mb-3">
+            <div class="mb-3 search-container">
                 <label for="routeCode" class="form-label">Route Code</label>
-                <select id="routeCode" name="routeCode" class="form-select" required>
-                    <option value="">Loading route codes...</option>
-                </select>
+                <input type="text" id="routeCode" name="routeCode" class="form-control" 
+                       placeholder="Start typing to search routes..." required
+                       autocomplete="off">
+                <div id="routeCodeResults" class="mt-1"></div>
             </div>
 
             <div class="mb-3">
@@ -202,14 +237,14 @@ $apiBaseUrl = $config['api_base_url'];
             <div class="mb-3">
                 <label for="startStage" class="form-label">Start Stage</label>
                 <select id="startStage" name="startStage" class="form-select" disabled required>
-                    <option value="">Select Route Code first</option>
+                    <option value="">Select a route first</option>
                 </select>
             </div>
 
             <div class="mb-3">
                 <label for="endStage" class="form-label">End Stage</label>
                 <select id="endStage" name="endStage" class="form-select" disabled required>
-                    <option value="">Select Route Code first</option>
+                    <option value="">Select a route first</option>
                 </select>
             </div>
 
@@ -250,7 +285,8 @@ $apiBaseUrl = $config['api_base_url'];
 const API_BASE_URL = "<?php echo $apiBaseUrl; ?>";
 
 document.addEventListener('DOMContentLoaded', function () {
-    const routeCodeSelect = document.getElementById('routeCode');
+    const routeCodeInput = document.getElementById('routeCode');
+    const routeCodeResults = document.getElementById('routeCodeResults');
     const busTypeSelect = document.getElementById('busType');
     const startStageSelect = document.getElementById('startStage');
     const endStageSelect = document.getElementById('endStage');
@@ -261,41 +297,78 @@ document.addEventListener('DOMContentLoaded', function () {
     const totalFareDiv = document.getElementById('totalFare');
     const errorMessageSpan = document.getElementById('errorMessage');
     const calculateBtn = document.getElementById('calculateBtn');
+    let selectedRouteCode = '';
+    let debounceTimer;
 
-    // Load route codes
-    fetch(`${API_BASE_URL}GetRouteCodes`)
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to load route codes');
-            return response.json();
-        })
-        .then(data => {
-            routeCodeSelect.innerHTML = '<option value="">Select Route Code</option>';
-            data.forEach(code => {
-                const option = document.createElement('option');
-                option.value = code;
-                option.textContent = code;
-                routeCodeSelect.appendChild(option);
-            });
-        })
-        .catch(error => {
-            console.error('Error fetching route codes:', error);
-            routeCodeSelect.innerHTML = '<option value="">Error loading route codes</option>';
-        });
-
-    // Handle route code change
-    routeCodeSelect.addEventListener('change', function () {
-        const selectedRouteCode = this.value;
+    // Handle route code input with debounce
+    routeCodeInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const searchText = this.value.trim();
         
+        if (searchText.length < 2) {
+            routeCodeResults.style.display = 'none';
+            return;
+        }
+        
+        debounceTimer = setTimeout(() => {
+            searchRoutes(searchText);
+        }, 300);
+    });
+
+    // Handle clicks outside to close dropdown
+    document.addEventListener('click', function(e) {
+        if (!routeCodeInput.contains(e.target) && !routeCodeResults.contains(e.target)) {
+            routeCodeResults.style.display = 'none';
+        }
+    });
+
+    function searchRoutes(searchText) {
+        fetch(`${API_BASE_URL}SearchRoutes/${encodeURIComponent(searchText)}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to search routes');
+                return response.json();
+            })
+            .then(data => {
+                routeCodeResults.innerHTML = '';
+                
+                if (data.length === 0) {
+                    const noResults = document.createElement('div');
+                    noResults.className = 'route-option';
+                    noResults.textContent = 'No routes found';
+                    routeCodeResults.appendChild(noResults);
+                } else {
+                    data.forEach(route => {
+                        const item = document.createElement('div');
+                        item.className = 'route-option';
+                        item.textContent = route;
+                        item.addEventListener('click', function() {
+                            routeCodeInput.value = route;
+                            selectedRouteCode = route;
+                            routeCodeResults.style.display = 'none';
+                            loadStagesForRoute(route);
+                        });
+                        routeCodeResults.appendChild(item);
+                    });
+                }
+                
+                routeCodeResults.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error searching routes:', error);
+                routeCodeResults.innerHTML = '<div class="route-option">No Routes Found</div>';
+                routeCodeResults.style.display = 'block';
+            });
+    }
+
+    function loadStagesForRoute(routeCode) {
         // Reset and disable stage selects
         startStageSelect.innerHTML = '<option value="">Loading stages...</option>';
         endStageSelect.innerHTML = '<option value="">Loading stages...</option>';
         startStageSelect.disabled = true;
         endStageSelect.disabled = true;
 
-        if (!selectedRouteCode) return;
-
         // Fetch stages for selected route
-        fetch(`${API_BASE_URL}GetRouteStagesByCode/${encodeURIComponent(selectedRouteCode)}`)
+        fetch(`${API_BASE_URL}GetRouteStagesByCode/${encodeURIComponent(routeCode)}`)
             .then(response => {
                 if (!response.ok) throw new Error('Failed to load stages');
                 return response.json();
@@ -328,13 +401,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 startStageSelect.disabled = false;
                 endStageSelect.disabled = false;
             });
-    });
+    }
 
     // Handle form submission
     document.getElementById('fareForm').addEventListener('submit', function (e) {
         e.preventDefault();
 
-        const routeCode = routeCodeSelect.value;
+        const routeCode = selectedRouteCode;
         const busType = busTypeSelect.value;
         const startStage = startStageSelect.value;
         const endStage = endStageSelect.value;
