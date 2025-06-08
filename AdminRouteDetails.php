@@ -34,197 +34,302 @@ if (!$route || !isset($route['id'])) {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Route Details - <?= htmlspecialchars($route['code']) ?></title>
+    <title>Admin - Route Details - <?= htmlspecialchars($route['code']) ?></title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            --secondary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --card-hover-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
         }
         
         body {
-            background-color: #f8f9fa;
+            background-color: #f8f9fb;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
         
-        .route-header-card {
-            background: var(--primary-gradient);
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            box-shadow: var(--card-hover-shadow);
+            transform: translateY(-2px);
+        }
+        
+        .route-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: var(--card-hover-shadow);
             overflow: hidden;
             margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .route-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Q50,80 0,100 Z" fill="rgba(255,255,255,0.1)" /></svg>');
+            background-size: 100% 100%;
+            opacity: 0.5;
+            z-index: -1;
         }
         
         .route-badge {
-            font-size: 1rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            padding: 0.5rem 1rem;
-            background: rgba(255,255,255,0.2);
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 0.4rem 1rem;
+            background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.3);
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
         .location-card {
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(5px);
-            border-radius: 10px;
-            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 1.5rem;
             transition: all 0.3s ease;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            height: 100%;
         }
         
         .location-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.3);
         }
         
         .location-icon {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             color: white;
-            background: rgba(255,255,255,0.2);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .stage-item {
-            background: #e9ecef;
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            margin: 0.5rem 0.5rem 0.5rem 0;
+            background: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            margin: 0 0.75rem 0.75rem 0;
             display: inline-flex;
             align-items: center;
             font-weight: 500;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.03);
         }
         
         .stage-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
         }
         
         .stage-item i {
-            margin-right: 0.5rem;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
         }
         
         .stage-start {
-            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            background: linear-gradient(135deg, #38b000 0%, #008000 100%);
             color: white;
         }
         
         .stage-end {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            background: linear-gradient(135deg, #ef233c 0%, #d90429 100%);
             color: white;
         }
         
         .stage-order-badge {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #3498db;
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            background: var(--accent-color);
             color: white;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            margin-right: 0.5rem;
-            font-size: 0.75rem;
+            margin-right: 0.75rem;
+            font-size: 0.8rem;
             font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
         .stage-start .stage-order-badge {
             background: white;
-            color: #27ae60;
+            color: #008000;
         }
         
         .stage-end .stage-order-badge {
             background: white;
-            color: #c0392b;
+            color: #d90429;
         }
         
         #routeMap {
             height: 500px;
             width: 100%;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            border: none;
             margin: 1.5rem 0;
         }
         
         .back-btn {
             transition: all 0.3s ease;
             font-weight: 500;
-            padding: 0.5rem 1.5rem;
-            border-radius: 50px;
+            padding: 0.6rem 1.5rem;
+            border-radius: 12px;
+            background: white;
+            color: var(--primary-color);
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
         .back-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            background: white;
+            color: var(--secondary-color);
+        }
+        
+        .card-title {
+            font-weight: 600;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title i {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
         }
         
         @media (max-width: 768px) {
-            .route-header-card {
+            .route-header {
                 padding: 1.5rem;
             }
             
             .location-card {
                 margin-bottom: 1rem;
-                width: 100%;
             }
             
             #routeMap {
                 height: 350px;
             }
+            
+            .stage-item {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Floating animation for location cards */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .location-card {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .location-card:nth-child(2n) {
+            animation-delay: 0.5s;
+        }
+        
+        /* Modern scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
         }
     </style>
 </head>
 <body>
     <?php include 'AdminNavbar.php'; ?>
 
-    <div class="container py-4">
+    <div class="container py-5">
         <!-- Route Header Card -->
-        <div class="route-header-card p-4">
+        <div class="route-header p-4 animate__animated animate__fadeIn">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-                <h1 class="h3 mb-3 mb-md-0 fw-bold">
-                    Route Details
-                    <span class="route-badge rounded-pill ms-2">
+                <div>
+                    <h1 class="h3 mb-2 fw-bold">
+                        Route Details
+                    </h1>
+                    <span class="route-badge rounded-pill">
                         <?= htmlspecialchars($route['code']) ?>
                     </span>
-                </h1>
-                <a href="AdminViewRoutes.php" class="btn btn-light back-btn">
+                </div>
+                <a href="AdminViewRoutes.php" class="btn back-btn mt-3 mt-md-0 animate__animated animate__pulse animate__infinite animate__slower">
                     <i class="bi bi-arrow-left me-2"></i>Back to Routes
                 </a>
             </div>
 
-            <div class="row g-4">
+            <div class="row g-4 mt-3">
                 <div class="col-md-6">
-                    <div class="location-card h-100 d-flex align-items-center">
+                    <div class="location-card d-flex align-items-center animate__animated animate__fadeInLeft">
                         <div class="location-icon me-3">
                             <i class="bi bi-geo-alt-fill"></i>
                         </div>
                         <div>
-                            <div class="small text-white-80 fw-semibold">Departure</div>
-                            <div class="h5 mb-0 fw-bold"><?= htmlspecialchars($route['from']) ?></div>
+                            <div class="small text-white-80 fw-semibold">Departure Point</div>
+                            <div class="h4 mb-0 fw-bold"><?= htmlspecialchars($route['from']) ?></div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="location-card h-100 d-flex align-items-center">
+                    <div class="location-card d-flex align-items-center animate__animated animate__fadeInRight">
                         <div class="location-icon me-3">
-                            <i class="bi bi-geo-alt-fill"></i>
+                            <i class="bi bi-pin-map-fill"></i>
                         </div>
                         <div>
-                            <div class="small text-white-80 fw-semibold">Destination</div>
-                            <div class="h5 mb-0 fw-bold"><?= htmlspecialchars($route['to']) ?></div>
+                            <div class="small text-white-80 fw-semibold">Destination Point</div>
+                            <div class="h4 mb-0 fw-bold"><?= htmlspecialchars($route['to']) ?></div>
                         </div>
                     </div>
                 </div>
@@ -232,10 +337,10 @@ if (!$route || !isset($route['id'])) {
         </div>
 
         <!-- Stages Section -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <h5 class="card-title mb-3 fw-semibold">
-                    <i class="bi bi-signpost-2-fill text-primary me-2"></i>
+        <div class="glass-card mb-4 animate__animated animate__fadeInUp">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-4">
+                    <i class="bi bi-signpost-split text-primary"></i>
                     Route Stages
                 </h5>
                 
@@ -247,16 +352,22 @@ if (!$route || !isset($route['id'])) {
                                 $isFirst = ($i === 0);
                                 $isLast = ($i === count($route['stages']) - 1);
                             ?>
-                            <div class="stage-item <?= $isFirst ? 'stage-start' : ($isLast ? 'stage-end' : '') ?>">
+                            <div class="stage-item <?= $isFirst ? 'stage-start' : ($isLast ? 'stage-end' : '') ?> animate__animated animate__fadeIn" style="animation-delay: <?= $i * 0.1 ?>s;">
                                 <span class="stage-order-badge"><?= $stageNumber ?></span>
                                 <?php if ($isFirst): ?>
-                                    <i class="bi bi-flag-fill" title="Start Stage"></i>
+                                    <i class="bi bi-signpost-start-fill" title="Start Stage"></i>
                                 <?php elseif ($isLast): ?>
-                                    <i class="bi bi-flag-fill" title="End Stage"></i>
+                                    <i class="bi bi-signpost-end-fill" title="End Stage"></i>
                                 <?php else: ?>
-                                    <i class="bi bi-geo-alt"></i>
+                                    <i class="bi bi-signpost"></i>
                                 <?php endif; ?>
                                 <?= htmlspecialchars($stage['stageName']) ?>
+                                <!-- <?php if ($stage['latitude'] && $stage['longitude']): ?>
+                                    <span class="ms-2 small opacity-75"><i class="bi bi-geo-alt"></i> <?= round($stage['latitude'], 4) ?>, <?= round($stage['longitude'], 4) ?></span>
+                                <?php endif; ?> -->
+                                <!-- <?php if ($stage['distanceFromStart']) : ?>
+                                    <span class="ms-2 small opacity-75"><i class="bi bi-geo-alt"></i> <?= round($stage['distanceFromStart'], 0) ?> Kms</span>
+                                <?php endif; ?> -->
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
@@ -267,11 +378,11 @@ if (!$route || !isset($route['id'])) {
         </div>
 
         <!-- Map Section -->
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title mb-3 fw-semibold">
-                    <i class="bi bi-map-fill text-primary me-2"></i>
-                    Route Map
+        <div class="glass-card animate__animated animate__fadeInUp">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-4">
+                    <i class="bi bi-map text-primary"></i>
+                    Route Visualization
                 </h5>
                 <div id="routeMap"></div>
             </div>
@@ -305,30 +416,30 @@ if (!$route || !isset($route['id'])) {
                         // Start marker (green)
                         marker = L.marker(latLng, {
                             icon: L.divIcon({
-                                html: `<div style="background: #2ecc70; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${stageNumber}</div>`,
+                                html: `<div style="background: #38b000; border-radius: 12px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">${stageNumber}</div>`,
                                 className: 'custom-div-icon',
-                                iconSize: [30, 30],
-                                iconAnchor: [15, 15]
+                                iconSize: [36, 36],
+                                iconAnchor: [18, 18]
                             })
                         }).bindPopup(`<b>Start (Stage ${stageNumber}):</b> ${stage.stageName}`);
                     } else if (i === stages.length - 1) {
                         // End marker (red)
                         marker = L.marker(latLng, {
                             icon: L.divIcon({
-                                html: `<div style="background: #e74c3c; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${stageNumber}</div>`,
+                                html: `<div style="background: #ef233c; border-radius: 12px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">${stageNumber}</div>`,
                                 className: 'custom-div-icon',
-                                iconSize: [30, 30],
-                                iconAnchor: [15, 15]
+                                iconSize: [36, 36],
+                                iconAnchor: [18, 18]
                             })
                         }).bindPopup(`<b>End (Stage ${stageNumber}):</b> ${stage.stageName}`);
                     } else {
                         // Intermediate markers (blue)
                         marker = L.marker(latLng, {
                             icon: L.divIcon({
-                                html: `<div style="background: #3498db; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${stageNumber}</div>`,
+                                html: `<div style="background: #4361ee; border-radius: 10px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">${stageNumber}</div>`,
                                 className: 'custom-div-icon',
-                                iconSize: [24, 24],
-                                iconAnchor: [12, 12]
+                                iconSize: [32, 32],
+                                iconAnchor: [16, 16]
                             })
                         }).bindPopup(`<b>Stage ${stageNumber}:</b> ${stage.stageName}`);
                     }
@@ -341,11 +452,11 @@ if (!$route || !isset($route['id'])) {
             if (bounds.length > 0) {
                 // Add route path
                 L.polyline(pathCoordinates, {
-                    color: '#00008B',
-                    weight: 4,
+                    color: '#4361ee',
+                    weight: 5,
                     opacity: 0.8,
-                    dashArray: '5, 5',
-                    lineJoin: 'round'
+                    lineJoin: 'round',
+                    dashArray: '8, 8'
                 }).addTo(map);
                 
                 // Fit bounds with some padding
@@ -355,7 +466,7 @@ if (!$route || !isset($route['id'])) {
             // No stages with coordinates - show info
             const infoDiv = document.createElement('div');
             infoDiv.className = 'alert alert-info text-center m-3';
-            infoDiv.innerHTML = 'No map data available for this route';
+            infoDiv.innerHTML = '<i class="bi bi-map me-2"></i>No map data available for this route';
             document.getElementById('routeMap').appendChild(infoDiv);
         }
     </script>

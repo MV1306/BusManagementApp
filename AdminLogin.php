@@ -33,126 +33,188 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Admin Panel</title>
+    <title>Admin - Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         :root {
-            --primary-color: #4361ee;
-            --secondary-color: #3f37c9;
-            --light-bg: #f8f9fa;
-            --dark-text: #212529;
-            --border-radius: 8px;
-            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --dark-color: #1e293b;
+            --light-color: #f8fafc;
+            --gray-color: #94a3b8;
+            --error-color: #ef4444;
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light-bg);
-            height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f1f5f9;
+            min-height: 100vh;
             display: flex;
             align-items: center;
+            justify-content: center;
+            color: var(--dark-color);
         }
 
         .login-container {
-            max-width: 400px;
             width: 100%;
-            margin: 0 auto;
-            padding: 2rem;
+            max-width: 420px;
+            padding: 1rem;
         }
 
         .login-card {
-            border: none;
+            background: white;
             border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            background-color: white;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            border: none;
         }
 
         .login-header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 1.5rem;
+            padding: 2rem 2rem 1rem;
             text-align: center;
         }
 
         .login-header h2 {
-            margin: 0;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        .login-header p {
+            color: var(--gray-color);
+            font-size: 0.875rem;
+        }
+
+        .login-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: rgba(99, 102, 241, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .login-icon i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
         }
 
         .login-body {
-            padding: 2rem;
+            padding: 1.5rem 2rem 2rem;
         }
 
         .form-control {
+            height: 48px;
             border-radius: var(--border-radius);
-            padding: 0.75rem 1rem;
-            border: 1px solid #dee2e6;
-            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            padding: 0.5rem 1rem;
+            transition: var(--transition);
         }
 
         .form-control:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
-        }
-
-        .btn-login {
-            background-color: var(--primary-color);
-            border: none;
-            border-radius: var(--border-radius);
-            padding: 0.75rem;
-            font-weight: 500;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-
-        .btn-login:hover {
-            background-color: var(--secondary-color);
-        }
-        
-        .btn-back {
-            background-color: #6c757d;
-            border: none;
-            border-radius: var(--border-radius);
-            padding: 0.75rem;
-            font-weight: 500;
-            width: 100%;
-            transition: all 0.3s ease;
-            color: white;
-        }
-        
-        .btn-back:hover {
-            background-color: #5a6268;
-            color: white;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
         .input-group-text {
             background-color: transparent;
             border-right: none;
+            color: var(--gray-color);
         }
 
         .input-group .form-control {
             border-left: none;
         }
 
-        .error-message {
-            color: #dc3545;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
+        .btn-login {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            height: 48px;
+            font-weight: 600;
+            width: 100%;
+            transition: var(--transition);
         }
 
-        .footer-text {
-            text-align: center;
-            margin-top: 1rem;
-            color: #6c757d;
-            font-size: 0.875rem;
+        .btn-login:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
         }
-        
+
+        .btn-back {
+            background-color: white;
+            color: var(--dark-color);
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            height: 48px;
+            font-weight: 600;
+            width: 100%;
+            transition: var(--transition);
+        }
+
+        .btn-back:hover {
+            background-color: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .alert {
+            border-radius: var(--border-radius);
+        }
+
+        .form-label {
+            font-weight: 500;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            color: var(--dark-color);
+        }
+
         .button-group {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .floating-input {
+            position: relative;
+        }
+
+        .floating-input label {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            transition: var(--transition);
+            pointer-events: none;
+            color: var(--gray-color);
+            font-size: 0.875rem;
+        }
+
+        .floating-input input:focus + label,
+        .floating-input input:not(:placeholder-shown) + label {
+            transform: translateY(-24px) scale(0.85);
+            background: white;
+            padding: 0 4px;
+            left: 11px;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 576px) {
+            .login-container {
+                padding: 1rem;
+            }
+            
+            .login-header,
+            .login-body {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -160,40 +222,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <h2><i class="bi bi-shield-lock"></i> Admin Login</h2>
+                <div class="login-icon">
+                    <i class="bi bi-shield-lock"></i>
+                </div>
+                <h2>Admin Portal</h2>
+                <p>Enter your credentials to access the dashboard</p>
             </div>
             <div class="login-body">
                 <?php if ($error): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <?php echo htmlspecialchars($error); ?>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-exclamation-circle-fill me-2"></i>
+                            <div><?php echo htmlspecialchars($error); ?></div>
+                        </div>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 <?php endif; ?>
 
                 <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                            <input type="text" class="form-control" id="username" name="username" 
-                                   value="<?php echo htmlspecialchars($username); ?>" 
-                                   placeholder="Enter username" required autofocus>
-                        </div>
+                    <div class="mb-3 floating-input">
+                        <input type="text" class="form-control" id="username" name="username" 
+                               value="<?php echo htmlspecialchars($username); ?>" 
+                               placeholder=" " required autofocus>
+                        <label for="username">Username</label>
                     </div>
-                    <div class="mb-4">
-                        <label for="password" class="form-label">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
-                            <input type="password" class="form-control" id="password" name="password" 
-                                   placeholder="Enter password" required>
-                        </div>
+                    
+                    <div class="mb-3 floating-input">
+                        <input type="password" class="form-control" id="password" name="password" 
+                               placeholder=" " required>
+                        <label for="password">Password</label>
                     </div>
+                    
                     <div class="button-group">
-                        <button type="submit" class="btn btn-primary btn-login">
-                            <i class="bi bi-box-arrow-in-right"></i> Login
+                        <button type="submit" class="btn btn-login">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
                         </button>
                         <a href="Index.php" class="btn btn-back">
-                            <i class="bi bi-arrow-left"></i> Go Back
+                            <i class="bi bi-arrow-left me-2"></i> Back to Home
                         </a>
                     </div>
                 </form>
@@ -211,6 +276,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (!username || !password) {
                 e.preventDefault();
                 alert('Please fill in both username and password');
+            }
+        });
+        
+        // Add floating label functionality
+        document.querySelectorAll('.floating-input input').forEach(input => {
+            // Trigger the check on page load if there's a value
+            if (input.value) {
+                input.dispatchEvent(new Event('input'));
             }
         });
     </script>
