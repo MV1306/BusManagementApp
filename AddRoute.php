@@ -5,7 +5,6 @@ checkAuth();
 $config = include('config.php');
 $apiBaseUrl = $config['api_base_url'];
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -260,7 +259,6 @@ $apiBaseUrl = $config['api_base_url'];
             padding: 0.75rem 1rem;
             border-bottom: 1px solid var(--gray-200);
             vertical-align: middle;
-            position: relative;
             background-color: white;
         }
 
@@ -350,19 +348,17 @@ $apiBaseUrl = $config['api_base_url'];
 
         /* Autocomplete styles */
         .autocomplete-dropdown {
-            position: absolute;
+            position: absolute; /* positioned relative to the body */
             background: white;
-            width: calc(100% - 2px);
             max-height: 200px;
             overflow-y: auto;
             border: 1px solid var(--gray-300);
-            border-top: none;
-            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            border-radius: var(--border-radius);
             box-shadow: var(--shadow-sm);
-            z-index: 1000;
+            z-index: 10000;
             display: none;
-            left: 0;
-            top: 100%;
+            /* Added for smooth keyboard navigation */
+            scroll-behavior: smooth;
         }
 
         .autocomplete-item {
@@ -372,10 +368,11 @@ $apiBaseUrl = $config['api_base_url'];
             font-size: 0.875rem;
         }
 
-        .autocomplete-item:hover {
-            background-color: var(--gray-300);         
+        .autocomplete-item:hover,
+        .autocomplete-item.highlighted { /* Added highlighted class */
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
         }
-
 
         .search-highlight {
             font-weight: 600;
@@ -508,8 +505,7 @@ $apiBaseUrl = $config['api_base_url'];
                         </tr>
                     </thead>
                     <tbody id="stagesTableBody">
-                        <!-- Stage rows will be added here -->
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
             
@@ -542,15 +538,19 @@ $apiBaseUrl = $config['api_base_url'];
 <script>
     const API_BASE_URL = "<?php echo $apiBaseUrl; ?>";
     let stageCounter = 0;
+    // Map to hold dropdowns for each input, keyed by input element
+    const dropdownMap = new WeakMap();
 
     // Initialize with empty state
     document.addEventListener('DOMContentLoaded', function() {
         toggleEmptyState();
-        setupAutocomplete();
         // Add one empty stage row by default
         setTimeout(() => {
             addStageRow();
         }, 300);
+        // Setup autocomplete for initial inputs (from, to)
+        setupTypeahead(document.getElementById('from'));
+        setupTypeahead(document.getElementById('to'));
     });
 
     function toggleEmptyState() {
@@ -568,7 +568,7 @@ $apiBaseUrl = $config['api_base_url'];
         const tbody = document.getElementById('stagesTableBody');
         const stageName = stage.stageName || '';
         const stageOrder = stage.stageOrder !== undefined ? stage.stageOrder : (tbody.children.length + 1);
-        const distance = stage.distanceFromStart !== undefined ? stage.distanceFromStart : '';
+        const distance = stage.distanceFromStart !== undefined ? stage.distanceFromStart : 0;
 
         const row = document.createElement('tr');
         row.className = 'animate-in';
@@ -589,6 +589,13 @@ $apiBaseUrl = $config['api_base_url'];
 
     function removeStageRow(button) {
         const row = button.closest('tr');
+        const inputElement = row.querySelector('.stageName');
+        const dropdown = dropdownMap.get(inputElement);
+        if (dropdown) {
+            dropdown.remove(); // Remove the associated dropdown from the body
+            dropdownMap.delete(inputElement); // Clean up the map
+        }
+
         row.classList.add('animate-in');
         row.style.animation = 'fadeIn 0.3s reverse forwards';
         
@@ -611,26 +618,17 @@ $apiBaseUrl = $config['api_base_url'];
         const url = `${API_BASE_URL}SearchStages/${encodeURIComponent(query)}`;
         try {
             const res = await fetch(url);
-            if (!res.ok) return [];
-            return await res.json();
-        } catch {
+            const resText = await res.text();
+            console.log(resText);
+            if (!res.ok || resText.includes("No stages found")) {                
+                console.error(`API Error: ${res.status} - ${resText}`);
+                return [];
+            }
+            return await JSON.parse(resText);
+        } catch(error) {
+            console.error('Fetch error:', error);
             return [];
         }
-    }
-
-    function setupAutocomplete() {
-        // Setup autocomplete for starting point
-        const fromInput = document.getElementById('from');
-        setupTypeahead(fromInput);
-        
-        // Setup autocomplete for destination
-        const toInput = document.getElementById('to');
-        setupTypeahead(toInput);
-        
-        // Setup autocomplete for existing stage name inputs
-        document.querySelectorAll('.stageName').forEach(input => {
-            setupTypeahead(input);
-        });
     }
 
     function highlightMatch(text, query) {
@@ -643,65 +641,164 @@ $apiBaseUrl = $config['api_base_url'];
     function setupTypeahead(inputElement) {
         let timeout;
         let dropdown;
-        
-        // Create dropdown element if it doesn't exist
-        if (!inputElement.nextElementSibling || !inputElement.nextElementSibling.classList.contains('autocomplete-dropdown')) {
+        let activeItem = -1; // To keep track of highlighted item for keyboard navigation
+
+        // Use WeakMap to store and retrieve the dropdown associated with this input
+        if (dropdownMap.has(inputElement)) {
+            dropdown = dropdownMap.get(inputElement);
+        } else {
             dropdown = document.createElement('div');
             dropdown.className = 'autocomplete-dropdown';
-            
-            // For table cells, append to the cell instead of parent
-            if (inputElement.closest('td')) {
-                inputElement.closest('td').appendChild(dropdown);
-            } else {
-                inputElement.parentNode.appendChild(dropdown);
-            }
-        } else {
-            dropdown = inputElement.nextElementSibling;
+            document.body.appendChild(dropdown); // Append to body
+            dropdownMap.set(inputElement, dropdown);
         }
         
+        const positionDropdown = () => {
+            const rect = inputElement.getBoundingClientRect();
+            dropdown.style.left = rect.left + window.scrollX + 'px';
+            dropdown.style.top = rect.bottom + window.scrollY + 'px';
+            dropdown.style.width = rect.width + 'px';
+        };
+
+        const highlightItem = (index) => {
+            const items = dropdown.querySelectorAll('.autocomplete-item');
+            items.forEach((item, i) => {
+                if (i === index) {
+                    item.classList.add('highlighted');
+                    scrollIntoViewIfNeeded(item, dropdown); // Ensure highlighted item is visible
+                } else {
+                    item.classList.remove('highlighted');
+                }
+            });
+        };
+
+        const scrollIntoViewIfNeeded = (element, parent) => {
+            if (!element || !parent) return;
+
+            const parentRect = parent.getBoundingClientRect();
+            const elementRect = element.getBoundingClientRect();
+
+            if (elementRect.top < parentRect.top) {
+                parent.scrollTop -= (parentRect.top - elementRect.top);
+            } else if (elementRect.bottom > parentRect.bottom) {
+                parent.scrollTop += (elementRect.bottom - parentRect.bottom);
+            }
+        };
+
+        const selectActiveItem = () => {
+            const items = dropdown.querySelectorAll('.autocomplete-item');
+            if (activeItem >= 0 && activeItem < items.length) {
+                inputElement.value = items[activeItem].dataset.value; // Use dataset value for selection
+                dropdown.style.display = 'none';
+                activeItem = -1; // Reset active item
+                inputElement.focus(); // Keep focus on the input
+            } else if (items.length === 1) { // If only one item and no active selection, select it
+                 inputElement.value = items[0].dataset.value;
+                 dropdown.style.display = 'none';
+                 activeItem = -1;
+                 inputElement.focus();
+            }
+        };
+
+
         inputElement.addEventListener('input', async () => {
             clearTimeout(timeout);
             dropdown.innerHTML = '';
-            
+            dropdown.style.display = 'none'; // Hide immediately on new input
+            activeItem = -1; // Reset active item on new input
+
             const query = inputElement.value.trim();
             if (query.length < 2) {
-                dropdown.style.display = 'none';
                 return;
             }
             
             timeout = setTimeout(async () => {
                 const stages = await fetchStages(query);
                 if (stages.length === 0) {
-                    dropdown.style.display = 'none';
                     return;
                 }
                 
-                dropdown.innerHTML = '';
                 stages.forEach(stage => {
                     const item = document.createElement('div');
                     item.className = 'autocomplete-item';
                     item.innerHTML = highlightMatch(stage, query);
-                    item.addEventListener('click', () => {
+                    item.dataset.value = stage; // Store the full stage name
+                    item.addEventListener('click', (event) => {
+                        // Prevent blur from hiding dropdown immediately
+                        event.preventDefault(); 
                         inputElement.value = stage;
                         dropdown.style.display = 'none';
+                        activeItem = -1;
+                        inputElement.focus(); // Keep focus on the input
                     });
                     dropdown.appendChild(item);
                 });
                 
+                positionDropdown(); // Position before displaying
                 dropdown.style.display = 'block';
             }, 300);
         });
         
-        // Hide dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (e.target !== inputElement && !dropdown.contains(e.target)) {
-                dropdown.style.display = 'none';
+        inputElement.addEventListener('focus', () => {
+            // Reposition and show if there are existing results or if query is ready
+            const query = inputElement.value.trim();
+            if (query.length >= 2 && dropdown.children.length > 0) {
+                positionDropdown();
+                dropdown.style.display = 'block';
             }
         });
-        
-        inputElement.addEventListener('focus', () => {
-            if (dropdown.children.length > 0) {
-                dropdown.style.display = 'block';
+
+        inputElement.addEventListener('blur', () => {
+            // Use a small delay to allow click on dropdown item to register
+            // and to check if focus moves to the dropdown itself
+            setTimeout(() => {
+                // Check if the focus is NOT on the input AND NOT within the dropdown
+                if (document.activeElement !== inputElement && !dropdown.contains(document.activeElement)) {
+                    dropdown.style.display = 'none';
+                    activeItem = -1; // Reset active item when dropdown is hidden
+                }
+            }, 150); // Increased timeout slightly
+        });
+
+        // Keyboard navigation for dropdown
+        inputElement.addEventListener('keydown', (event) => {
+            const items = dropdown.querySelectorAll('.autocomplete-item');
+            if (items.length === 0 || dropdown.style.display === 'none') {
+                return;
+            }
+
+            switch (event.key) {
+                case 'ArrowDown':
+                    event.preventDefault(); // Prevent cursor movement in input
+                    activeItem = (activeItem + 1) % items.length;
+                    highlightItem(activeItem);
+                    break;
+                case 'ArrowUp':
+                    event.preventDefault(); // Prevent cursor movement in input
+                    activeItem = (activeItem - 1 + items.length) % items.length;
+                    highlightItem(activeItem);
+                    break;
+                case 'Enter':
+                    event.preventDefault(); // Prevent form submission
+                    selectActiveItem();
+                    break;
+                case 'Escape':
+                    event.preventDefault();
+                    dropdown.style.display = 'none';
+                    activeItem = -1;
+                    break;
+            }
+        });
+
+        // Reposition dropdown on scroll/resize
+        window.addEventListener('scroll', () => {
+            if (dropdown.style.display === 'block') {
+                positionDropdown();
+            }
+        });
+        window.addEventListener('resize', () => {
+            if (dropdown.style.display === 'block') {
+                positionDropdown();
             }
         });
     }
@@ -757,18 +854,23 @@ $apiBaseUrl = $config['api_base_url'];
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error(response.text());
+                // Read response as text to get potential error message from API
+                return response.text().then(text => {
+                    throw new Error(text || 'Failed to add route.');
+                });
             }
             return response.text();
         })
         .then(text => {
             if (text.toLowerCase().includes('success')) {
                 showMessage(text, 'success');
+                // Cleanup all active dropdowns before redirecting
+                // dropdownMap.forEach(dropdown => dropdown.remove());
                 setTimeout(() => {
                     window.location.href = 'AdminViewRoutes.php';
                 }, 1500);
             } else {
-                showMessage(text || 'Failed to add route.', 'error');
+                showMessage(text || 'Failed to add route. Unexpected response.', 'error');
             }
         })
         .catch(err => {
