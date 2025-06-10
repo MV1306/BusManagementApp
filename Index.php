@@ -552,6 +552,19 @@ footer {
                         </a>
                     </div>
                 </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-icon">
+                            <i class="fas fa-ticket"></i>
+                        </div>
+                        <h3 class="card-title">Tickets</h3>
+                        <p class="card-text">Purchase tickets and view the purchased tickets.</p>
+                        <a href="TicketsHome.php" class="btn">
+                            <i class="fas fa-ticket"></i> Tickets
+                        </a>
+                    </div>
+                </div>
                 
                 <div class="card">
                     <div class="card-body">
@@ -595,7 +608,6 @@ footer {
         </section>
     </main>
 
-    <!-- Chatbot Container -->
     <div class="chatbot-container">
         <button class="chatbot-toggle" id="chatbotToggle">
             <i class="fas fa-robot"></i>
@@ -613,8 +625,7 @@ footer {
                 </div>
             </div>
             <div class="chatbot-messages" id="chatbotMessages">
-                <!-- Messages will appear here -->
-            </div>
+                </div>
             <div class="chatbot-input-area">
                 <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Type your message...">
                 <button class="chatbot-send-btn" id="chatbotSend">
@@ -978,222 +989,159 @@ footer {
                     return;
                 }
                 
-                // For Calculate Fare, after toStage, ask for passengerCount
-                if (conversationState.currentAction === 'calculateFare' && 
-                    currentField === 'toStage' && 
-                    conversationState.currentFieldIndex < conversationState.inputFields.length) {
+                // If all inputs are collected, execute the action
+                if (conversationState.currentFieldIndex < conversationState.inputFields.length) {
+                    const nextField = conversationState.inputFields[conversationState.currentFieldIndex];
+                    let prompt = "";
+                    let type = "text";
+                    let placeholder = "";
                     
-                    addBotMessage("How many passengers are traveling?");
-                    createInputField('passengerCount', 'number', 'Enter number (1-10)');
-                    return;
+                    switch(nextField) {
+                        case 'fromStage':
+                            prompt = "Please enter your starting point:";
+                            placeholder = "Enter starting stage";
+                            break;
+                        case 'toStage':
+                            prompt = "Please enter your destination:";
+                            placeholder = "Enter destination stage";
+                            break;
+                        case 'passengerCount':
+                            prompt = "How many passengers are traveling?";
+                            type = "number";
+                            placeholder = "Enter number of passengers";
+                            break;
+                        default:
+                            prompt = "Please provide the " + nextField + ":";
+                            placeholder = "Enter " + nextField;
+                    }
+                    addBotMessage(prompt);
+                    createInputField(nextField, type, placeholder);
+                } else {
+                    // All inputs collected, execute the action
+                    conversationState.waitingForInput = false;
+                    executeAction(conversationState.currentAction, conversationState.collectedInputs);
                 }
-                
-                // For Find Routes Between Stages, after fromStage, ask for toStage
-                if (conversationState.currentAction === 'findRoutesBetweenStages' && 
-                    currentField === 'fromStage' && 
-                    conversationState.currentFieldIndex < conversationState.inputFields.length) {
-                    
-                    addBotMessage("Now please enter your destination:");
-                    createInputField('toStage', 'text', 'Enter destination stage');
-                    return;
-                }
-                
-                // All inputs collected, call the appropriate API
-                callApiWithCollectedInputs();
             }
             
-            async function callApiWithCollectedInputs() {
+            function addUserMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message user-message';
+                messageDiv.textContent = message;
+                chatbotMessages.appendChild(messageDiv);
+                scrollToBottom();
+            }
+            
+            function addBotMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message bot-message';
+                messageDiv.textContent = message;
+                chatbotMessages.appendChild(messageDiv);
+                scrollToBottom();
+            }
+            
+            function addBotHtmlResponse(htmlContent) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message bot-message api-response';
+                messageDiv.innerHTML = htmlContent;
+                chatbotMessages.appendChild(messageDiv);
+                scrollToBottom();
+            }
+            
+            function scrollToBottom() {
+                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+            }
+            
+            async function executeAction(action, inputs) {
+                addBotMessage("Processing your request...");
                 const loadingDiv = document.createElement('div');
                 loadingDiv.className = 'loading-spinner';
                 chatbotMessages.appendChild(loadingDiv);
                 scrollToBottom();
-                
+
                 try {
-                    let response, data;
-                    
-                    switch (conversationState.currentAction) {
+                    let url;
+                    let data = {};
+                    let response;
+                    let result;
+
+                    switch (action) {
                         case 'getRouteByCode':
-                            response = await fetch(API_ENDPOINTS.getRouteByCode + conversationState.collectedInputs.routeCode);
-                            data = await response.json();
-                            displayRouteDetails(data);
+                            url = API_ENDPOINTS.getRouteByCode + inputs.routeCode;
+                            response = await fetch(url);
+                            result = await response.json();
+                            displayRouteDetails(result);
                             break;
-                            
                         case 'findRoutesBetweenStages':
-                            const fromStage = encodeURIComponent(conversationState.collectedInputs.fromStage);
-                            const toStage = encodeURIComponent(conversationState.collectedInputs.toStage);
-                            response = await fetch(API_ENDPOINTS.findRoutesBetweenStages + fromStage + '/' + toStage);
-                            data = await response.json();
-                            displayRoutesBetweenStages(data, conversationState.collectedInputs.fromStage, conversationState.collectedInputs.toStage);
+                            url = API_ENDPOINTS.findRoutesBetweenStages + `${inputs.fromStage}/${inputs.toStage}`;
+                            response = await fetch(url);
+                            result = await response.json();
+                            displayFoundRoutes(result);
                             break;
-                            
                         case 'calculateFare':
-                            const routeCode = encodeURIComponent(conversationState.collectedInputs.routeCode);
-                            const busType = encodeURIComponent(conversationState.collectedInputs.busType);
-                            const fromStage1 = encodeURIComponent(conversationState.collectedInputs.fromStage);
-                            const toStage1 = encodeURIComponent(conversationState.collectedInputs.toStage);
-                            response = await fetch(API_ENDPOINTS.calculateFare + routeCode + '/' + busType + '/' + fromStage1 + '/' + toStage1);
-                            data = await response.json();
-                            displayFareCalculation(data, conversationState.collectedInputs);
+                            url = API_ENDPOINTS.calculateFare + 
+                                `${inputs.routeCode}/${inputs.busType}/${inputs.fromStage}/${inputs.toStage}/${inputs.passengerCount}`;
+                            response = await fetch(url);
+                            result = await response.json();
+                            displayCalculatedFare(result);
                             break;
+                        default:
+                            addBotMessage("I don't know how to handle that request.");
                     }
                 } catch (error) {
-                    console.error('API call failed:', error);
-                    addBotMessage("Sorry, there was an error processing your request. Please try again.");
+                    console.error('API Error:', error);
+                    addBotMessage("I apologize, but there was an error processing your request. Please try again later.");
                 } finally {
                     loadingDiv.remove();
-                    
-                    // Reset conversation state
-                    conversationState = {
-                        waitingForInput: false,
-                        currentAction: null,
-                        inputFields: []
-                    };
-                    
-                    // Show menu options again
-                    setTimeout(() => {
-                        addBotMessage("What else can I help you with?");
-                        showMenuOptions();
-                    }, 500);
+                    showMenuOptions(); // Always show menu options after an action
                 }
             }
-            
-            function displayRouteDetails(routeData) {
-                if (!routeData || !routeData.code) {
-                    addBotMessage("Sorry, I couldn't find details for that route. Please check the route code and try again.");
-                    return;
-                }
-                
-                const responseDiv = document.createElement('div');
-                responseDiv.className = 'api-response';
-                
-                // Create stops list with distance
-                const stopsList = routeData.stages.map(stage => 
-                    `<li>
-                        <strong>${stage.stageName}</strong> 
-                        ${stage.distanceFromStart > 0 ? `(Distance: ${stage.distanceFromStart} km)` : ''}
-                    </li>`
-                ).join('');
-                
-                responseDiv.innerHTML = `
-                    <h4><i class="fas fa-route"></i> Route ${routeData.code}</h4>
-                    <p><strong>From:</strong> ${routeData.from}</p>
-                    <p><strong>To:</strong> ${routeData.to}</p>
-                    <p><strong><i class="fas fa-map-marker-alt"></i> Stops:</strong></p>
-                    <ol>${stopsList}</ol>
-                `;
-                
-                chatbotMessages.appendChild(responseDiv);
-                scrollToBottom();
-            }
-        
-        function displayRoutesBetweenStages(routesData, fromStage, toStage) {
-            const responseDiv = document.createElement('div');
-            responseDiv.className = 'api-response';
-            
-            if (!routesData || routesData.length === 0) {
-                responseDiv.innerHTML = `
-                    <p>No direct routes found between ${fromStage} and ${toStage}.</p>
-                    <p>You might need to consider transfers or alternative transportation.</p>
-                `;
-                chatbotMessages.appendChild(responseDiv);
-                scrollToBottom();
-                return;
-            }
-            
-            let routesHtml = '';
-            
-            routesData.forEach(route => {
-                // Find the order of from and to stages
-                let fromOrder, toOrder;
-                route.stages.forEach(stage => {
-                    if (stage.stageName === fromStage) fromOrder = stage.stageOrder;
-                    if (stage.stageName === toStage) toOrder = stage.stageOrder;
-                });
-                
-                // Calculate stops between
-                const stopsBetween = Math.abs(fromOrder - toOrder) - 1;
-                
-                routesHtml += `
-                    <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px; margin-bottom: 10px;">
-                        <div style="font-weight: bold; color: #145da0;">${route.code} - ${route.from} to ${route.to}</div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 6px;">
-                            <span>🚏 ${stopsBetween} stops between</span>
-                        </div>
-                        <div style="margin-top: 8px;">
-                            <strong>Direction:</strong> ${fromOrder < toOrder ? route.from + ' → ' + route.to : route.to + ' → ' + route.from}
-                        </div>
-                    </div>
-                `;
-            });
-            
-            responseDiv.innerHTML = `
-                <h4>🔍 Routes between ${fromStage} and ${toStage}</h4>
-                <div style="margin-top: 12px;">
-                    ${routesHtml}
-                </div>
-            `;
-            
-            chatbotMessages.appendChild(responseDiv);
-            scrollToBottom();
-        }
-        
-        function displayFareCalculation(fareData, inputs) {
-            if (!fareData || fareData.fare === undefined) {
-                addBotMessage("Sorry, I couldn't calculate the fare for that route. Please check your inputs and try again.");
-                return;
-            }
-            
-            const passengerCount = parseInt(inputs.passengerCount) || 1;
-            const totalFare = fareData.fare * passengerCount;
-            
-            const responseDiv = document.createElement('div');
-            responseDiv.className = 'api-response';
-            
-            responseDiv.innerHTML = `
-                <h4>💰 Fare Calculation</h4>
-                <p><strong>Route:</strong> ${inputs.routeCode} (${inputs.busType})</p>
-                <p><strong>From:</strong> ${inputs.fromStage}</p>
-                <p><strong>To:</strong> ${inputs.toStage}</p>
-                <p><strong>Passengers:</strong> ${passengerCount}</p>
-                <div style="margin-top: 12px; background: #f0f7ff; padding: 12px; border-radius: 8px;">
-                    <div style="font-size: 1.5rem; font-weight: bold; color: #145da0; text-align: center;">
-                        ₹${fareData.fare} <small style="font-size: 1rem;">per passenger</small>
-                    </div>
-                    <div style="font-size: 1.5rem; font-weight: bold; color: #0b2e6a; text-align: center; margin-top: 8px;">
-                        ₹${totalFare} <small style="font-size: 1rem;">total</small>
-                    </div>
-                    <div style="text-align: center; margin-top: 4px;">Estimated Fare</div>
-                </div>
-            `;
-            
-            chatbotMessages.appendChild(responseDiv);
-            scrollToBottom();
-        }
-        
-        function addUserMessage(text) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message user-message';
-            messageDiv.textContent = text;
-            chatbotMessages.appendChild(messageDiv);
-            scrollToBottom();
-        }
-        
-        function addBotMessage(text) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message bot-message';
-            messageDiv.textContent = text;
-            chatbotMessages.appendChild(messageDiv);
-            scrollToBottom();
-        }
-        
-        function scrollToBottom() {
-            // Small delay to ensure DOM is updated
-            setTimeout(() => {
-                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-            }, 50);
-        }
-    });
-</script>
 
+            function displayRouteDetails(data) {
+                if (data && data.routeCode) {
+                    let html = `<h4><i class="fas fa-route"></i> Route Details for ${data.routeCode} - ${data.routeName}</h4>`;
+                    if (data.stages && data.stages.length > 0) {
+                        html += `<h5>Stages:</h5><ul>`;
+                        data.stages.forEach(stage => {
+                            html += `<li>${stage.stageName} (Order: ${stage.stageOrder})</li>`;
+                        });
+                        html += `</ul>`;
+                    } else {
+                        html += `<p>No stages found for this route.</p>`;
+                    }
+                    addBotHtmlResponse(html);
+                } else {
+                    addBotMessage("Route not found or invalid route code.");
+                }
+            }
+
+            function displayFoundRoutes(data) {
+                if (data && data.length > 0) {
+                    let html = `<h4><i class="fas fa-search"></i> Routes found from ${conversationState.collectedInputs.fromStage} to ${conversationState.collectedInputs.toStage}:</h4><ul>`;
+                    data.forEach(route => {
+                        html += `<li><strong>${route.routeCode}</strong> - ${route.routeName}</li>`;
+                    });
+                    html += `</ul>`;
+                    addBotHtmlResponse(html);
+                } else {
+                    addBotMessage(`No direct routes found from ${conversationState.collectedInputs.fromStage} to ${conversationState.collectedInputs.toStage}.`);
+                }
+            }
+
+            function displayCalculatedFare(data) {
+                if (data && data.fare !== undefined) {
+                    let html = `<h4><i class="fas fa-calculator"></i> Fare Calculation Result</h4>`;
+                    html += `<p><strong>Route:</strong> ${conversationState.collectedInputs.routeCode}</p>`;
+                    html += `<p><strong>Bus Type:</strong> ${conversationState.collectedInputs.busType}</p>`;
+                    html += `<p><strong>From:</strong> ${conversationState.collectedInputs.fromStage}</p>`;
+                    html += `<p><strong>To:</strong> ${conversationState.collectedInputs.toStage}</p>`;
+                    html += `<p><strong>Passengers:</strong> ${conversationState.collectedInputs.passengerCount}</p>`;
+                    html += `<p><strong>Total Fare:</strong> <span style="font-size: 1.2rem; font-weight: bold; color: var(--success);">$${data.fare.toFixed(2)}</span></p>`;
+                    addBotHtmlResponse(html);
+                } else {
+                    addBotMessage("Could not calculate fare. Please check the provided details and try again.");
+                }
+            }
+        });
+    </script>
 </body>
 </html>
