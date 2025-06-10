@@ -759,7 +759,7 @@
                 $('#passengerModal').removeClass('show');
                 
                 // Extract Booking ID from the response string
-                const bookingIdMatch = response.match(/Booking ID - (\w{8}-\w{4}-\w{4}-\w{4}-\w{12})/);
+                const bookingIdMatch = response.match(/Booking Reference ID - ([A-Z0-9]+)/);
                 const bookingId = bookingIdMatch ? bookingIdMatch[1] : 'N/A';
 
                 // Update the fareResult section to show success message
