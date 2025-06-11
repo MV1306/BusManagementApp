@@ -246,6 +246,7 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
             border: 1px solid rgba(0, 0, 0, 0.05);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer; /* Indicate it's clickable */
         }
         
         .ticket-card:hover {
@@ -281,9 +282,6 @@
         
         .ticket-body {
             padding: 1.5rem;
-        }
-        
-        .ticket-details {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.2rem;
@@ -345,36 +343,6 @@
         
         .ticket-status.redeemed .status-dot {
             background-color: var(--gray);
-        }
-        
-        .ticket-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .ticket-btn {
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .ticket-btn.print {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        .ticket-btn.cancel {
-            background-color: var(--light-gray);
-            color: var(--dark);
-        }
-        
-        .ticket-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
         }
         
         /* Info message styles */
@@ -445,15 +413,6 @@
                 gap: 1rem;
                 align-items: flex-start;
             }
-            
-            .ticket-actions {
-                width: 100%;
-            }
-            
-            .ticket-btn {
-                flex: 1;
-                padding: 0.6rem;
-            }
         }
 
         @media (max-width: 480px) {
@@ -499,7 +458,7 @@
                 </div>
 
                 <div class="form-group icon-input">
-                    <input type="tel" id="searchInput" class="form-control" placeholder="Enter 10-digit Mobile Number" required>
+                    <input type="tel" id="searchInput" autocomplete="off" class="form-control" placeholder="Enter 10-digit Mobile Number" required>
                     <i id="inputIcon" class="fas fa-mobile-alt"></i>
                 </div>
 
@@ -607,7 +566,7 @@
                         </div>`);
                 } else {
                     // This would be your actual API endpoint for booking ID search
-                    // apiUrl = `${apiBase}/GetTicketById/${searchValue}`;
+                    // For now, we'll indicate it's not implemented, but you'd use a specific endpoint here
                     ticketResultDiv.html(`
                         <div class="info-message error">
                             <i class="fas fa-times-circle"></i>
@@ -625,7 +584,7 @@
                         </div>`);
                 } else {
                     // This would be your actual API endpoint for date search
-                    // apiUrl = `${apiBase}/GetTicketsByDate/${searchValue}`;
+                    // For now, we'll indicate it's not implemented
                     ticketResultDiv.html(`
                          <div class="info-message error">
                             <i class="fas fa-times-circle"></i>
@@ -648,65 +607,40 @@
                             tickets.forEach(ticket => {
                                 const bookingDate = new Date(ticket.bookingDate);
                                 const formattedDate = bookingDate.toLocaleDateString('en-IN', {
-                                    year: 'numeric', month: 'long', day: 'numeric'
-                                });
-                                const formattedTime = bookingDate.toLocaleTimeString('en-IN', {
-                                    hour: '2-digit', minute: '2-digit'
+                                    year: 'numeric', month: 'short', day: 'numeric'
                                 });
                                 
                                 const statusClass = ticket.isRedeemed ? 'redeemed' : 'active';
                                 const statusText = ticket.isRedeemed ? 'Used' : 'Active';
 
                                 ticketsHtml += `
-                                    <div class="ticket-card">
+                                    <div class="ticket-card" data-booking-id="${ticket.ticketID}">
                                         <div class="ticket-header">
                                             <h3>
-                                                <i class="fas fa-bus"></i> ${ticket.routeCode} • ${ticket.busType}
+                                                <i class="fas fa-bus"></i> ${ticket.routeCode}
                                             </h3>
                                             <span class="badge"><strong>${ticket.bookingRefId}</strong></span>
                                         </div>
                                         
                                         <div class="ticket-body">
-                                            <div class="ticket-details">
-                                                <div class="detail-group">
-                                                    <span class="detail-label">Passenger Name</span>
-                                                    <span class="detail-value">${ticket.userName}</span>
-                                                </div>
-                                                
-                                                <div class="detail-group">
-                                                    <span class="detail-label">From</span>
-                                                    <span class="detail-value">${ticket.fromStage}</span>
-                                                </div>
-                                                
-                                                <div class="detail-group">
-                                                    <span class="detail-label">To</span>
-                                                    <span class="detail-value">${ticket.toStage}</span>
-                                                </div>
-                                                
-                                                <div class="detail-group">
-                                                    <span class="detail-label">Booking Date</span>
-                                                    <span class="detail-value">${formattedDate} at ${formattedTime}</span>
-                                                </div>
-                                                
-                                                <div class="detail-group">
-                                                    <span class="detail-label">Passengers</span>
-                                                    <span class="detail-value">${ticket.passengers}</span>
-                                                </div>
-                                                
-                                                <div class="detail-group">
-                                                    <span class="detail-label">Fare per Passenger</span>
-                                                    <span class="detail-value">₹${ticket.fare.toFixed(2)}</span>
-                                                </div>
-                                                
-                                                <div class="detail-group">
-                                                    <span class="detail-label">Total Fare</span>
-                                                    <span class="detail-value primary large">₹${ticket.totalFare.toFixed(2)}</span>
-                                                </div>
-                                                
-                                                <div class="detail-group">
-                                                    <span class="detail-label">Contact</span>
-                                                    <span class="detail-value">${ticket.mobileNo}<br>${ticket.email || 'N/A'}</span>
-                                                </div>
+                                            <div class="detail-group">
+                                                <span class="detail-label">From</span>
+                                                <span class="detail-value">${ticket.fromStage}</span>
+                                            </div>
+                                            
+                                            <div class="detail-group">
+                                                <span class="detail-label">To</span>
+                                                <span class="detail-value">${ticket.toStage}</span>
+                                            </div>
+                                            
+                                            <div class="detail-group">
+                                                <span class="detail-label">Booking Date</span>
+                                                <span class="detail-value">${formattedDate}</span>
+                                            </div>
+                                            
+                                            <div class="detail-group">
+                                                <span class="detail-label">Passengers</span>
+                                                <span class="detail-value">${ticket.passengers}</span>
                                             </div>
                                         </div>
                                         
@@ -715,22 +649,21 @@
                                                 <span class="status-dot"></span>
                                                 <span>${statusText}</span>
                                             </div>
-                                            
-                                            <div class="ticket-actions">
-                                                <button class="ticket-btn print">
-                                                    <i class="fas fa-print"></i> Print
-                                                </button>
-                                                ${!ticket.isRedeemed ? `
-                                                <button class="ticket-btn cancel">
-                                                    <i class="fas fa-times"></i> Cancel
-                                                </button>
-                                                ` : ''}
+                                            <div>
+                                                <small class="text-muted">Click for full details</small>
                                             </div>
                                         </div>
                                     </div>
                                 `;
                             });
                             ticketResultDiv.html(ticketsHtml);
+
+                            // Attach click event to newly loaded ticket cards
+                            $('.ticket-card').on('click', function() {
+                                const bookingId = $(this).data('booking-id');
+                                window.location.href = `TicketDetails.php?id=${bookingId}`;
+                            });
+
                         } else {
                             ticketResultDiv.html(`
                                  <div class="info-message">
