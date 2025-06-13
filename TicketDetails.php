@@ -24,9 +24,15 @@
             --dark: #212529;
             --gray: #6c757d;
             --light-gray: #e9ecef;
-            --success: #4bb543;
-            --warning: #f8961e;
-            --danger: #f72585;
+            
+            /* Consistent Category Colors with SearchTickets.php */
+            --active-color: #28a745; /* Green */
+            --active-color-dark: #228b22;
+            --redeemed-color: #6f42c1; /* Muted Purple */
+            --redeemed-color-dark: #5b369c;
+            --cancelled-color: #dc3545; /* Red */
+            --cancelled-color-dark: #b02a37;
+
             --card-bg: rgba(255, 255, 255, 0.98);
             --ticket-bg: linear-gradient(135deg, rgba(76, 201, 240, 0.03) 0%, rgba(67, 97, 238, 0.03) 100%);
         }
@@ -99,7 +105,8 @@
             padding: 2rem;
         }
         
-        .ticket-card { /* Using similar styling for the single ticket view */
+        /* Dynamic ticket card styling based on status */
+        .ticket-card { 
             background: var(--ticket-bg);
             border-radius: 14px;
             padding: 0;
@@ -109,13 +116,24 @@
             border: 1px solid rgba(0, 0, 0, 0.05);
         }
         
-        .ticket-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        .ticket-card .ticket-header { /* Base style for all ticket headers */
             color: white;
             padding: 1.2rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            /* Default background, will be overridden by specific status classes */
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); 
+        }
+
+        .ticket-card.active .ticket-header {
+            background: linear-gradient(135deg, var(--active-color) 0%, var(--active-color-dark) 100%);
+        }
+        .ticket-card.redeemed .ticket-header {
+            background: linear-gradient(135deg, var(--redeemed-color) 0%, var(--redeemed-color-dark) 100%);
+        }
+        .ticket-card.cancelled .ticket-header {
+            background: linear-gradient(135deg, var(--cancelled-color) 0%, var(--cancelled-color-dark) 100%);
         }
         
         .ticket-header h3 {
@@ -135,15 +153,15 @@
             font-weight: 500;
         }
         
-        .ticket-details-grid { /* Renamed for clarity in this file */
+        .ticket-details-grid { 
             padding: 1.5rem;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjusted for more details */
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
             gap: 1.5rem;
         }
         
         .detail-group {
-            margin-bottom: 0; /* No margin-bottom if using grid gap */
+            margin-bottom: 0; 
         }
         
         .detail-label {
@@ -175,7 +193,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            flex-wrap: wrap; 
         }
         
         .ticket-status {
@@ -184,27 +202,44 @@
             gap: 8px;
             font-size: 0.9rem;
             font-weight: 500;
+            /* Default color, will be overridden */
+            color: var(--dark); 
         }
         
         .ticket-status .status-dot {
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background-color: var(--success);
+            /* Default color, will be overridden */
+            background-color: var(--gray); 
         }
         
+        /* Status dot colors based on classes applied to .ticket-status */
+        .ticket-status.active {
+            color: var(--active-color);
+        }
         .ticket-status.active .status-dot {
-            background-color: var(--success);
+            background-color: var(--active-color);
         }
         
+        .ticket-status.redeemed {
+            color: var(--redeemed-color);
+        }
         .ticket-status.redeemed .status-dot {
-            background-color: var(--gray);
+            background-color: var(--redeemed-color);
+        }
+
+        .ticket-status.cancelled {
+            color: var(--cancelled-color);
+        }
+        .ticket-status.cancelled .status-dot {
+            background-color: var(--cancelled-color);
         }
         
         .ticket-actions {
             display: flex;
             gap: 10px;
-            flex-wrap: wrap; /* Allow buttons to wrap */
+            flex-wrap: wrap; 
         }
         
         .ticket-btn {
@@ -223,10 +258,14 @@
         }
         
         .ticket-btn.cancel {
-            background-color: var(--light-gray);
-            color: var(--dark);
+            background-color: var(--cancelled-color); /* Use cancelled-color for consistency */
+            color: white; /* White text for better contrast on red */
         }
 
+        .ticket-btn.cancel:hover {
+            background-color: var(--cancelled-color-dark); /* Darker red on hover */
+        }
+        
         .ticket-btn.back {
             background-color: var(--gray);
             color: white;
@@ -260,12 +299,12 @@
         }
         
         .info-message.error {
-            border-color: var(--danger);
-            background-color: rgba(247, 37, 133, 0.03);
+            border-color: var(--cancelled-color); /* Use consistent cancelled color for errors */
+            background-color: rgba(220, 53, 69, 0.03); /* Red background tint */
         }
 
         .info-message.error i {
-            color: var(--danger);
+            color: var(--cancelled-color); /* Red icon for errors */
         }
         
         /* Loading spinner */
@@ -304,7 +343,7 @@
             
             .ticket-actions {
                 width: 100%;
-                justify-content: flex-start; /* Align buttons to start */
+                justify-content: flex-start; 
             }
             
             .ticket-btn {
@@ -364,12 +403,18 @@
 <script>
     $(document).ready(function() {
         const apiBase = "<?php echo rtrim($apiBaseUrl, '/'); ?>";
-        const ticketId = "<?php echo $ticketId; ?>"; // Now correctly named ticketId
+        const ticketId = "<?php echo $ticketId; ?>"; 
         const ticketDetailsContent = $('#ticketDetailsContent');
 
-        if (ticketId) {
+        // Function to fetch and display ticket details
+        function fetchTicketDetails() {
+            if (!ticketId) {
+                // If ticketId is not provided from PHP, the initial error message is already shown.
+                return;
+            }
+
             $.ajax({
-                url: `${apiBase}/GetTicketById/${ticketId}`, // Assumed API endpoint to fetch by TicketId
+                url: `${apiBase}/GetTicketById/${ticketId}`, 
                 method: 'GET',
                 success: function(ticket) {
                     if (ticket) {
@@ -381,32 +426,47 @@
                             hour: '2-digit', minute: '2-digit'
                         });
                         
-                        const statusClass = ticket.isRedeemed ? 'redeemed' : 'active';
-                        const statusText = ticket.isRedeemed ? 'Used' : 'Active';
+                        // Determine status based on API flags, giving precedence to cancelled
+                        let statusClass;
+                        let statusText;
+
+                        if (ticket.isCancelled) {
+                            statusClass = 'cancelled';
+                            statusText = 'Cancelled';
+                        } else if (ticket.isRedeemed) {
+                            statusClass = 'redeemed';
+                            statusText = 'Used';
+                        } else {
+                            statusClass = 'active';
+                            statusText = 'Active';
+                        }
+
+                        // Debugging log
+                        console.log(`Ticket ID: ${ticket.ticketID}, isRedeemed: ${ticket.isRedeemed}, isCancelled: ${ticket.isCancelled}, Final Status Class: ${statusClass}`);
 
                         const ticketHtml = `
-                            <div class="ticket-card">
+                            <div class="ticket-card ${statusClass}">
                                 <div class="ticket-header">
                                     <h3>
-                                        <i class="fas fa-bus"></i> ${ticket.routeCode} • ${ticket.busType}
+                                        <i class="fas fa-bus"></i> ${ticket.routeCode || 'N/A'} • ${ticket.busType || 'N/A'}
                                     </h3>
-                                    <span class="badge"><strong>ID: ${ticket.ticketId}</strong> | Ref: ${ticket.bookingRefId}</span>
+                                    <span class="badge"><strong>Ref.ID: ${ticket.bookingRefId || 'N/A'}</strong></span>
                                 </div>
                                 
                                 <div class="ticket-details-grid">
                                     <div class="detail-group">
                                         <span class="detail-label">Passenger Name</span>
-                                        <span class="detail-value">${ticket.userName}</span>
+                                        <span class="detail-value">${ticket.userName || 'N/A'}</span>
                                     </div>
                                     
                                     <div class="detail-group">
                                         <span class="detail-label">From</span>
-                                        <span class="detail-value">${ticket.fromStage}</span>
+                                        <span class="detail-value">${ticket.fromStage || 'N/A'}</span>
                                     </div>
                                     
                                     <div class="detail-group">
                                         <span class="detail-label">To</span>
-                                        <span class="detail-value">${ticket.toStage}</span>
+                                        <span class="detail-value">${ticket.toStage || 'N/A'}</span>
                                     </div>
                                     
                                     <div class="detail-group">
@@ -416,32 +476,27 @@
                                     
                                     <div class="detail-group">
                                         <span class="detail-label">Passengers</span>
-                                        <span class="detail-value">${ticket.passengers}</span>
+                                        <span class="detail-value">${ticket.passengers || 'N/A'}</span>
                                     </div>
                                     
                                     <div class="detail-group">
                                         <span class="detail-label">Fare per Passenger</span>
-                                        <span class="detail-value">₹${ticket.fare.toFixed(2)}</span>
+                                        <span class="detail-value">₹${(ticket.fare || 0).toFixed(2)}</span>
                                     </div>
                                     
                                     <div class="detail-group">
                                         <span class="detail-label">Total Fare</span>
-                                        <span class="detail-value primary large">₹${ticket.totalFare.toFixed(2)}</span>
+                                        <span class="detail-value primary large">₹${(ticket.totalFare || 0).toFixed(2)}</span>
                                     </div>
                                     
                                     <div class="detail-group">
                                         <span class="detail-label">Contact Mobile</span>
-                                        <span class="detail-value">${ticket.mobileNo}</span>
+                                        <span class="detail-value">${ticket.mobileNo || 'N/A'}</span>
                                     </div>
                                     
                                     <div class="detail-group">
                                         <span class="detail-label">Contact Email</span>
                                         <span class="detail-value">${ticket.email || 'N/A'}</span>
-                                    </div>
-                                    
-                                    <div class="detail-group">
-                                        <span class="detail-label">Seat Number(s)</span>
-                                        <span class="detail-value">${ticket.seatNumbers || 'N/A'}</span>
                                     </div>
                                 </div>
                                 
@@ -452,11 +507,12 @@
                                     </div>
                                     
                                     <div class="ticket-actions">
-                                        <button class="ticket-btn print">
+                                        <button class="ticket-btn print" id="printTicketBtn">
                                             <i class="fas fa-print"></i> Print
                                         </button>
-                                        ${!ticket.isRedeemed ? `
-                                        <button class="ticket-btn cancel">
+                                        
+                                        ${!ticket.isRedeemed && !ticket.isCancelled ? `
+                                        <button class="ticket-btn cancel" id="cancelTicketBtn" data-ref-id="${ticket.bookingRefId}">
                                             <i class="fas fa-times"></i> Cancel Ticket
                                         </button>
                                         ` : ''}
@@ -465,6 +521,46 @@
                             </div>
                         `;
                         ticketDetailsContent.html(ticketHtml);
+
+                        // Attach event listener for the cancel button
+                        if (!ticket.isRedeemed && !ticket.isCancelled) {
+                            $('#cancelTicketBtn').on('click', function() {
+                                const bookingRefId = $(this).data('ref-id');
+                                if (confirm(`Are you sure you want to cancel ticket ${bookingRefId}? This action cannot be undone.`)) {
+                                    cancelTicket(bookingRefId);
+                                }
+                            });
+                        }
+                        
+                        // Attach event listener for the print button (if needed, this can open a print-friendly view)
+                        $('#printTicketBtn').on('click', function() {
+                            // Example: open a new window with a simplified print view
+                            const printWindow = window.open('', '_blank');
+                            printWindow.document.write('<html><head><title>Print Ticket</title>');
+                            // Include minimal CSS for printing
+                            printWindow.document.write('<style>body{font-family: Arial, sans-serif; margin: 20px;} .ticket-print-area{border: 1px solid #ccc; padding: 20px; max-width: 600px; margin: 0 auto;} h1{color: #333;} p{margin: 5px 0;} strong{font-weight: bold;} table{width: 100%; border-collapse: collapse; margin-top: 20px;} th, td{border: 1px solid #eee; padding: 8px; text-align: left;}.status{font-weight: bold; padding: 5px 10px; border-radius: 5px; display: inline-block;}.active-status{background-color: #d4edda; color: #155724;}.redeemed-status{background-color: #e2e3e5; color: #495057;}.cancelled-status{background-color: #f8d7da; color: #721c24;}</style>');
+                            printWindow.document.write('</head><body>');
+                            printWindow.document.write('<div class="ticket-print-area">');
+                            printWindow.document.write(`<h1>Bus Ticket Details</h1>`);
+                            printWindow.document.write(`<p><strong>Ref. ID:</strong> ${ticket.bookingRefId || 'N/A'}</p>`);
+                            printWindow.document.write(`<p><strong>Route:</strong> ${ticket.routeCode || 'N/A'} - ${ticket.busType || 'N/A'}</p>`);
+                            printWindow.document.write(`<p><strong>Passenger:</strong> ${ticket.userName || 'N/A'}</p>`);
+                            printWindow.document.write(`<p><strong>From:</strong> ${ticket.fromStage || 'N/A'}</p>`);
+                            printWindow.document.write(`<p><strong>To:</strong> ${ticket.toStage || 'N/A'}</p>`);
+                            printWindow.document.write(`<p><strong>Date & Time:</strong> ${formattedDate} at ${formattedTime}</p>`);
+                            printWindow.document.write(`<p><strong>Passengers:</strong> ${ticket.passengers || 'N/A'}</p>`);
+                            printWindow.document.write(`<p><strong>Fare per Passenger:</strong> ₹${(ticket.fare || 0).toFixed(2)}</p>`);
+                            printWindow.document.write(`<p><strong>Total Fare:</strong> ₹${(ticket.totalFare || 0).toFixed(2)}</p>`);
+                            printWindow.document.write(`<p><strong>Contact Mobile:</strong> ${ticket.mobileNo || 'N/A'}</p>`);
+                            printWindow.document.write(`<p><strong>Contact Email:</strong> ${ticket.email || 'N/A'}</p>`);
+                            printWindow.document.write(`<p><strong>Status:</strong> <span class="status ${statusClass}-status">${statusText}</span></p>`);
+                            printWindow.document.write('</div>');
+                            printWindow.document.write('</body></html>');
+                            printWindow.document.close();
+                            printWindow.print();
+                        });
+
+
                     } else {
                         ticketDetailsContent.html(`
                             <div class="info-message error">
@@ -480,11 +576,71 @@
                         <div class="info-message error">
                             <i class="fas fa-exclamation-circle"></i>
                             <p>Error loading ticket details.</p>
-                            <small class="text-muted">Please try again later or contact support.</small>
+                            <small class="text-muted">Please try again later or contact support. (Status: ${xhr.status})</small>
                         </div>`);
                 }
             });
         }
+
+        // Function to handle ticket cancellation
+        function cancelTicket(bookingRefId) {
+            // Show loading or confirmation UI
+            if (!confirm("Are you sure you want to cancel this ticket? This action cannot be undone.")) {
+                return; // User cancelled
+            }
+
+            // Display a temporary loading message or spinner
+            const originalContent = ticketDetailsContent.html();
+            ticketDetailsContent.html(`
+                <div class="info-message">
+                    <i class="fas fa-spinner spinner"></i>
+                    <p>Attempting to cancel ticket ${bookingRefId}...</p>
+                    <small>Please wait, this may take a moment.</small>
+                </div>
+            `);
+
+            $.ajax({
+                url: `${apiBase}/CancelTicket/${bookingRefId}`,
+                method: 'PUT', // Assuming POST for state-changing operations
+                success: function(response) {
+                    if (response.success) { // Assuming API returns { success: true, message: "Ticket cancelled successfully" }
+                        ticketDetailsContent.html(`
+                            <div class="info-message">
+                                <i class="fas fa-check-circle" style="color: var(--active-color);"></i>
+                                <p>Ticket ${bookingRefId} has been successfully cancelled!</p>
+                                <small>The details will now reflect the cancelled status.</small>
+                            </div>
+                        `);
+                        // Re-fetch ticket details to reflect the updated status
+                        setTimeout(fetchTicketDetails, 2000); // Fetch after 2 seconds to show message
+                    } else {
+                        // Assuming API returns { success: false, message: "Reason for failure" }
+                        ticketDetailsContent.html(`
+                            <div class="info-message error">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p>Failed to cancel ticket ${bookingRefId}.</p>
+                                <small>${response.message || 'An unknown error occurred.'}</small>
+                            </div>
+                        `);
+                        setTimeout(() => { ticketDetailsContent.html(originalContent); }, 3000); // Restore original after delay
+                    }
+                },
+                error: function(xhr) {
+                    console.error("Cancellation API Error:", xhr);
+                    ticketDetailsContent.html(`
+                        <div class="info-message error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>Error during cancellation attempt for ${bookingRefId}.</p>
+                            <small>Server responded with status: ${xhr.status}. Please try again.</small>
+                        </div>
+                    `);
+                    setTimeout(() => { ticketDetailsContent.html(originalContent); }, 3000); // Restore original after delay
+                }
+            });
+        }
+
+        // Initial fetch when page loads
+        fetchTicketDetails();
     });
 </script>
 
