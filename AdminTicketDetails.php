@@ -1,5 +1,6 @@
 <?php
-    if (session_status() === PHP_SESSION_NONE) session_start();
+    require_once 'AdminAuth.php';
+    checkAuth();
     $config = include('config.php');
     $apiBaseUrl = $config['api_base_url'];
 
@@ -372,7 +373,7 @@
 </head>
 <body>
 
-<?php include 'navbar.php'; ?>
+<?php include 'AdminNavbar.php'; ?>
 
 <div class="container">
     <div class="card">
@@ -384,7 +385,7 @@
                 <div class="info-message error">
                     <i class="fas fa-exclamation-triangle"></i>
                     <p>No ticket ID provided.</p>
-                    <small class="text-muted">Please go back to the <a href="AdminSearchTickets.php">View Tickets</a> page and select a ticket.</small>
+                    <small class="text-muted">Please go back to the <a href="SearchTickets.php">View Tickets</a> page and select a ticket.</small>
                 </div>
             <?php else: ?>
                 <div class="info-message">
@@ -394,7 +395,7 @@
             <?php endif; ?>
         </div>
         <div class="card-footer" style="text-align: center; padding-bottom: 2rem;">
-            <button class="ticket-btn back" onclick="window.location.href='AdminSearchTickets.php'">
+            <button class="ticket-btn back" onclick="window.location.href='SearchTickets.php'">
                 <i class="fas fa-arrow-left"></i> Back to Search Tickets
             </button>
         </div>

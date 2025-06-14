@@ -1,18 +1,21 @@
 <?php
-    if (session_status() === PHP_SESSION_NONE) session_start();
+    require_once 'AdminAuth.php';
+    checkAuth();
     $config = include('config.php');
     $apiBaseUrl = $config['api_base_url'];
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Redeem Bus Ticket</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
-        /* Reusing your existing CSS variables and general styles */
         :root {
             --primary: #4361ee;
             --secondary: #3f37c9;
@@ -190,7 +193,7 @@
             padding: 1.5rem;
             border-radius: 10px;
             margin-top: 1.5rem;
-            display: none; /* Hidden by default */
+            display: none;
             animation: fadeIn 0.5s ease;
         }
 
@@ -224,6 +227,53 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* QR Scanner Styles */
+        .qr-scanner-container {
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+        
+        #qr-reader {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        #qr-reader-results {
+            text-align: center;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+        
+        .toggle-method {
+            text-align: center;
+            margin: 1rem 0;
+        }
+        
+        .toggle-method-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .toggle-method-btn:hover {
+            color: var(--secondary);
+        }
+        
+        .error-message {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .container {
@@ -240,7 +290,7 @@
 </head>
 <body>
 
-<?php include 'navbar.php'; // Assuming you have a navbar.php file for consistent navigation ?>
+<?php include 'AdminNavbar.php'; ?>
 
 <div class="container">
     <div class="card">
@@ -248,37 +298,121 @@
             <h2><i class="fas fa-ticket-alt"></i> Redeem Your Bus Ticket</h2>
         </div>
         <div class="card-body">
-            <div class="form-group">
-                <label for="bookingId">Booking ID</label>
-                <div class="icon-input">
-                    <i class="fas fa-barcode"></i>
-                    <input type="text" id="bookingId" class="form-control" placeholder="Enter your 10-digit Booking ID" required>
+            <div class="toggle-method">
+                <button id="toggleMethodBtn" class="toggle-method-btn">
+                    <i class="fas fa-qrcode"></i> Scan QR Code Instead
+                </button>
+            </div>
+            
+            <!-- Manual Input Section -->
+            <div id="manualInputSection">
+                <div class="form-group">
+                    <label for="bookingId">Booking ID</label>
+                    <div class="icon-input">
+                        <i class="fas fa-barcode"></i>
+                        <input type="text" id="bookingId" class="form-control" placeholder="Enter your Booking ID" required>
+                    </div>
+                    <div id="bookingIdError" class="error-message">Please enter a valid booking ID.</div>
                 </div>
-                <div id="bookingIdError" class="error-message">Please enter a valid 10-digit booking ID.</div>
+            </div>
+            
+            <!-- QR Scanner Section -->
+            <div id="qrScannerSection" class="qr-scanner-container">
+                <div id="qr-reader"></div>
+                <div id="qr-reader-results"></div>
             </div>
             
             <button id="redeemBtn" class="btn btn-primary">
                 <i class="fas fa-check-circle"></i> Redeem Ticket
             </button>
             
-            <div id="responseMessage" class="message-box" style="display: none;">
-                </div>
+            <div id="responseMessage" class="message-box" style="display: none;"></div>
         </div>
     </div>
 </div>
 
 <script>
-    const apiBase = "<?php echo $apiBaseUrl; ?>"; 
+    const apiBase = "<?php echo $apiBaseUrl; ?>";  
+    let html5QrCode;
+    let isScannerActive = false;
 
-    // Function to validate booking ID (example: 10 digits/characters, adjust as per your actual ID format)
+    // Function to validate booking ID
     function validateBookingId(bookingId) {
-        // Assuming your booking ID is a 10-character alphanumeric string,
-        // or a specific UUID format if that's what your API returns.
-        // For the UUID you are returning in BuyTicket success message, it's 36 characters including hyphens.
-        // Adjust this regex based on your actual booking ID format.
-        return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(bookingId);
+        return bookingId.length === 10;
     }
 
+
+    // Toggle between manual input and QR scanner
+    $('#toggleMethodBtn').on('click', function() {
+        const $manualSection = $('#manualInputSection');
+        const $qrSection = $('#qrScannerSection');
+        
+        if ($manualSection.is(':visible')) {
+            // Switch to QR scanner
+            $manualSection.hide();
+            $qrSection.show();
+            $(this).html('<i class="fas fa-keyboard"></i> Enter Manually Instead');
+            
+            // Initialize and start QR scanner
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("qr-reader");
+            }
+            
+            const qrScannerConfig = { 
+                fps: 10,
+                qrbox: { width: 250, height: 250 }
+            };
+            
+            html5QrCode.start(
+                { facingMode: "environment" },
+                qrScannerConfig,
+                onQrScanSuccess,
+                onQrScanError
+            ).then(() => {
+                isScannerActive = true;
+            }).catch(err => {
+                console.error("Unable to start QR scanner:", err);
+                $('#qr-reader-results').text("Unable to access camera. Please check permissions.");
+            });
+        } else {
+            // Switch to manual input
+            $manualSection.show();
+            $qrSection.hide();
+            $(this).html('<i class="fas fa-qrcode"></i> Scan QR Code Instead');
+            
+            // Stop QR scanner if active
+            if (html5QrCode && isScannerActive) {
+                html5QrCode.stop().then(() => {
+                    isScannerActive = false;
+                }).catch(err => {
+                    console.error("Unable to stop QR scanner:", err);
+                });
+            }
+        }
+    });
+
+    // Handle successful QR scan
+    function onQrScanSuccess(decodedText, decodedResult) {
+        // Validate the scanned data
+        if (validateBookingId(decodedText)) {
+            $('#bookingId').val(decodedText);
+            $('#qr-reader-results').html('<i class="fas fa-check-circle" style="color: var(--success);"></i> Valid QR code scanned');
+            
+            // Automatically attempt redemption after 1 second
+            setTimeout(() => {
+                $('#redeemBtn').click();
+            }, 1000);
+        } else {
+            $('#qr-reader-results').html('<i class="fas fa-exclamation-circle" style="color: var(--danger);"></i> Invalid QR code format');
+        }
+    }
+
+    // Handle QR scan errors
+    function onQrScanError(errorMessage) {
+        console.log("QR Scan Error:", errorMessage);
+    }
+
+    // Redeem ticket function
     $('#redeemBtn').on('click', function() {
         const bookingId = $('#bookingId').val().trim();
         const $responseMessage = $('#responseMessage');
@@ -303,16 +437,14 @@
 
         // API call to redeem the ticket
         $.ajax({
-            url: `${apiBase}RedeemTicket/${bookingId}`, // Example API endpoint for redemption
-            method: "POST", // Typically redemption would be a POST or PUT
-            contentType: "application/json", // If your API expects JSON even for simple POSTs
+            url: `${apiBase}RedeemTicket/${bookingId}`,
+            method: "PUT",
+            contentType: "application/json",
             success: function(response) {
                 let statusMsg = '';
                 let messageClass = 'success';
                 let iconClass = 'fas fa-check-circle';
 
-                // Assuming your API returns a clear success message or object
-                // You might need to adjust this based on the actual API response
                 if (response && response.message) {
                     statusMsg = response.message;
                 } else {
@@ -325,8 +457,15 @@
                     <p>This ticket is now marked as used.</p>
                 `).show();
                 
-                // Optionally clear the input field after successful redemption
+                // Clear the input field after successful redemption
                 $('#bookingId').val('');
+                
+                // If scanner is active, stop it after successful redemption
+                if (html5QrCode && isScannerActive) {
+                    html5QrCode.stop().then(() => {
+                        isScannerActive = false;
+                    });
+                }
             },
             error: function(xhr) {
                 let errorMsg = "Failed to redeem ticket. Please try again.";
@@ -336,12 +475,10 @@
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMsg = xhr.responseJSON.message;
                 } else if (xhr.responseText) {
-                    // Try to parse if responseText is JSON but not set as application/json
                     try {
                         const errorObj = JSON.parse(xhr.responseText);
                         if (errorObj.message) errorMsg = errorObj.message;
                     } catch (e) {
-                        // Fallback to plain text if parsing fails
                         errorMsg = xhr.responseText;
                     }
                 }
@@ -360,6 +497,15 @@
                 }, 500);
             }
         });
+    });
+
+    // Clean up scanner when page is unloaded
+    $(window).on('beforeunload', function() {
+        if (html5QrCode && isScannerActive) {
+            html5QrCode.stop().then(() => {
+                isScannerActive = false;
+            });
+        }
     });
 </script>
 
