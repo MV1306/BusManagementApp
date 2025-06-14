@@ -3,6 +3,7 @@
     $config = include('config.php');
     $apiBaseUrl = $config['api_base_url'];
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,15 +24,15 @@
             --danger: #f72585;
             --card-bg: rgba(255, 255, 255, 0.95);
         }
-        
+       
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        
-        body { 
-            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; 
+       
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             color: var(--dark);
@@ -39,27 +40,28 @@
             padding: 0;
             margin: 0;
         }
-        
+       
         .container {
             max-width: 800px;
             margin: 2rem auto;
             padding: 0 1rem;
         }
-        
+       
         .card {
             background: var(--card-bg);
             border-radius: 20px;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            overflow: visible;
             margin-bottom: 2rem;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
         }
-        
+       
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
-        
+       
         .card-header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
@@ -68,7 +70,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+       
         .card-header h2 {
             font-weight: 700;
             font-size: 1.8rem;
@@ -76,7 +78,7 @@
             position: relative;
             z-index: 1;
         }
-        
+       
         .card-header::before {
             content: "";
             position: absolute;
@@ -87,16 +89,17 @@
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
             transform: rotate(30deg);
         }
-        
+       
         .card-body {
             padding: 2rem;
+            overflow: visible;
         }
-        
+       
         .form-group {
             margin-bottom: 1.5rem;
             position: relative;
         }
-        
+       
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
@@ -104,7 +107,7 @@
             color: var(--dark);
             font-size: 0.95rem;
         }
-        
+       
         .form-control {
             width: 100%;
             padding: 0.8rem 1rem;
@@ -115,13 +118,13 @@
             background-color: white;
             color: var(--dark);
         }
-        
+       
         .form-control:focus {
             outline: none;
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.2);
         }
-        
+       
         select.form-control {
             appearance: none;
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -129,7 +132,7 @@
             background-position: right 1rem center;
             background-size: 1em;
         }
-        
+       
         .btn {
             display: inline-block;
             padding: 0.8rem 1.5rem;
@@ -144,7 +147,7 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
+       
         .btn-primary {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
@@ -152,29 +155,29 @@
             padding: 1rem;
             font-size: 1.1rem;
         }
-        
+       
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
         }
-        
+       
         .btn-primary:disabled {
             background: #adb5bd;
             transform: none;
             box-shadow: none;
             cursor: not-allowed;
         }
-        
+       
         .btn-secondary {
             background: var(--light);
             color: var(--dark);
             border: 1px solid #dee2e6;
         }
-        
+       
         .btn-secondary:hover {
             background: #e9ecef;
         }
-        
+       
         .fare-result {
             background: linear-gradient(135deg, rgba(76, 201, 240, 0.1) 0%, rgba(67, 97, 238, 0.1) 100%);
             border-radius: 10px;
@@ -183,19 +186,19 @@
             border-left: 5px solid var(--accent);
             animation: fadeIn 0.5s ease;
         }
-        
+       
         .fare-result h3 {
             color: var(--primary);
             margin-bottom: 0.5rem;
             font-size: 1.2rem;
         }
-        
+       
         .fare-details {
             display: flex;
             justify-content: space-between;
             margin-bottom: 0.5rem;
         }
-        
+       
         .fare-total {
             font-size: 1.5rem;
             font-weight: 700;
@@ -204,16 +207,16 @@
             padding-top: 1rem;
             border-top: 1px dashed #dee2e6;
         }
-        
+       
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+       
         .icon-input {
             position: relative;
         }
-        
+       
         .icon-input i {
             position: absolute;
             left: 1rem;
@@ -221,17 +224,17 @@
             transform: translateY(-50%);
             color: var(--primary);
         }
-        
+       
         .icon-input .form-control {
             padding-left: 3rem;
         }
-        
+       
         .route-info {
             display: flex;
             gap: 1rem;
             margin-bottom: 1.5rem;
         }
-        
+       
         .route-info-item {
             flex: 1;
             background: rgba(67, 97, 238, 0.1);
@@ -239,19 +242,19 @@
             border-radius: 10px;
             text-align: center;
         }
-        
+       
         .route-info-item i {
             color: var(--primary);
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
         }
-        
+       
         .route-info-item span {
             display: block;
             font-weight: 600;
             color: var(--secondary);
         }
-        
+       
         /* Modal Styles */
         .modal {
             display: none;
@@ -267,12 +270,12 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-        
+       
         .modal.show {
             display: flex;
             opacity: 1;
         }
-        
+       
         .modal-content {
             background-color: white;
             border-radius: 15px;
@@ -283,27 +286,27 @@
             transition: transform 0.3s ease;
             overflow: hidden;
         }
-        
+       
         .modal.show .modal-content {
             transform: translateY(0);
         }
-        
+       
         .modal-header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             padding: 1.5rem;
             text-align: center;
         }
-        
+       
         .modal-header h3 {
             margin: 0;
             font-size: 1.5rem;
         }
-        
+       
         .modal-body {
             padding: 2rem;
         }
-        
+       
         .modal-footer {
             padding: 1rem 2rem;
             background-color: #f8f9fa;
@@ -311,36 +314,94 @@
             justify-content: flex-end;
             gap: 1rem;
         }
-        
+       
         .error-message {
             color: var(--danger);
             font-size: 0.9rem;
             margin-top: 0.25rem;
             display: none;
         }
-        
+       
+        /* Route Search Results Styles */
+        .search-container {
+            position: relative;
+            z-index: 100;
+        }
+       
+        .route-search-results {
+            position: absolute;
+            width: calc(100% - 2px);
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+            top: 100%;
+            left: 0;
+            margin-top: -1px;
+        }
+       
+        .route-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #eee;
+        }
+       
+        .route-item:hover {
+            background-color: #f5f5f5;
+        }
+       
+        .route-item:last-child {
+            border-bottom: none;
+        }
+       
+        .route-item .route-code {
+            font-weight: bold;
+            color: var(--primary);
+        }
+       
+        .route-item .route-name {
+            font-size: 0.9em;
+            color: #666;
+        }
+       
+        .search-loading {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            display: none;
+            z-index: 10;
+        }
+       
         @media (max-width: 768px) {
             .container {
                 padding: 0 0.5rem;
             }
-            
+           
             .card-header h2 {
                 font-size: 1.5rem;
             }
-            
+           
             .card-body {
                 padding: 1.5rem;
             }
-            
+           
             .route-info {
                 flex-direction: column;
                 gap: 0.5rem;
             }
-            
+           
             .modal-content {
                 width: 95%;
             }
-            
+           
             .modal-body {
                 padding: 1.5rem;
             }
@@ -359,15 +420,20 @@
         </div>
         <div class="card-body">
             <div class="form-group">
-                <label for="routeCode">Select Route</label>
-                <div class="icon-input">
-                    <i class="fas fa-route"></i>
-                    <select id="routeCode" class="form-control">
-                        <option value="">Choose your route...</option>
-                    </select>
+                <label for="routeSearch">Search Route</label>
+                <div class="search-container">
+                    <div class="icon-input">
+                        <i class="fas fa-route"></i>
+                        <input type="text" id="routeSearch" class="form-control" placeholder="Enter route code or name...">
+                    </div>
+                    <div class="search-loading" id="searchLoading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                    <div class="route-search-results" id="routeSearchResults"></div>
                 </div>
+                <input type="hidden" id="routeCode">
             </div>
-            
+           
             <div id="routeDetails" style="display: none;">
                 <div class="route-info">
                     <div class="route-info-item">
@@ -383,7 +449,7 @@
                         <span id="toStageLabel">To</span>
                     </div>
                 </div>
-                
+               
                 <div class="form-group">
                     <label for="fromStage">Departure Point</label>
                     <div class="icon-input">
@@ -393,7 +459,7 @@
                         </select>
                     </div>
                 </div>
-                
+               
                 <div class="form-group">
                     <label for="toStage">Destination Point</label>
                     <div class="icon-input">
@@ -403,7 +469,7 @@
                         </select>
                     </div>
                 </div>
-                
+               
                 <div class="form-group">
                     <label for="busType">Bus Type</label>
                     <div class="icon-input">
@@ -418,7 +484,7 @@
                         </select>
                     </div>
                 </div>
-                
+               
                 <div class="form-group">
                     <label for="passengerCount">Number of Passengers</label>
                     <div class="icon-input">
@@ -426,11 +492,11 @@
                         <input type="number" id="passengerCount" class="form-control" min="1" value="1">
                     </div>
                 </div>
-                
+               
                 <button id="calculateBtn" class="btn btn-primary">
                     <i class="fas fa-calculator"></i> Calculate Fare
                 </button>
-                
+               
                 <div id="fareResult" class="fare-result" style="display: none;">
                     <h3><i class="fas fa-receipt"></i> Fare Details</h3>
                     <div class="fare-details">
@@ -461,7 +527,7 @@
                         Total: <span id="totalFare">₹0</span>
                     </div>
                 </div>
-                
+               
                 <button id="buyBtn" class="btn btn-primary" disabled>
                     <i class="fas fa-ticket-alt"></i> Confirm Booking
                 </button>
@@ -485,7 +551,7 @@
                     </div>
                     <div id="nameError" class="error-message">Please enter your name</div>
                 </div>
-                
+               
                 <div class="form-group">
                     <label for="passengerMobile">Mobile Number</label>
                     <div class="icon-input">
@@ -494,7 +560,7 @@
                     </div>
                     <div id="mobileError" class="error-message">Please enter a valid 10-digit mobile number</div>
                 </div>
-                
+               
                 <div class="form-group">
                     <label for="passengerEmail">Email Address</label>
                     <div class="icon-input">
@@ -518,40 +584,97 @@
 
 <script>
     const apiBase = "<?php echo $apiBaseUrl; ?>"; // This will be your http://192.168.29.141/BusManagementAPI/api/
+    let searchTimeout;
 
-    // Populate route codes on document ready
-    $(document).ready(function () {
-        $.get(`${apiBase}GetAllRoutes`, function (routes) {
-            routes.forEach(r => {
-                $('#routeCode').append(`<option value="${r.code}">${r.code}</option>`);
+    // Route search functionality
+    $('#routeSearch').on('input', function() {
+        const searchText = $(this).val().trim();
+        
+        // Clear previous timeout if exists
+        if (searchTimeout) {
+            clearTimeout(searchTimeout);
+        }
+        
+        // Hide results if search is empty
+        if (searchText.length === 0) {
+            $('#routeSearchResults').hide().empty();
+            return;
+        }
+        
+        // Show loading indicator
+        $('#searchLoading').show();
+        
+        // Set a new timeout to delay the API call
+        searchTimeout = setTimeout(() => {
+            $.get(`${apiBase}SearchRoutes/${encodeURIComponent(searchText)}`, function(routes) {
+                $('#searchLoading').hide();
+                
+                const resultsContainer = $('#routeSearchResults');
+                resultsContainer.empty();
+                
+                if (routes && routes.length > 0) {
+                    routes.forEach(route => {
+                        resultsContainer.append(`
+                            <div class="route-item" data-code="${route}">
+                                <div class="route-code">${route}</div>
+                            </div>
+                        `);
+                    });
+                    resultsContainer.show();
+                } else {
+                    resultsContainer.append('<div class="route-item">No routes found</div>');
+                    resultsContainer.show();
+                }
+            }).fail(function() {
+                $('#searchLoading').hide();
+                $('#routeSearchResults').html('<div class="route-item">Error loading routes</div>').show();
             });
-        }).fail(function() {
-            console.error("Failed to load routes.");
-            alert("Could not load bus routes. Please try refreshing the page.");
-        });
+        }, 500); // 500ms delay after typing stops
     });
-
-    // Load stages when route changes
-    $('#routeCode').on('change', function () {
-        const code = $(this).val();
+    
+    // Handle route selection from search results
+    $(document).on('click', '.route-item', function() {
+        const routeCode = $(this).data('code');
+        const routeName = $(this).find('.route-code').text();
+        
+        // Set the selected route
+        $('#routeSearch').val(routeName);
+        $('#routeCode').val(routeCode);
+        $('#routeSearchResults').hide();
+        
+        // Load stages for the selected route
+        loadRouteStages(routeCode);
+    });
+    
+    // Hide search results when clicking elsewhere
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.search-container').length) {
+            $('#routeSearchResults').hide();
+        }
+    });
+    
+    // Function to load route stages
+    function loadRouteStages(routeCode) {
         $('#fromStage, #toStage').empty().append('<option value="">Select...</option>').prop('disabled', true);
         $('#fareResult').hide();
         $('#buyBtn').prop('disabled', true);
-        $('#routeDetails').hide(); // Hide route details until a route is selected
-
-        if (code) {
-            $.get(`${apiBase}GetRouteStagesByCode/${code}`, function (stages) {
-                $('#routeDetails').show(); // Show route details section
+        $('#routeDetails').hide();
+        
+        if (routeCode) {
+            $.get(`${apiBase}GetRouteStagesByCode/${routeCode}`, function(stages) {
+                $('#routeDetails').show();
+                
                 stages.stages.forEach(s => {
                     $('#fromStage, #toStage').append(`<option value="${s.stageName}">${s.stageName}</option>`);
                 });
+                
                 $('#fromStage, #toStage').prop('disabled', false);
             }).fail(function() {
                 console.error("Failed to load route stages.");
                 alert("Could not load stages for the selected route.");
             });
         }
-    });
+    }
 
     // Update route info labels when stages change
     $('#fromStage, #toStage').on('change', function() {
@@ -563,7 +686,7 @@
     });
 
     // Calculate fare
-    $('#calculateBtn').on('click', function () {
+    $('#calculateBtn').on('click', function() {
         const routeCode = $('#routeCode').val();
         const from = $('#fromStage').val();
         const to = $('#toStage').val();
@@ -581,22 +704,22 @@
             return;
         }
 
-        $.get(`${apiBase}CalculateFare/${routeCode}/${busType}/${from}/${to}`, function (fare) {
+        $.get(`${apiBase}CalculateFare/${routeCode}/${busType}/${from}/${to}`, function(fare) {
             if (fare && fare.fare !== undefined) {
                 const totalFare = fare.fare * passengers;
-                
+               
                 // Update all fare details displays
-                $('#routeDisplay').text($('#routeCode option:selected').text());
+                $('#routeDisplay').text($('#routeSearch').val());
                 $('#fromDisplay').text(from);
                 $('#toDisplay').text(to);
                 $('#busTypeDisplay').text(busType);
                 $('#baseFare').text(`₹${fare.fare.toFixed(2)}`);
                 $('#passengerCountDisplay').text(passengers);
                 $('#totalFare').text(`₹${totalFare.toFixed(2)}`);
-                
+               
                 $('#fareResult').show();
                 $('#buyBtn').prop('disabled', false);
-                
+               
                 // Scroll to fare result for better UX
                 $('html, body').animate({
                     scrollTop: $('#fareResult').offset().top - 100
@@ -606,7 +729,7 @@
                 $('#fareResult').hide();
                 $('#buyBtn').prop('disabled', true);
             }
-        }).fail(function (xhr) {
+        }).fail(function(xhr) {
             let errorMsg = "Could not calculate fare. Please check your inputs and try again.";
             if (xhr.responseJSON && xhr.responseJSON.message) {
                 errorMsg = xhr.responseJSON.message;
@@ -651,9 +774,9 @@
         const name = $('#passengerName').val().trim();
         const mobile = $('#passengerMobile').val().trim();
         const email = $('#passengerEmail').val().trim();
-        
+       
         let isValid = true;
-        
+       
         // Validate name
         if (!name) {
             $('#nameError').show();
@@ -661,7 +784,7 @@
         } else {
             $('#nameError').hide();
         }
-        
+       
         // Validate mobile
         if (!validateMobile(mobile)) {
             $('#mobileError').show();
@@ -669,7 +792,7 @@
         } else {
             $('#mobileError').hide();
         }
-        
+       
         // Validate email
         if (!validateEmail(email)) {
             $('#emailError').show();
@@ -677,11 +800,11 @@
         } else {
             $('#emailError').hide();
         }
-        
+       
         if (!isValid) {
             return; // Stop if any validation fails
         }
-        
+       
         // Get booking details from the main form
         const routeCode = $('#routeCode').val();
         const from = $('#fromStage').val();
@@ -694,8 +817,6 @@
         let baseFarePerPerson = parseFloat($('#baseFare').text().replace('₹', '')); // Use the base fare already displayed
 
         // Synchronously fetch route stages to determine stagesTravelled
-        // This is a blocking call, for small data sets it's usually fine,
-        // but for larger apps, consider an async chain or pre-storing this data.
         $.ajax({
             url: `${apiBase}GetRouteStagesByCode/${routeCode}`,
             method: "GET",
@@ -704,7 +825,7 @@
                 const stages = data.stages;
                 let fromIndex = -1;
                 let toIndex = -1;
-                
+               
                 // Find indices of from and to stages in the route array
                 for (let i = 0; i < stages.length; i++) {
                     if (stages[i].stageName === from) {
@@ -748,7 +869,7 @@
 
         // Show loading state on button
         $('#confirmBooking').html('<i class="fas fa-spinner fa-spin"></i> Processing...').prop('disabled', true);
-        
+       
         // Make the API call to book the ticket
         $.ajax({
             url: `${apiBase}BuyTicket`, // Corrected API endpoint for booking
@@ -758,7 +879,7 @@
             success: function(response) {
                 // Hide modal
                 $('#passengerModal').removeClass('show');
-                
+               
                 // Extract Booking ID from the response string
                 const bookingIdMatch = response.match(/Booking Reference ID - ([A-Z0-9]+)/);
                 const bookingId = bookingIdMatch ? bookingIdMatch[1] : 'N/A';
@@ -781,7 +902,7 @@
 
                 // Hide the original buy button after successful booking
                 $('#buyBtn').hide();
-                
+               
                 // Reset passenger form and button state
                 $('#passengerForm')[0].reset();
                 $('#confirmBooking').html('<i class="fas fa-check"></i> Confirm Booking').prop('disabled', false);
@@ -800,7 +921,7 @@
                 } else if (xhr.responseText) {
                     errorMsg = xhr.responseText;
                 }
-                
+               
                 alert(`Error: ${errorMsg}`); // Display error to the user
                 $('#confirmBooking').html('<i class="fas fa-check"></i> Confirm Booking').prop('disabled', false); // Reset button
             }
