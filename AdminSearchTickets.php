@@ -1,5 +1,6 @@
 <?php
-    if (session_status() === PHP_SESSION_NONE) session_start();
+    require_once 'AdminAuth.php';
+    checkAuth();
     $config = include('config.php');
     $apiBaseUrl = $config['api_base_url'];
 ?>
@@ -525,7 +526,7 @@
 </head>
 <body>
 
-<?php include 'navbar.php'; ?>
+<?php include 'AdminNavbar.php'; ?>
 
 <div class="container">
     <div class="card">
@@ -873,7 +874,7 @@
                     $('#ticketResult').off('click', '.ticket-card').on('click', '.ticket-card', function() {
                         const ticketID = $(this).data('ticket-id');
                         if (ticketID) {
-                            window.location.href = `TicketDetails.php?id=${ticketID}`;
+                            window.location.href = `AdminTicketDetails.php?id=${ticketID}`;
                         } else {
                             console.warn("Ticket card clicked, but no ticket ID found.");
                         }

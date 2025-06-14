@@ -1,3 +1,10 @@
+<?php
+    require_once 'AdminAuth.php';
+    checkAuth();
+    $config = include('config.php');
+    $apiBaseUrl = $config['api_base_url'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -323,11 +330,11 @@ footer {
     </style>
 </head>
 <body>
-    <?php include 'navbar.php'; ?>
+    <?php include 'AdminNavbar.php'; ?>
 
     <header>
         <h1>Ticket Management</h1>
-        <p>Your hub for buying new tickets and viewing your existing bookings</p>
+        <p>Your hub for issuing new tickets and managing bookings</p>
     </header>
 
     <main class="main-content">
@@ -339,9 +346,9 @@ footer {
                         <i class="fas fa-ticket-alt card-icon"></i>
                     </div>
                     <div class="card-body">
-                        <h3 class="card-title">Buy New Ticket</h3>
+                        <h3 class="card-title">Issue New Ticket</h3>
                         <p class="card-text">Purchase bus tickets for your desired routes with our secure payment system and instant confirmation.</p>
-                        <a href="BuyTicket.php" class="btn">
+                        <a href="AdminBuyTicket.php" class="btn">
                             <i class="fas fa-shopping-cart"></i> Buy Ticket
                         </a>
                     </div>
@@ -354,8 +361,21 @@ footer {
                     <div class="card-body">
                         <h3 class="card-title">View My Tickets</h3>
                         <p class="card-text">Access your booking history, view upcoming trips, and manage your existing reservations.</p>
-                        <a href="SearchTickets.php" class="btn">
+                        <a href="AdminSearchTickets.php" class="btn">
                             <i class="fas fa-eye"></i> View Tickets
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ticket-card">
+                    <div class="card-icon-container">
+                        <i class="fas fa-receipt card-icon"></i>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">Redeem Tickets</h3>
+                        <p class="card-text">Access your booking history, view upcoming trips, and manage your existing reservations.</p>
+                        <a href="RedeemTicket.php" class="btn">
+                            <i class="fas fa-times"></i> Redeem Tickets
                         </a>
                     </div>
                 </div>

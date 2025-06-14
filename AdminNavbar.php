@@ -228,6 +228,10 @@
                 <i class="bi bi-house-door"></i>
                 <span>Home</span>
             </a>
+            <a href="AdminTicketsHome.php">
+                <i class="bi bi-ticket"></i>
+                <span>Tickets</span>
+            </a>
             <a href="AdminViewRoutes.php">
                 <i class="bi bi-map"></i>
                 <span>View Routes</span>

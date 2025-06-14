@@ -227,6 +227,10 @@ checkAuth();
         <i class="fas fa-search"></i>
         Find Routes
     </a>
+    <a class="btn glass-card" href="AdminTicketsHome.php">
+        <i class="fas fa-ticket"></i>
+        Tickets
+    </a>
     <a class="btn glass-card" href="AdminCalculateFare.php">
         <i class="fas fa-calculator"></i>
         Calculate Fare
