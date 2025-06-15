@@ -410,6 +410,13 @@ $apiBaseUrl = $config['api_base_url'];
             color: var(--primary-dark);
         }
 
+        /* Shortcut help text */
+        .shortcut-help {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            margin-left: 0.5rem;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 992px) {
             .container {
@@ -512,13 +519,13 @@ $apiBaseUrl = $config['api_base_url'];
             <div id="emptyState" class="empty-state" style="display: none;">
                 <i class="fas fa-map-marked-alt"></i>
                 <p>No stages added yet</p>
-                <button type="button" class="btn btn-primary" onclick="addStageRow()">
-                    <i class="fas fa-plus"></i> Add First Stage
+                <button type="button" class="btn btn-primary" onclick="addStageRow()" data-shortcut="F6">
+                    <i class="fas fa-plus"></i> Add First Stage <small class="shortcut-help">(F6)</small>
                 </button>
             </div>
             
-            <button type="button" class="btn btn-outline" onclick="addStageRow()" style="margin-top: 1rem;">
-                <i class="fas fa-plus"></i> Add Another Stage
+            <button type="button" class="btn btn-outline" id="addAnotherStageBtn" onclick="addStageRow()" style="margin-top: 1rem;" data-shortcut="F6">
+                <i class="fas fa-plus"></i> Add Another Stage <small class="shortcut-help">(F6)</small>
             </button>
             
             <div class="action-buttons">
@@ -693,10 +700,10 @@ $apiBaseUrl = $config['api_base_url'];
                 activeItem = -1; // Reset active item
                 inputElement.focus(); // Keep focus on the input
             } else if (items.length === 1) { // If only one item and no active selection, select it
-                 inputElement.value = items[0].dataset.value;
-                 dropdown.style.display = 'none';
-                 activeItem = -1;
-                 inputElement.focus();
+                   inputElement.value = items[0].dataset.value;
+                   dropdown.style.display = 'none';
+                   activeItem = -1;
+                   inputElement.focus();
             }
         };
 
@@ -892,6 +899,21 @@ $apiBaseUrl = $config['api_base_url'];
             }, 3000);
         }
     }
+
+    // Keyboard shortcut listener for F6
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'F6') {
+            event.preventDefault(); // Prevent default browser behavior (e.g., F6 moving cursor to address bar)
+            const addStageButton = document.getElementById('addAnotherStageBtn');
+            const addFirstStageButton = document.querySelector('#emptyState .btn-primary[data-shortcut="F6"]');
+            
+            if (addStageButton && addStageButton.style.display !== 'none') {
+                addStageButton.click();
+            } else if (addFirstStageButton && addFirstStageButton.style.display !== 'none') {
+                addFirstStageButton.click();
+            }
+        }
+    });
 </script>
 
 </body>
