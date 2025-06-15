@@ -590,8 +590,13 @@ $apiBaseUrl = $config['api_base_url'];
         stageCounter++;
         toggleEmptyState();
         
-        // Setup autocomplete for the new stage input
-        setupTypeahead(row.querySelector('.stageName'));
+        const newStageInput = row.querySelector('.stageName');
+        setupTypeahead(newStageInput); // Setup autocomplete for the new stage input
+
+        // Set focus to the newly added stage name input after a short delay
+        setTimeout(() => {
+            newStageInput.focus();
+        }, 100);
     }
 
     function removeStageRow(button) {
@@ -700,10 +705,10 @@ $apiBaseUrl = $config['api_base_url'];
                 activeItem = -1; // Reset active item
                 inputElement.focus(); // Keep focus on the input
             } else if (items.length === 1) { // If only one item and no active selection, select it
-                   inputElement.value = items[0].dataset.value;
-                   dropdown.style.display = 'none';
-                   activeItem = -1;
-                   inputElement.focus();
+                    inputElement.value = items[0].dataset.value;
+                    dropdown.style.display = 'none';
+                    activeItem = -1;
+                    inputElement.focus();
             }
         };
 
